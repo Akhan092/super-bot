@@ -1,17 +1,81 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <title>Тіркелу</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Регистрация</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <h2>Kaspi тіркелу формасы</h2>
-    <form action="/register_user" method="post">
-        <input name="first_name" placeholder="Аты" required><br>
-        <input name="last_name" placeholder="Фамилия" required><br>
-        <input name="phone" placeholder="+7 (777) 777 77 77" required><br>
-        <input name="password" type="password" placeholder="Құпиясөз" required><br>
-        <button type="submit">Тіркелу</button>
-    </form>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+<!-- 1️⃣ Тіркелу -->
+<div class="bg-white p-8 rounded-2xl shadow-md w-full max-w-sm" id="registerForm">
+  <h2 class="text-2xl font-bold text-center mb-2">Присоединяйтесь к нам!</h2>
+  <p class="text-sm text-center text-gray-500 mb-6">Начните 3-дневный бесплатный период</p>
+
+  <form class="space-y-4" action="/register_user" method="post" onsubmit="return validateForm()">
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Имя</label>
+      <input name="first_name" id="firstName" type="text" placeholder="Введите имя"
+             class="w-full border border-gray-300 rounded-lg p-2 focus:ring-blue-500 focus:outline-none" required />
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Фамилия</label>
+      <input name="last_name" id="lastName" type="text" placeholder="Введите фамилию"
+             class="w-full border border-gray-300 rounded-lg p-2 focus:ring-blue-500 focus:outline-none" required />
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Номер телефона</label>
+      <input name="phone" id="phone" type="tel" placeholder="+7 (777) 777 77 77" maxlength="18"
+             class="w-full border border-gray-300 rounded-lg p-2 focus:ring-blue-500 focus:outline-none" value="+7 " required />
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Придумайте пароль</label>
+      <input name="password" id="password" type="password"
+             class="w-full border border-gray-300 rounded-lg p-2 focus:ring-blue-500 focus:outline-none" required />
+    </div>
+    <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">Зарегистрироваться</button>
+  </form>
+
+  <div class="text-sm text-center mt-4">
+    Уже есть аккаунт? <a href="/" class="text-blue-600 hover:underline">Войти</a>
+  </div>
+</div>
+
+<script>
+  const phoneInput = document.getElementById('phone');
+  const firstNameInput = document.getElementById('firstName');
+  const lastNameInput = document.getElementById('lastName');
+
+  phoneInput.addEventListener('input', function () {
+    let digits = this.value.replace(/\D/g, '');
+    if (digits.startsWith('7')) digits = digits.slice(1);
+    if (digits.length > 10) digits = digits.slice(0, 10);
+    let formatted = '+7';
+    if (digits.length > 0) formatted += ' (' + digits.slice(0, 3);
+    if (digits.length >= 3) formatted += ') ' + digits.slice(3, 6);
+    if (digits.length >= 6) formatted += ' ' + digits.slice(6, 8);
+    if (digits.length >= 8) formatted += ' ' + digits.slice(8, 10);
+    this.value = formatted;
+  });
+
+  firstNameInput.addEventListener('input', function () {
+    this.value = this.value.replace(/[^a-zA-Zа-яА-ЯёЁіІңңғҒүҮқҚөӨәӘһҺ\s]/g, '');
+  });
+
+  lastNameInput.addEventListener('input', function () {
+    this.value = this.value.replace(/[^a-zA-Zа-яА-ЯёЁіІңңғҒүҮқҚөӨәӘһҺ\s]/g, '');
+  });
+
+  function validateForm() {
+    const password = document.getElementById('password').value;
+    if (password.length < 6 || !/[a-zA-Z]/.test(password) || !/\d/.test(password)) {
+      alert("Пароль кемінде 6 таңба, әріп және сан болуы керек");
+      return false;
+    }
+    return true;
+  }
+</script>
+
 </body>
 </html>
