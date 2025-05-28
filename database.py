@@ -1,7 +1,7 @@
 from sqlalchemy import Table, Column, Integer, String, MetaData
 from databases import Database
 
-DATABASE_URL = "postgresql://superbotdb_rclo_user:XcneYfZI...@dpg-d0rhlbjui...a:5432/superbotdb_rclo"
+DATABASE_URL = "postgresql://superbotdb_rclo_user:XcneYf7IkosTX2Rb2AbR14HvujBRyfKh@dpg-d0rh1bjuibrs73d82dpg-a:5432/superbotdb_rclo"
 
 database = Database(DATABASE_URL)
 metadata = MetaData()
