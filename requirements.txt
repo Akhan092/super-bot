@@ -4,3 +4,4 @@ sqlalchemy
 databases
 jinja2
 aiosqlite
+python-multipart
