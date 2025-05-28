@@ -40,3 +40,9 @@ async def register_user(
     )
     await database.execute(query)
     return {"message": "Пайдаланушы базаға сақталды ✅"}
+
+@app.get("/users19034006343")
+async def get_users():
+    query = users.select()
+    result = await database.fetch_all(query)
+    return result
