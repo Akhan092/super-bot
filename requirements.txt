@@ -6,3 +6,4 @@ jinja2
 aiosqlite
 python-multipart
 asyncpg
+psycopg2-binary
