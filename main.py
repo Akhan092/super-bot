@@ -6,6 +6,7 @@ import sqlalchemy
 import random
 import requests
 from datetime import datetime
+from sqlalchemy import text
 
 app = FastAPI()
 
@@ -45,7 +46,7 @@ async def home(request: Request):
 async def register_form(request: Request):
     return templates.TemplateResponse("register.html", {"request": request})
 
-# Код жіберу
+# SMS код жіберу
 @app.post("/send_code")
 async def send_code(phone: str = Form(...)):
     cleaned = clean_phone(phone)
@@ -96,7 +97,7 @@ async def register_user(
         last_name=last_name,
         phone=phone,
         password=password,
-        created_at=datetime.utcnow()  # ✅ тіркелу уақыты
+        created_at=datetime.utcnow()  # тіркелу уақыты
     )
     await database.execute(query)
     return JSONResponse({"ok": True, "msg": "✅ Пайдаланушы тіркелді!"})
@@ -117,3 +118,14 @@ async def view_all_users(request: Request, admin_code: str):
         "request": request,
         "users": user_list
     })
+
+# created_at бағанын қосатын маршрут
+@app.get("/add-created-at")
+async def add_created_at_column():
+    try:
+        await database.execute(text(
+            "ALTER TABLE users ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        ))
+        return {"ok": True, "msg": "✅ created_at бағаны қосылды"}
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
