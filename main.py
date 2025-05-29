@@ -13,19 +13,19 @@ engine = sqlalchemy.create_engine(str(database.url))
 metadata.create_all(engine)
 templates = Jinja2Templates(directory="templates")
 
-# 🔐 smsc.kz параметрлері
+# smsc.kz параметрлері
 SMS_LOGIN = "Ahan1992"
 SMS_PASSWORD = "Ahan5250!"
 
-# 📦 Уақытша SMS кодтар (Redis орнына)
+# Уақытша SMS кодтар
 sms_codes = {}
 
-# ✅ Телефон форматтаушы
+# Телефонды тазалау
 def clean_phone(phone: str) -> str:
     phone = phone.replace("+7", "7")
     return phone.replace("(", "").replace(")", "").replace(" ", "").replace("-", "")
 
-# 🔌 База қосу/ажырату
+# База қосу/ажырату
 @app.on_event("startup")
 async def startup():
     await database.connect()
@@ -34,17 +34,17 @@ async def startup():
 async def shutdown():
     await database.disconnect()
 
-# 🔷 Басты бет
+# Басты бет
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
-# 🔷 Тіркелу беті
+# Тіркелу беті
 @app.get("/register", response_class=HTMLResponse)
 async def register_form(request: Request):
     return templates.TemplateResponse("register.html", {"request": request})
 
-# 🔷 Код жіберу
+# Код жіберу
 @app.post("/send_code")
 async def send_code(phone: str = Form(...)):
     cleaned = clean_phone(phone)
@@ -61,7 +61,7 @@ async def send_code(phone: str = Form(...)):
     else:
         return JSONResponse({"ok": False, "msg": "Қате: код жіберілмеді ❌"}, status_code=500)
 
-# 🔷 Кодты тексеру
+# Кодты тексеру
 @app.post("/verify_code")
 async def verify_code(phone: str = Form(...), code: str = Form(...)):
     cleaned = clean_phone(phone)
@@ -73,7 +73,7 @@ async def verify_code(phone: str = Form(...), code: str = Form(...)):
         return JSONResponse({"success": True})
     return JSONResponse({"success": False})
 
-# 🔷 Пайдаланушыны тіркеу
+# Пайдаланушыны тіркеу
 @app.post("/register_user")
 async def register_user(
     first_name: str = Form(...),
@@ -94,25 +94,24 @@ async def register_user(
         first_name=first_name,
         last_name=last_name,
         phone=phone,
-        password=password  # ⚠️ кейін bcrypt қолдану керек
+        password=password
     )
     await database.execute(query)
     return JSONResponse({"ok": True, "msg": "✅ Пайдаланушы тіркелді!"})
 
-# 🔍 Қолданушыны телефон нөмірі арқылы көру
-@app.get("/users{phone}", response_class=HTMLResponse)
-async def view_user_by_phone(request: Request, phone: str):
-    cleaned = ''.join(filter(str.isdigit, phone))
-    query = users.select().where(users.c.phone.contains(cleaned))
-    user = await database.fetch_one(query)
-
-    if not user:
+# 🔍 Барлық қолданушыларды көру (тек админ коды арқылы)
+@app.get("/users{admin_code}", response_class=HTMLResponse)
+async def view_all_users(request: Request, admin_code: str):
+    if admin_code != "190340006343":
         return templates.TemplateResponse("user_not_found.html", {
             "request": request,
-            "phone": cleaned
+            "phone": admin_code
         })
 
-    return templates.TemplateResponse("user_view.html", {
+    query = users.select()
+    user_list = await database.fetch_all(query)
+
+    return templates.TemplateResponse("user_list.html", {
         "request": request,
-        "user": user
+        "users": user_list
     })
