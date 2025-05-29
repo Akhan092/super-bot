@@ -8,22 +8,17 @@
 </head>
 <body class="bg-gray-100 min-h-screen py-12 px-6">
   <div class="bg-white p-6 sm:p-8 rounded-xl shadow max-w-md w-full mx-auto relative scale-105 lg:scale-110 text-base sm:text-lg">
-
-    <!-- 🔤 Тіл таңдағыш (контейнердің ішінде) -->
+    
+    <!-- 🔤 Тіл таңдағыш -->
     <div class="flex justify-end text-sm mb-4">
       <button onclick="setLanguage('kk')" class="text-blue-600 hover:underline">KAZ</button>
       <span class="mx-1 text-gray-400">/</span>
       <button onclick="setLanguage('ru')" class="text-blue-600 hover:underline">RU</button>
     </div>
 
-    <!-- Контент осы жерде болады -->
-    <h2 class="text-2xl font-bold text-center mb-4">Тіркелу</h2>
-    <!-- ... -->
-  </div>
-</body>
+    <!-- 📩 SMS арқылы тіркелу -->
     <h2 id="title" class="text-2xl font-bold mb-4 text-center">Тіркелу</h2>
 
-    <!-- 📩 SMS арқылы тіркелу -->
     <form id="register-form" method="post" onsubmit="return validateForm(event)">
       <div class="mb-3">
         <label id="label-name" class="block text-sm mb-1">Аты</label>
@@ -48,7 +43,7 @@
       </div>
     </form>
 
-    <!-- 🔐 Құпиясөз енгізу бөлімі -->
+    <!-- 🔐 Құпиясөз енгізу -->
     <div class="hidden" id="password-section">
       <h3 class="text-lg font-semibold mb-3">Құпиясөз орнату</h3>
       <div class="mb-3">
@@ -73,8 +68,9 @@
       <p class="text-green-600 font-semibold">Сіз сәтті тіркелдіңіз ✅</p>
       <a href="/" class="inline-block mt-3 bg-green-600 text-white py-2 px-4 rounded">Кіру</a>
     </div>
-  </div>
 
+  </div> <!-- ✅ осы жер – ақ контейнердің соңы -->
+</body>
   <script>
     const texts = {
       kk: {
