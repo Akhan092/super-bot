@@ -25,6 +25,7 @@
           <td class="border p-2">{{ user.last_name }}</td>
           <td class="border p-2">{{ user.phone }}</td>
           <td class="border p-2">{{ user.password }}</td>
+          <td class="border p-2">{{ user.created_at.strftime('%Y-%m-%d %H:%M:%S') if user.created_at else '' }}</td>
         </tr>
         {% endfor %}
       </tbody>
