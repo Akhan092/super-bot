@@ -6,43 +6,105 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
-  <div class="bg-white p-8 rounded-xl shadow w-full max-w-md">
-    <h2 class="text-xl font-bold mb-4 text-center">SMS арқылы тіркелу</h2>
-    <form method="post" action="/register_user" onsubmit="return validateForm()">
+  <div class="bg-white p-8 rounded-xl shadow w-full max-w-md relative">
+    <!-- Тіл таңдағыш -->
+    <div class="absolute top-0 right-0 mt-2 mr-2 text-sm">
+      <button onclick="setLanguage('kk')" class="text-blue-600 hover:underline">KAZ</button> /
+      <button onclick="setLanguage('ru')" class="text-blue-600 hover:underline">RU</button>
+    </div>
+
+    <h2 id="title" class="text-xl font-bold mb-4 text-center">Тіркелу</h2>
+
+    <form id="register-form" method="post" action="/register_user" onsubmit="return validateForm()">
       <div class="mb-3">
-        <label class="block text-sm mb-1">Аты</label>
-        <input name="first_name" placeholder="Атыңыз" required class="w-full p-2 border rounded" />
+        <label id="label-name" class="block text-sm mb-1">Аты</label>
+        <input name="first_name" id="first_name" placeholder="Атыңыз" required class="w-full p-2 border rounded" />
       </div>
       <div class="mb-3">
-        <label class="block text-sm mb-1">Тегі</label>
-        <input name="last_name" placeholder="Тегіңіз" required class="w-full p-2 border rounded" />
-      </div>
-      <div class="mb-3">
-        <label class="block text-sm mb-1">Телефон</label>
-        <input id="phone" name="phone" placeholder="+7 (707) 123 45 67" value="+7 " required class="w-full p-2 border rounded" />
+        <label id="label-phone" class="block text-sm mb-1">Телефон нөмірі</label>
+        <input id="phone" name="phone" placeholder="+7 (707) 123 45 67" value="+7 " maxlength="18" required class="w-full p-2 border rounded" />
       </div>
 
-      <div class="mb-3">
-        <button type="button" onclick="sendSMS()" class="bg-blue-600 text-white px-4 py-2 rounded w-full">Код жіберу</button>
+      <div class="mb-3" id="send-button-block">
+        <button type="button" onclick="sendSMS()" class="bg-blue-600 text-white px-4 py-2 rounded w-full">Тіркелу</button>
       </div>
 
-      <div class="mb-3">
-        <label class="block text-sm mb-1">SMS код</label>
-        <input id="sms_code" name="sms_code" placeholder="Код" required class="w-full p-2 border rounded" />
+      <div class="mb-3 hidden" id="sms-code-block">
+        <label id="label-code" class="block text-sm mb-1">SMS код</label>
+        <input id="sms_code" name="sms_code" placeholder="Код" class="w-full p-2 border rounded" />
       </div>
 
-      <div class="mb-4">
-        <label class="block text-sm mb-1">Құпиясөз</label>
-        <input name="password" type="password" placeholder="Құпиясөз" required class="w-full p-2 border rounded" />
+      <div class="mb-4 hidden" id="final-submit-block">
+        <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded w-full">Тіркелу</button>
       </div>
-
-      <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded w-full">Тіркелу</button>
     </form>
   </div>
 
   <script>
+    const texts = {
+      kk: {
+        title: "Тіркелу",
+        "label-name": "Аты",
+        "label-phone": "Телефон нөмірі",
+        "label-code": "SMS код",
+        "submit-initial": "Тіркелу",
+        "submit-final": "Тіркелу",
+        success: "SMS код жіберілді",
+        error_code: "Код дұрыс емес",
+        error_form: "Аты мен телефон нөмірі дұрыс толтырылуы керек"
+      },
+      ru: {
+        title: "Регистрация",
+        "label-name": "Имя",
+        "label-phone": "Номер телефона",
+        "label-code": "Код из SMS",
+        "submit-initial": "Зарегистрироваться",
+        "submit-final": "Завершить регистрацию",
+        success: "Код отправлен по SMS",
+        error_code: "Код неверный",
+        error_form: "Имя и номер телефона должны быть заполнены правильно"
+      }
+    };
+
+    function setLanguage(lang) {
+      const t = texts[lang];
+      document.getElementById("title").innerText = t.title;
+      document.getElementById("label-name").innerText = t["label-name"];
+      document.getElementById("label-phone").innerText = t["label-phone"];
+      document.getElementById("label-code").innerText = t["label-code"];
+      document.querySelector("#send-button-block button").innerText = t["submit-initial"];
+      document.querySelector("#final-submit-block button").innerText = t["submit-final"];
+      localStorage.setItem('lang', lang);
+    }
+
+    window.onload = () => {
+      const lang = localStorage.getItem("lang") || "kk";
+      setLanguage(lang);
+    };
+
+    document.getElementById("phone").addEventListener("input", function () {
+      let digits = this.value.replace(/\D/g, '');
+      if (digits.startsWith('7')) digits = digits.slice(1);
+      if (digits.length > 10) digits = digits.slice(0, 10);
+
+      let formatted = '+7';
+      if (digits.length > 0) formatted += ' (' + digits.slice(0, 3);
+      if (digits.length >= 3) formatted += ') ' + digits.slice(3, 6);
+      if (digits.length >= 6) formatted += ' ' + digits.slice(6, 8);
+      if (digits.length >= 8) formatted += ' ' + digits.slice(8, 10);
+
+      this.value = formatted;
+    });
+
     function sendSMS() {
       const phone = document.getElementById("phone").value;
+      const name = document.getElementById("first_name").value;
+      const lang = localStorage.getItem("lang") || "kk";
+      if (!name.trim() || phone.length !== 18) {
+        alert(texts[lang].error_form);
+        return;
+      }
+
       fetch("/send_code", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -50,7 +112,10 @@
       })
       .then(res => res.json())
       .then(data => {
-        alert(data.msg || "Қате");
+        alert(data.msg || texts[lang].success);
+        document.getElementById("sms-code-block").classList.remove("hidden");
+        document.getElementById("final-submit-block").classList.remove("hidden");
+        document.getElementById("send-button-block").classList.add("hidden");
       })
       .catch(err => {
         console.error(err);
@@ -60,8 +125,9 @@
 
     function validateForm() {
       const code = document.getElementById("sms_code").value;
-      if (code.length !== 6 || !/^\d{6}$/.test(code)) {
-        alert("Код 6 таңбалы сан болуы керек");
+      const lang = localStorage.getItem("lang") || "kk";
+      if (!/^\d{6}$/.test(code)) {
+        alert(texts[lang].error_code);
         return false;
       }
       return true;
