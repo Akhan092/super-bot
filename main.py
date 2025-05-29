@@ -10,23 +10,23 @@ from sqlalchemy import text
 
 app = FastAPI()
 
-# PostgreSQL байланысын бастау
+# PostgreSQL байланысы
 engine = sqlalchemy.create_engine(str(database.url))
 metadata.create_all(engine)
 templates = Jinja2Templates(directory="templates")
 
-# Textbelt API параметрі
+# СМС API (Textbelt)
 SMS_API_KEY = "58ed0414c9e959d68d66c2b55e0a4c576e2a4c52BgRzbptGWysU5P2wvItnvUbHD"
 
-# Уақытша SMS кодтар
+# Уақытша сақталатын кодтар
 sms_codes = {}
 
-# Телефонды тазалау
+# Телефон форматтау
 def clean_phone(phone: str) -> str:
     phone = phone.replace("+7", "7")
     return phone.replace("(", "").replace(")", "").replace(" ", "").replace("-", "")
 
-# База қосу/ажырату
+# Базамен байланыс
 @app.on_event("startup")
 async def startup():
     await database.connect()
@@ -45,13 +45,20 @@ async def home(request: Request):
 async def register_form(request: Request):
     return templates.TemplateResponse("register.html", {"request": request})
 
-# SMS код жіберу
+# ✅ СМС код жіберу
 @app.post("/send_code")
 async def send_code(phone: str = Form(...)):
     cleaned = clean_phone(phone)
+
+    # 📌 Егер қолданушы бар болса — тіркетпейміз
+    query = users.select().where(users.c.phone == phone)
+    user_exists = await database.fetch_one(query)
+    if user_exists:
+        return JSONResponse({"ok": False, "msg": "Бұл нөмір тіркелген", "exists": True})
+
+    # ➕ Код генерация және сақтау
     code = str(random.randint(100000, 999999))
     sms_codes[cleaned] = code
-
     print(f"[SMS] Код {code} жіберілді: {cleaned}")
 
     payload = {
@@ -72,7 +79,7 @@ async def send_code(phone: str = Form(...)):
     else:
         return JSONResponse({"ok": False, "msg": "Қате: код жіберілмеді ❌", "data": data}, status_code=500)
 
-# Кодты тексеру
+# СМС кодты тексеру
 @app.post("/verify_code")
 async def verify_code(phone: str = Form(...), code: str = Form(...)):
     cleaned = clean_phone(phone)
@@ -84,7 +91,7 @@ async def verify_code(phone: str = Form(...), code: str = Form(...)):
         return JSONResponse({"success": True})
     return JSONResponse({"success": False})
 
-# Пайдаланушыны тіркеу
+# Қолданушыны тіркеу
 @app.post("/register_user")
 async def register_user(
     first_name: str = Form(...),
@@ -112,7 +119,7 @@ async def register_user(
     print("✅ Пайдаланушы тіркелді:", phone)
     return JSONResponse({"ok": True, "msg": "✅ Пайдаланушы тіркелді!"})
 
-# Барлық қолданушыларды көру (админге арналған сілтеме)
+# Қолданушылар тізімі (тек админге)
 @app.get("/users{admin_code}", response_class=HTMLResponse)
 async def view_all_users(request: Request, admin_code: str):
     if admin_code != "190340006343":
@@ -129,7 +136,7 @@ async def view_all_users(request: Request, admin_code: str):
         "users": user_list
     })
 
-# created_at бағанын қосу (бір рет қолдануға арналған)
+# created_at бағанын қосу (бір реттік)
 @app.get("/add-created-at")
 async def add_created_at_column():
     try:
@@ -140,7 +147,7 @@ async def add_created_at_column():
     except Exception as e:
         return {"ok": False, "error": str(e)}
 
-# Debug — база ішіндегі қолданушыларды JSON түрінде көру
+# Debug: JSON арқылы қолданушыларды көру
 @app.get("/debug-users")
 async def debug_users():
     query = users.select().order_by(users.c.created_at.desc())
