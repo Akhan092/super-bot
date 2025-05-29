@@ -22,12 +22,10 @@ SMS_API_KEY = "58ed0414c9e959d68d66c2b55e0a4c576e2a4c52BgRzbptGWysU5P2wvItnvUbHD
 sms_codes = {}
 
 # Clean phone number
-
 def clean_phone(phone: str) -> str:
     return phone.replace("+7", "7").replace("(", "").replace(")", "").replace(" ", "").replace("-", "")
 
 # DB startup and shutdown
-
 @app.on_event("startup")
 async def startup():
     await database.connect()
@@ -35,6 +33,11 @@ async def startup():
 @app.on_event("shutdown")
 async def shutdown():
     await database.disconnect()
+
+# Root page (/)
+@app.get("/", response_class=HTMLResponse)
+async def root(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
 
 # Register page
 @app.get("/register", response_class=HTMLResponse)
