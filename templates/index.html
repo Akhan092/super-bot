@@ -8,18 +8,22 @@
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
 
-  <!-- 📦 Контейнер -->
   <body class="bg-gray-100 min-h-screen py-12 px-4">
   <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-md max-w-md mx-auto text-lg sm:text-xl">
-    <!-- Контейнер ішіндегі форма, кнопка, т.б. -->
-  </div>
-</body>
-    <!-- 🔤 Тіл таңдағыш -->
-    <div class="absolute top-0 right-0 mt-2 mr-2 text-sm">
-      <button onclick="setLanguage('kk')" class="text-blue-600 hover:underline">KAZ</button> /
+    
+    <!-- 🔤 Тіл таңдағыш (контейнердің ішінде) -->
+    <div class="flex justify-end text-sm mb-4">
+      <button onclick="setLanguage('kk')" class="text-blue-600 hover:underline">KAZ</button>
+      <span class="mx-1 text-gray-400">/</span>
       <button onclick="setLanguage('ru')" class="text-blue-600 hover:underline">RU</button>
     </div>
 
+    <!-- 🧾 Контейнер ішіндегі контент осында -->
+    <h2 class="text-2xl font-bold text-center mb-4">Тіркелу</h2>
+    <!-- Форма, кнопка, т.б. -->
+
+  </div>
+</body>
     <!-- 📝 Форма -->
     <h2 id="welcome" class="text-2xl font-bold text-center mb-2">Қош келдіңіз!</h2>
     <p id="subtitle" class="text-sm text-center text-gray-500 mb-6">3 күндік тегін кезеңді бастаңыз</p>
