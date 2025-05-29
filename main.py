@@ -15,9 +15,9 @@ engine = sqlalchemy.create_engine(str(database.url))
 metadata.create_all(engine)
 templates = Jinja2Templates(directory="templates")
 
-# smsc.kz параметрлері
-SMS_LOGIN = "Ahan1992"
-SMS_PASSWORD = "Ahan5250!"
+# SMS Aero параметрлері
+SMS_API_KEY = "OOz_jt9g1TfWYsGwbMaMU-DTwBrBVeZq"  # Құпия кілтіңіз
+SMS_SIGN = "SMS Aero"  # Жалпы sender аты
 
 # Уақытша SMS кодтар
 sms_codes = {}
@@ -55,13 +55,26 @@ async def send_code(phone: str = Form(...)):
 
     print(f"[SMS] Код {code} жіберілді: {cleaned}")
 
-    url = f"https://smsc.kz/sys/send.php?login={SMS_LOGIN}&psw={SMS_PASSWORD}&phones={cleaned}&mes=Код:%20{code}&charset=utf-8&translit=0&sender=&fmt=3"
-    response = requests.get(url)
+    url = "https://gate.smsaero.kz/v2/sms/send"
+    headers = {
+        "Authorization": f"Bearer {SMS_API_KEY}"
+    }
+    payload = {
+        "sign": SMS_SIGN,
+        "channel": "DIRECT",
+        "number": cleaned,
+        "text": f"Код: {code} (super-bot.kz)",
+        "type": "plain",
+        "dateSend": ""
+    }
 
-    if response.status_code == 200:
+    response = requests.post(url, json=payload, headers=headers)
+    data = response.json()
+
+    if response.status_code == 200 and data.get("success"):
         return JSONResponse({"ok": True, "msg": "Код жіберілді ✅"})
     else:
-        return JSONResponse({"ok": False, "msg": "Қате: код жіберілмеді ❌"}, status_code=500)
+        return JSONResponse({"ok": False, "msg": f"Қате: код жіберілмеді ❌ ({data})"}, status_code=500)
 
 # Кодты тексеру
 @app.post("/verify_code")
