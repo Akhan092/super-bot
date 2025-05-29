@@ -1,98 +1,98 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="kk">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Добро пожаловать!</title>
+  <title>Тіл таңдағышпен форма</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
 
-  <div class="bg-white p-8 rounded-2xl shadow-md w-full max-w-sm">
-    <h2 class="text-2xl font-bold text-center mb-2">Добро пожаловать!</h2>
-    <p class="text-sm text-center text-gray-500 mb-6">Начните 3-дневный бесплатный период</p>
+  <!-- 📦 Негізгі контейнер -->
+  <div class="bg-white p-8 rounded-2xl shadow-md w-full max-w-sm relative">
 
-    <form class="space-y-4" onsubmit="return validateForm()">
-      <!-- Номер телефона -->
+    <!-- 🔤 Тіл таңдау батырмасы – осы контейнер ішінде, жоғарғы оң жақта -->
+    <div class="absolute top-0 right-0 mt-2 mr-2 text-sm">
+      <button onclick="setLanguage('kk')" class="text-blue-600 hover:underline">KAZ</button> /
+      <button onclick="setLanguage('ru')" class="text-blue-600 hover:underline">RU</button>
+    </div>
+
+    <!-- 📝 Тақырып және форма -->
+    <h2 id="welcome" class="text-2xl font-bold text-center mb-2">Қош келдіңіз!</h2>
+    <p id="subtitle" class="text-sm text-center text-gray-500 mb-6">3 күндік тегін кезеңді бастаңыз</p>
+
+    <form class="space-y-4" onsubmit="return false;">
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Номер телефона</label>
+        <label id="label-phone" class="block text-sm font-medium text-gray-700 mb-1">Телефон нөмірі</label>
         <input id="phone" type="tel" placeholder="+7 (777) 777 77 77" maxlength="18"
                class="w-full border border-gray-300 rounded-lg p-2 focus:ring-blue-500 focus:outline-none" value="+7 " />
       </div>
 
-      <!-- Пароль -->
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Пароль</label>
+        <label id="label-password" class="block text-sm font-medium text-gray-700 mb-1">Құпиясөз</label>
         <div class="relative">
-          <input id="password" type="password" placeholder="Введите пароль"
+          <input id="password" type="password" placeholder=""
                  class="w-full border border-gray-300 rounded-lg p-2 pr-10 focus:ring-blue-500 focus:outline-none" />
-          <button type="button" onclick="togglePassword()" class="absolute inset-y-0 right-2 flex items-center text-gray-500">
-            👁️
-          </button>
+          <button type="button" onclick="togglePassword()" class="absolute inset-y-0 right-2 flex items-center text-gray-500">👁️</button>
         </div>
         <p id="password-error" class="text-red-600 text-sm mt-1 hidden">
-          Пароль кемінде 6 таңба болуы, ағылшын әріптері мен сандардан тұруы керек.
+          Құпиясөз кемінде 6 таңбадан тұруы және әріп пен сан болуы керек.
         </p>
       </div>
 
-      <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">Войти</button>
+      <button id="login-button" type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">Кіру</button>
     </form>
 
-    <div class="text-sm text-center mt-4 text-blue-600 hover:underline cursor-pointer">Забыли пароль?</div>
+    <div id="forgot" class="text-sm text-center mt-4 text-blue-600 hover:underline cursor-pointer">Құпиясөзді ұмыттыңыз ба?</div>
     <div class="text-sm text-center mt-2">
-      Нет аккаунта?
-      <a href="register" class="text-blue-600 hover:underline">Зарегистрироваться</a>
+      <span id="no-account">Аккаунт жоқ па?</span>
+      <a href="register" class="text-blue-600 hover:underline" id="register-link">Тіркелу</a>
     </div>
   </div>
 
+  <!-- 🌐 JavaScript: тіл ауыстыру және логика -->
   <script>
-    const phoneInput = document.getElementById('phone');
-    const passwordInput = document.getElementById('password');
-    const passwordError = document.getElementById('password-error');
+    const texts = {
+      kk: {
+        welcome: "Қош келдіңіз!",
+        subtitle: "3 күндік тегін кезеңді бастаңыз",
+        "label-phone": "Телефон нөмірі",
+        "label-password": "Құпиясөз",
+        "password-error": "Құпиясөз кемінде 6 таңбадан тұруы және әріп пен сан болуы керек.",
+        "login-button": "Кіру",
+        forgot: "Құпиясөзді ұмыттыңыз ба?",
+        "no-account": "Аккаунт жоқ па?",
+        "register-link": "Тіркелу"
+      },
+      ru: {
+        welcome: "Добро пожаловать!",
+        subtitle: "Начните 3-дневный бесплатный период",
+        "label-phone": "Номер телефона",
+        "label-password": "Пароль",
+        "password-error": "Пароль должен содержать минимум 6 символов, буквы и цифры.",
+        "login-button": "Войти",
+        forgot: "Забыли пароль?",
+        "no-account": "Нет аккаунта?",
+        "register-link": "Зарегистрироваться"
+      }
+    };
 
-    phoneInput.addEventListener('input', function () {
-      let digits = this.value.replace(/\D/g, '');
-      if (digits.startsWith('7')) digits = digits.slice(1);
-      if (digits.length > 10) digits = digits.slice(0, 10);
-
-      let formatted = '+7';
-      if (digits.length > 0) formatted += ' (' + digits.slice(0, 3);
-      if (digits.length >= 3) formatted += ') ' + digits.slice(3, 6);
-      if (digits.length >= 6) formatted += ' ' + digits.slice(6, 8);
-      if (digits.length >= 8) formatted += ' ' + digits.slice(8, 10);
-
-      this.value = formatted;
-    });
-
-    passwordInput.addEventListener('input', function () {
-      this.value = this.value.replace(/[^a-zA-Z0-9]/g, '');
-    });
+    function setLanguage(lang) {
+      for (const key in texts[lang]) {
+        const el = document.getElementById(key);
+        if (el) el.innerText = texts[lang][key];
+      }
+      localStorage.setItem('lang', lang);
+    }
 
     function togglePassword() {
+      const passwordInput = document.getElementById('password');
       passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
     }
 
-    function validateForm() {
-      const password = passwordInput.value;
-      const isValid = /^[A-Za-z0-9]+$/.test(password) &&
-                      /[A-Za-z]/.test(password) &&
-                      /\d/.test(password) &&
-                      password.length >= 6;
-
-      if (phoneInput.value.length !== 18) {
-        alert("Телефон нөмірі толық емес: +7 (777) 777 77 77");
-        return false;
-      }
-
-      if (!isValid) {
-        passwordError.classList.remove('hidden');
-        return false;
-      } else {
-        passwordError.classList.add('hidden');
-        return true;
-      }
-    }
+    window.onload = () => {
+      const lang = localStorage.getItem("lang") || "kk";
+      setLanguage(lang);
+    };
   </script>
-
 </body>
 </html>
