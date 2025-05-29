@@ -5,6 +5,7 @@ from database import database, users, metadata
 import sqlalchemy
 import random
 import requests
+from datetime import datetime
 
 app = FastAPI()
 
@@ -94,12 +95,13 @@ async def register_user(
         first_name=first_name,
         last_name=last_name,
         phone=phone,
-        password=password
+        password=password,
+        created_at=datetime.utcnow()  # ✅ тіркелу уақыты
     )
     await database.execute(query)
     return JSONResponse({"ok": True, "msg": "✅ Пайдаланушы тіркелді!"})
 
-# 🔍 Барлық қолданушыларды көру (тек админ коды арқылы)
+# Барлық қолданушыларды көру (админге арналған сілтеме)
 @app.get("/users{admin_code}", response_class=HTMLResponse)
 async def view_all_users(request: Request, admin_code: str):
     if admin_code != "190340006343":
