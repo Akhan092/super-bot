@@ -6,7 +6,7 @@
   <title>Тіркелу</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 min-h-screen py-12 px-6">
+<body class="bg-gray-100 flex items-center justify-center min-h-screen px-6">
   <div class="bg-white p-6 sm:p-8 rounded-xl shadow max-w-md w-full mx-auto relative scale-105 lg:scale-110 text-base sm:text-lg">
     
     <!-- 🔤 Тіл таңдағыш -->
@@ -84,7 +84,8 @@
         error_code: "Код дұрыс емес",
         error_form: "Аты мен телефон нөмірі дұрыс толтырылуы керек",
         password_error: "Құпиясөз кемінде 6 таңбадан тұруы және әріп пен сан болуы керек",
-        password_match: "Құпиясөздер сәйкес келмейді"
+        password_match: "Құпиясөздер сәйкес келмейді",
+        placeholder_name: "Атыңыз"
       },
       ru: {
         title: "Регистрация",
@@ -97,7 +98,8 @@
         error_code: "Код неверный",
         error_form: "Имя и номер телефона должны быть заполнены правильно",
         password_error: "Пароль должен быть не менее 6 символов, с буквами и цифрами",
-        password_match: "Пароли не совпадают"
+        password_match: "Пароли не совпадают",
+        placeholder_name: "Ваше имя"
       }
     };
 
@@ -109,6 +111,7 @@
       document.getElementById("label-code").innerText = t["label-code"];
       document.querySelector("#send-button-block button").innerText = t["submit-initial"];
       document.querySelector("#final-submit-block button").innerText = t["submit-final"];
+      document.getElementById("first_name").placeholder = t["placeholder_name"];
       localStorage.setItem('lang', lang);
     }
 
