@@ -15,9 +15,8 @@ engine = sqlalchemy.create_engine(str(database.url))
 metadata.create_all(engine)
 templates = Jinja2Templates(directory="templates")
 
-# SMS Aero.ru параметрлері
-SMS_API_KEY = "sfrFxoQ3REq6Fw5Ar3LmdnHxZor"  # Құпия кілтіңіз
-SMS_SIGN = "SMS Aero"  # Жалпы sender аты
+# Textbelt API параметрі
+SMS_API_KEY = "58ed0414c9e959d68d66c2b55e0a4c576e2a4c52BgRzbptGWysU5P2wvItnvUbHD"
 
 # Уақытша SMS кодтар
 sms_codes = {}
@@ -55,26 +54,23 @@ async def send_code(phone: str = Form(...)):
 
     print(f"[SMS] Код {code} жіберілді: {cleaned}")
 
-    url = "https://gate.smsaero.ru/v2/sms/send"
-    headers = {
-        "Authorization": f"Bearer {SMS_API_KEY}"
-    }
     payload = {
-        "sign": SMS_SIGN,
-        "channel": "DIRECT",
-        "number": cleaned,
-        "text": f"Код: {code} (super-bot.kz)",
-        "type": "plain",
-        "dateSend": ""
+        "phone": cleaned,
+        "message": f"Кіру коды: {code}",
+        "key": SMS_API_KEY
     }
 
-    response = requests.post(url, json=payload, headers=headers)
-    data = response.json()
+    response = requests.post("https://textbelt.com/text", data=payload)
+
+    try:
+        data = response.json()
+    except Exception as e:
+        return JSONResponse({"ok": False, "msg": f"JSON қатесі: {str(e)}", "raw": response.text}, status_code=500)
 
     if response.status_code == 200 and data.get("success"):
         return JSONResponse({"ok": True, "msg": "Код жіберілді ✅"})
     else:
-        return JSONResponse({"ok": False, "msg": f"Қате: код жіберілмеді ❌ ({data})"}, status_code=500)
+        return JSONResponse({"ok": False, "msg": "Қате: код жіберілмеді ❌", "data": data}, status_code=500)
 
 # Кодты тексеру
 @app.post("/verify_code")
