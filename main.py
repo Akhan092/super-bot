@@ -16,7 +16,7 @@ metadata.create_all(engine)
 templates = Jinja2Templates(directory="templates")
 
 # SMS Aero.ru параметрлері
-SMS_API_KEY = "OOz_jt9g1TfWYsGwbMaMU-DTwBrBVeZq"  # Құпия кілтіңіз
+SMS_API_KEY = "sfrFxoQ3REq6Fw5Ar3LmdnHxZor"  # Құпия кілтіңіз
 SMS_SIGN = "SMS Aero"  # Жалпы sender аты
 
 # Уақытша SMS кодтар
