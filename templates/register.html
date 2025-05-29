@@ -44,9 +44,8 @@
     </form>
 
     <!-- 🔐 Құпиясөз енгізу -->
-    <!-- 🔐 Құпиясөз енгізу -->
 	<div class="hidden" id="password-section">
-		<h3 class="text-lg font-semibold mb-3">Құпиясөз орнату</h3>
+		<h3 id="password-title" class="text-lg font-semibold mb-3">Құпиясөз орнату</h3>
 
 		<!-- 🔑 Жаңа пароль -->
 		<div class="mb-3">
@@ -70,7 +69,7 @@
 			</p>
 		</div>
 
-		<button onclick="savePassword()" class="bg-blue-600 text-white w-full py-2 rounded">Сақтау</button>
+		<button id="save-password-button" onclick="savePassword()" class="bg-blue-600 text-white w-full py-2 rounded">Сақтау</button>
 		</div>
 
 
@@ -96,7 +95,10 @@
         error_form: "Аты мен телефон нөмірі дұрыс толтырылуы керек",
         password_error: "Құпиясөз кемінде 6 әріптен (a-z) және 1 цифрдан тұруы керек",
         password_match: "Құпиясөздер сәйкес келмейді",
-        placeholder_name: "Атыңыз"
+        placeholder_name: "Атыңыз",
+		password_title: "Құпиясөз орнату",
+		save_button: "Сақтау",
+		placeholder_password: "Жаңа құпиясөз"
       },
       ru: {
         title: "Регистрация",
@@ -110,7 +112,10 @@
         error_form: "Имя и номер телефона должны быть заполнены правильно",
         password_error: "Пароль должен быть не менее 6 символов, с буквами и цифрами",
         password_match: "Пароли не совпадают",
-        placeholder_name: "Ваше имя"
+        placeholder_name: "Ваше имя",
+		password_title: "Установка пароля",
+		save_button: "Сохранить",
+		placeholder_password: "Новый пароль"
       }
     };
 
@@ -123,8 +128,11 @@
 		document.querySelector("#send-button-block button").innerText = t["submit-initial"];
 		document.querySelector("#final-submit-block button").innerText = t["submit-final"];
 		document.getElementById("first_name").placeholder = t["placeholder_name"];
+		document.getElementById("new_password").placeholder = t.placeholder_password;
 		document.getElementById("password-hint-1").innerText = t.password_error;
 		document.getElementById("password-hint-2").innerText = t.password_error;
+		document.getElementById("password-title").innerText = t.password_title;
+		document.getElementById("save-password-button").innerText = t.save_button;
 		localStorage.setItem('lang', lang);
 	}
 	
