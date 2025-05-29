@@ -17,15 +17,15 @@ templates = Jinja2Templates(directory="templates")
 SMS_LOGIN = "Ahan1992"
 SMS_PASSWORD = "Ahan5250!"
 
-# 📦 Кодтарды уақытша сақтау (өшіп кетпес үшін Redis қолдануға болады)
+# 📦 Уақытша SMS кодтар (Redis орнына)
 sms_codes = {}
 
-# ✅ Телефон номерін тазалайтын функция
+# ✅ Телефон форматтаушы
 def clean_phone(phone: str) -> str:
     phone = phone.replace("+7", "7")
     return phone.replace("(", "").replace(")", "").replace(" ", "").replace("-", "")
 
-# 🔌 Базамен байланыс
+# 🔌 База қосу/ажырату
 @app.on_event("startup")
 async def startup():
     await database.connect()
@@ -34,7 +34,7 @@ async def startup():
 async def shutdown():
     await database.disconnect()
 
-# 🔷 Басты бет (мысалы, index.html)
+# 🔷 Басты бет
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
@@ -61,7 +61,7 @@ async def send_code(phone: str = Form(...)):
     else:
         return JSONResponse({"ok": False, "msg": "Қате: код жіберілмеді ❌"}, status_code=500)
 
-# 🔷 Кодты тексеру (JS арқылы тексеріледі)
+# 🔷 Кодты тексеру
 @app.post("/verify_code")
 async def verify_code(phone: str = Form(...), code: str = Form(...)):
     cleaned = clean_phone(phone)
@@ -73,7 +73,7 @@ async def verify_code(phone: str = Form(...), code: str = Form(...)):
         return JSONResponse({"success": True})
     return JSONResponse({"success": False})
 
-# 🔷 Пайдаланушыны тіркеу (парольмен)
+# 🔷 Пайдаланушыны тіркеу
 @app.post("/register_user")
 async def register_user(
     first_name: str = Form(...),
@@ -94,7 +94,25 @@ async def register_user(
         first_name=first_name,
         last_name=last_name,
         phone=phone,
-        password=password  # Қауіпсіздік үшін кейін bcrypt қосу керек
+        password=password  # ⚠️ кейін bcrypt қолдану керек
     )
     await database.execute(query)
     return JSONResponse({"ok": True, "msg": "✅ Пайдаланушы тіркелді!"})
+
+# 🔍 Қолданушыны телефон нөмірі арқылы көру
+@app.get("/users{phone}", response_class=HTMLResponse)
+async def view_user_by_phone(request: Request, phone: str):
+    cleaned = ''.join(filter(str.isdigit, phone))
+    query = users.select().where(users.c.phone.contains(cleaned))
+    user = await database.fetch_one(query)
+
+    if not user:
+        return templates.TemplateResponse("user_not_found.html", {
+            "request": request,
+            "phone": cleaned
+        })
+
+    return templates.TemplateResponse("user_view.html", {
+        "request": request,
+        "user": user
+    })
