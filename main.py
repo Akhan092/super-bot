@@ -10,23 +10,22 @@ from sqlalchemy import text
 
 app = FastAPI()
 
-# PostgreSQL байланысы
+# PostgreSQL Engine
 engine = sqlalchemy.create_engine(str(database.url))
 metadata.create_all(engine)
 templates = Jinja2Templates(directory="templates")
 
-# Textbelt API кілті
+# Textbelt API
 SMS_API_KEY = "58ed0414c9e959d68d66c2b55e0a4c576e2a4c52BgRzbptGWysU5P2wvItnvUbHD"
 
-# Уақытша SMS кодтар
+# Кодтарды уақытша сақтау
 sms_codes = {}
 
-# Телефонды тазалау
+# Телефон форматтау
 def clean_phone(phone: str) -> str:
-    phone = phone.replace("+7", "7")
-    return phone.replace("(", "").replace(")", "").replace(" ", "").replace("-", "")
+    return phone.replace("+7", "7").replace("(", "").replace(")", "").replace(" ", "").replace("-", "")
 
-# База байланысы
+# Базаға қосылу
 @app.on_event("startup")
 async def startup():
     await database.connect()
@@ -45,27 +44,27 @@ async def home(request: Request):
 async def register_form(request: Request):
     return templates.TemplateResponse("register.html", {"request": request})
 
-# ✅ SMS код жіберу және тіркелген нөмірді тексеру
+# ✅ СМС код жіберу және тіркелген нөмірді тексеру
 @app.post("/send_code")
 async def send_code(phone: str = Form(...)):
     cleaned = clean_phone(phone)
 
-    # ✅ Егер нөмір бұрын тіркелген болса
+    # 🔒 Егер нөмір бұрын тіркелген болса — тоқтату
     query = users.select().where(users.c.phone == phone)
     user_exists = await database.fetch_one(query)
     if user_exists:
         return JSONResponse({
             "ok": False,
-            "msg": "Бұл нөмір тіркелген. Кіру бетіне бағытталуда...",
+            "msg": "Бұл нөмір тіркелген",
             "exists": True
         })
 
-    # ➕ Жаңа код генерация
+    # ✅ Код генерациялау және сақтау
     code = str(random.randint(100000, 999999))
     sms_codes[cleaned] = code
     print(f"[SMS] Код {code} жіберілді: {cleaned}")
 
-    # Textbelt арқылы SMS жіберу
+    # Textbelt арқылы СМС жіберу
     payload = {
         "phone": cleaned,
         "message": f"Кіру коды: {code}",
@@ -79,7 +78,7 @@ async def send_code(phone: str = Form(...)):
     except Exception as e:
         return JSONResponse({"ok": False, "msg": f"JSON қатесі: {str(e)}", "raw": response.text}, status_code=500)
 
-    if response.status_code == 200 and data.get("success"):
+    if data.get("success"):
         return JSONResponse({"ok": True, "msg": "Код жіберілді ✅"})
     else:
         return JSONResponse({"ok": False, "msg": "Қате: код жіберілмеді ❌", "data": data}, status_code=500)
@@ -90,7 +89,7 @@ async def verify_code(phone: str = Form(...), code: str = Form(...)):
     cleaned = clean_phone(phone)
     expected_code = sms_codes.get(cleaned)
 
-    print(f"[VERIFY] Күтілген код: {expected_code}, келген код: {code}, номер: {cleaned}")
+    print(f"[VERIFY] Күтілген код: {expected_code}, келген код: {code}")
 
     if expected_code == code:
         return JSONResponse({"success": True})
@@ -108,8 +107,6 @@ async def register_user(
     cleaned = clean_phone(phone)
     expected_code = sms_codes.get(cleaned)
 
-    print(f"[REGISTER] Күтілген код: {expected_code}, енгізілген код: {sms_code}, номер: {cleaned}")
-
     if not expected_code or sms_code != expected_code:
         return JSONResponse({"ok": False, "msg": "❌ Код дұрыс емес"}, status_code=400)
 
@@ -124,7 +121,7 @@ async def register_user(
     print("✅ Пайдаланушы тіркелді:", phone)
     return JSONResponse({"ok": True, "msg": "✅ Пайдаланушы тіркелді!"})
 
-# ✅ Админ қолданушылар тізімі
+# 🔒 Қолданушылар тізімі (админге)
 @app.get("/users{admin_code}", response_class=HTMLResponse)
 async def view_all_users(request: Request, admin_code: str):
     if admin_code != "190340006343":
@@ -141,7 +138,7 @@ async def view_all_users(request: Request, admin_code: str):
         "users": user_list
     })
 
-# ✅ created_at бағанын қосу
+# ✅ created_at бағанын қосу (бір реттік)
 @app.get("/add-created-at")
 async def add_created_at_column():
     try:
@@ -152,7 +149,7 @@ async def add_created_at_column():
     except Exception as e:
         return {"ok": False, "error": str(e)}
 
-# ✅ JSON түрде қолданушыларды көру
+# ✅ Debug: JSON форматта қолданушылар
 @app.get("/debug-users")
 async def debug_users():
     query = users.select().order_by(users.c.created_at.desc())
