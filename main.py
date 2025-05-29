@@ -39,6 +39,11 @@ async def shutdown():
 async def home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
+# ✅ /login маршруты
+@app.get("/login", response_class=HTMLResponse)
+async def login_page(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
+
 # Тіркелу беті
 @app.get("/register", response_class=HTMLResponse)
 async def register_form(request: Request):
