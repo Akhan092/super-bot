@@ -200,31 +200,43 @@
 
 
     function sendSMS() {
-      const phone = document.getElementById("phone").value;
-      const name = document.getElementById("first_name").value;
-      const lang = localStorage.getItem("lang") || "kk";
-      if (!name.trim() || phone.length !== 18) {
-        alert(texts[lang].error_form);
-        return;
-      }
+		const phone = document.getElementById("phone").value;
+		const name = document.getElementById("first_name").value;
+		const lang = localStorage.getItem("lang") || "kk";
 
-      fetch("/send_code", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: "phone=" + encodeURIComponent(phone)
-      })
-      .then(res => res.json())
-      .then(data => {
-        alert(data.msg || texts[lang].success);
-        document.getElementById("sms-code-block").classList.remove("hidden");
-        document.getElementById("final-submit-block").classList.remove("hidden");
-        document.getElementById("send-button-block").classList.add("hidden");
-      })
-      .catch(err => {
-        console.error(err);
-        alert("Қате пайда болды");
-      });
-    }
+		if (!name.trim() || phone.length !== 18) {
+			alert(texts[lang].error_form);
+			return;
+		}
+
+		fetch("/send_code", {
+			method: "POST",
+			headers: { "Content-Type": "application/x-www-form-urlencoded" },
+			body: "phone=" + encodeURIComponent(phone)
+		})
+		.then(res => res.json())
+		.then(data => {
+			// ✅ Егер нөмір бұрын тіркелген болса — alert + /login
+			if (data.exists) {
+				alert("Бұл нөмір тіркелген. Кіру бетіне өтеміз...");
+				setTimeout(() => {
+					window.location.href = "/login";
+				}, 100);
+				return;
+			}
+
+			// ✅ Егер тіркелмеген болса — SMS код формасын ашу
+			alert(data.msg || texts[lang].success);
+			document.getElementById("sms-code-block").classList.remove("hidden");
+			document.getElementById("final-submit-block").classList.remove("hidden");
+			document.getElementById("send-button-block").classList.add("hidden");
+		})
+		.catch(err => {
+			console.error(err);
+			alert("Қате пайда болды");
+		});
+	}
+
 
     function validateForm(event) {
       event.preventDefault();
