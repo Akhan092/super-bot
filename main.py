@@ -20,7 +20,8 @@ sms_codes = {}
 
 # 📦 Телефон нөмірін тазалау функциясы
 def clean_phone(phone: str) -> str:
-    return phone.replace("+", "").replace("(", "").replace(")", "").replace(" ", "").replace("-", "")
+    phone = phone.replace("+7", "7")
+    return phone.replace("(", "").replace(")", "").replace(" ", "").replace("-", "")
 
 @app.on_event("startup")
 async def startup():
@@ -78,3 +79,14 @@ async def register_user(
     )
     await database.execute(query)
     return JSONResponse({"ok": True, "msg": "✅ Пайдаланушы тіркелді!"})
+
+@app.post("/verify_code")
+async def verify_code(phone: str = Form(...), code: str = Form(...)):
+    cleaned = clean_phone(phone)
+    expected_code = sms_codes.get(cleaned)
+
+    print(f"[VERIFY] Күтілген код: {expected_code}, келген код: {code}, номер: {cleaned}")
+
+    if expected_code == code:
+        return JSONResponse({"success": True})
+    return JSONResponse({"success": False})
