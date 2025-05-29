@@ -10,22 +10,22 @@ from sqlalchemy import text
 
 app = FastAPI()
 
-# 📦 PostgreSQL engine және шаблондар
+# 🔌 База және шаблондар
 engine = sqlalchemy.create_engine(str(database.url))
 metadata.create_all(engine)
 templates = Jinja2Templates(directory="templates")
 
-# 🔑 Textbelt API кілті
+# 📲 Textbelt API кілті
 SMS_API_KEY = "58ed0414c9e959d68d66c2b55e0a4c576e2a4c52BgRzbptGWysU5P2wvItnvUbHD"
 
-# ⏳ СМС кодтарды уақытша сақтау
+# 📥 Уақытша SMS кодтар
 sms_codes = {}
 
 # ☎️ Телефон форматтау
 def clean_phone(phone: str) -> str:
     return phone.replace("+7", "7").replace("(", "").replace(")", "").replace(" ", "").replace("-", "")
 
-# 🔌 Базамен байланыс
+# 🔛 Базаға қосылу
 @app.on_event("startup")
 async def startup():
     await database.connect()
@@ -34,27 +34,22 @@ async def startup():
 async def shutdown():
     await database.disconnect()
 
-# 🏠 Басты бет (қаласаңыз өзгерте аласыз)
-@app.get("/", response_class=HTMLResponse)
-async def home(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
-
 # 🧾 Тіркелу беті
 @app.get("/register", response_class=HTMLResponse)
 async def register_form(request: Request):
     return templates.TemplateResponse("register.html", {"request": request})
 
-# 🔐 Кіру беті → index.html көрсету
+# 🔐 Кіру беті → index.html
 @app.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
-# 📩 СМС код жіберу және тіркелген нөмірді тексеру
+# 📩 СМС код жіберу
 @app.post("/send_code")
 async def send_code(phone: str = Form(...)):
     cleaned = clean_phone(phone)
 
-    # ✅ Егер нөмір бұрын тіркелген болса
+    # ✅ Егер нөмір тіркелген болса
     query = users.select().where(users.c.phone == phone)
     user_exists = await database.fetch_one(query)
     if user_exists:
@@ -64,10 +59,10 @@ async def send_code(phone: str = Form(...)):
             "exists": True
         })
 
-    # ✅ Жаңа код генерация және СМС жіберу
+    # ✅ Егер тіркелмеген болса — код жіберу
     code = str(random.randint(100000, 999999))
     sms_codes[cleaned] = code
-    print(f"[SMS] Код {code} жіберілді: {cleaned}")
+    print(f"[SMS] Код: {code} -> {cleaned}")
 
     payload = {
         "phone": cleaned,
@@ -76,18 +71,17 @@ async def send_code(phone: str = Form(...)):
     }
 
     response = requests.post("https://textbelt.com/text", data=payload)
-
     try:
         data = response.json()
     except Exception as e:
-        return JSONResponse({"ok": False, "msg": f"JSON қатесі: {str(e)}", "raw": response.text}, status_code=500)
+        return JSONResponse({"ok": False, "msg": f"JSON қатесі: {str(e)}"}, status_code=500)
 
     if data.get("success"):
         return JSONResponse({"ok": True, "msg": "Код жіберілді ✅"})
     else:
-        return JSONResponse({"ok": False, "msg": "Қате: код жіберілмеді ❌", "data": data}, status_code=500)
+        return JSONResponse({"ok": False, "msg": "Қате: код жіберілмеді", "exists": False}, status_code=500)
 
-# ✅ Код тексеру
+# 🧾 Код тексеру
 @app.post("/verify_code")
 async def verify_code(phone: str = Form(...), code: str = Form(...)):
     cleaned = clean_phone(phone)
@@ -97,7 +91,7 @@ async def verify_code(phone: str = Form(...), code: str = Form(...)):
         return JSONResponse({"success": True})
     return JSONResponse({"success": False})
 
-# 👤 Қолданушыны тіркеу
+# 🧑‍💻 Қолданушыны тіркеу
 @app.post("/register_user")
 async def register_user(
     first_name: str = Form(...),
