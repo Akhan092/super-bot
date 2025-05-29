@@ -6,18 +6,21 @@
   <title>Тіркелу</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
-  <body class="bg-gray-100 min-h-screen py-12 px-6">
+<body class="bg-gray-100 min-h-screen py-12 px-6">
   <div class="bg-white p-6 sm:p-8 rounded-xl shadow max-w-md w-full mx-auto relative scale-105 lg:scale-110 text-base sm:text-lg">
-    <!-- Контент осы жерде болады -->
-  </div>
-</body>
-    <!-- 🔤 Тіл таңдағыш -->
-    <div class="absolute top-0 right-0 mt-2 mr-2 text-sm">
-      <button onclick="setLanguage('kk')" class="text-blue-600 hover:underline">KAZ</button> /
+
+    <!-- 🔤 Тіл таңдағыш (контейнердің ішінде) -->
+    <div class="flex justify-end text-sm mb-4">
+      <button onclick="setLanguage('kk')" class="text-blue-600 hover:underline">KAZ</button>
+      <span class="mx-1 text-gray-400">/</span>
       <button onclick="setLanguage('ru')" class="text-blue-600 hover:underline">RU</button>
     </div>
 
+    <!-- Контент осы жерде болады -->
+    <h2 class="text-2xl font-bold text-center mb-4">Тіркелу</h2>
+    <!-- ... -->
+  </div>
+</body>
     <h2 id="title" class="text-2xl font-bold mb-4 text-center">Тіркелу</h2>
 
     <!-- 📩 SMS арқылы тіркелу -->
