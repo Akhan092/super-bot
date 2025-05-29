@@ -97,9 +97,10 @@ async def register_user(
         last_name=last_name,
         phone=phone,
         password=password,
-        created_at=datetime.utcnow()  # тіркелу уақыты
+        created_at=datetime.utcnow()
     )
     await database.execute(query)
+    print("✅ Пайдаланушы тіркелді:", phone)
     return JSONResponse({"ok": True, "msg": "✅ Пайдаланушы тіркелді!"})
 
 # Барлық қолданушыларды көру (админге арналған сілтеме)
@@ -119,7 +120,7 @@ async def view_all_users(request: Request, admin_code: str):
         "users": user_list
     })
 
-# created_at бағанын қосатын маршрут
+# created_at бағанын қосу (бір рет қолдануға арналған)
 @app.get("/add-created-at")
 async def add_created_at_column():
     try:
@@ -129,3 +130,10 @@ async def add_created_at_column():
         return {"ok": True, "msg": "✅ created_at бағаны қосылды"}
     except Exception as e:
         return {"ok": False, "error": str(e)}
+
+# Debug — база ішіндегі қолданушыларды JSON түрінде көру
+@app.get("/debug-users")
+async def debug_users():
+    query = users.select().order_by(users.c.created_at.desc())
+    result = await database.fetch_all(query)
+    return [dict(u) for u in result]
