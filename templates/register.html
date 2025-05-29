@@ -123,9 +123,11 @@
 		document.querySelector("#send-button-block button").innerText = t["submit-initial"];
 		document.querySelector("#final-submit-block button").innerText = t["submit-final"];
 		document.getElementById("first_name").placeholder = t["placeholder_name"];
+		document.getElementById("password-hint-1").innerText = t.password_error;
+		document.getElementById("password-hint-2").innerText = t.password_error;
 		localStorage.setItem('lang', lang);
-    }
-
+	}
+	
     window.onload = () => {
       const lang = localStorage.getItem("lang") || "kk";
       setLanguage(lang);
