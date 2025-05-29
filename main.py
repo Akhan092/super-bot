@@ -10,22 +10,22 @@ from sqlalchemy import text
 
 app = FastAPI()
 
-# PostgreSQL engine and templates
+# PostgreSQL Engine
 engine = sqlalchemy.create_engine(str(database.url))
 metadata.create_all(engine)
 templates = Jinja2Templates(directory="templates")
 
-# Textbelt API key
+# Textbelt API
 SMS_API_KEY = "58ed0414c9e959d68d66c2b55e0a4c576e2a4c52BgRzbptGWysU5P2wvItnvUbHD"
 
-# Temporary SMS codes
+# Кодтарды уақытша сақтау
 sms_codes = {}
 
-# Clean phone number
+# Телефон форматтау
 def clean_phone(phone: str) -> str:
     return phone.replace("+7", "7").replace("(", "").replace(")", "").replace(" ", "").replace("-", "")
 
-# DB startup and shutdown
+# Базаға қосылу
 @app.on_event("startup")
 async def startup():
     await database.connect()
@@ -34,43 +34,22 @@ async def startup():
 async def shutdown():
     await database.disconnect()
 
-# Root page (/)
+# Басты бет
 @app.get("/", response_class=HTMLResponse)
-async def root(request: Request):
+async def home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
-# Register page
+# Тіркелу беті
 @app.get("/register", response_class=HTMLResponse)
 async def register_form(request: Request):
     return templates.TemplateResponse("register.html", {"request": request})
 
-# Login page (index.html)
-@app.get("/login", response_class=HTMLResponse)
-async def login_page(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
-
-# Admin view of users
-@app.get("/users{admin_code}", response_class=HTMLResponse)
-async def view_all_users(request: Request, admin_code: str):
-    if admin_code != "190340006343":
-        return templates.TemplateResponse("user_not_found.html", {
-            "request": request,
-            "phone": admin_code
-        })
-
-    query = users.select().order_by(users.c.created_at.desc())
-    user_list = await database.fetch_all(query)
-
-    return templates.TemplateResponse("user_list.html", {
-        "request": request,
-        "users": user_list
-    })
-
-# Send SMS code
+# ✅ СМС код жіберу және тіркелген нөмірді тексеру
 @app.post("/send_code")
 async def send_code(phone: str = Form(...)):
     cleaned = clean_phone(phone)
 
+    # 🔒 Егер нөмір бұрын тіркелген болса — тоқтату
     query = users.select().where(users.c.phone == phone)
     user_exists = await database.fetch_one(query)
     if user_exists:
@@ -80,10 +59,12 @@ async def send_code(phone: str = Form(...)):
             "exists": True
         })
 
+    # ✅ Код генерациялау және сақтау
     code = str(random.randint(100000, 999999))
     sms_codes[cleaned] = code
-    print(f"[SMS] Код: {code} -> {cleaned}")
+    print(f"[SMS] Код {code} жіберілді: {cleaned}")
 
+    # Textbelt арқылы СМС жіберу
     payload = {
         "phone": cleaned,
         "message": f"Кіру коды: {code}",
@@ -91,27 +72,30 @@ async def send_code(phone: str = Form(...)):
     }
 
     response = requests.post("https://textbelt.com/text", data=payload)
+
     try:
         data = response.json()
     except Exception as e:
-        return JSONResponse({"ok": False, "msg": f"JSON қатесі: {str(e)}"}, status_code=500)
+        return JSONResponse({"ok": False, "msg": f"JSON қатесі: {str(e)}", "raw": response.text}, status_code=500)
 
     if data.get("success"):
         return JSONResponse({"ok": True, "msg": "Код жіберілді ✅"})
     else:
-        return JSONResponse({"ok": False, "msg": "Қате: код жіберілмеді", "exists": False}, status_code=500)
+        return JSONResponse({"ok": False, "msg": "Қате: код жіберілмеді ❌", "data": data}, status_code=500)
 
-# Verify SMS code
+# ✅ СМС кодты тексеру
 @app.post("/verify_code")
 async def verify_code(phone: str = Form(...), code: str = Form(...)):
     cleaned = clean_phone(phone)
     expected_code = sms_codes.get(cleaned)
 
+    print(f"[VERIFY] Күтілген код: {expected_code}, келген код: {code}")
+
     if expected_code == code:
         return JSONResponse({"success": True})
     return JSONResponse({"success": False})
 
-# Register user
+# ✅ Қолданушыны тіркеу
 @app.post("/register_user")
 async def register_user(
     first_name: str = Form(...),
@@ -137,7 +121,24 @@ async def register_user(
     print("✅ Пайдаланушы тіркелді:", phone)
     return JSONResponse({"ok": True, "msg": "✅ Пайдаланушы тіркелді!"})
 
-# Add created_at column (for one-time DB patching)
+# 🔒 Қолданушылар тізімі (админге)
+@app.get("/users{admin_code}", response_class=HTMLResponse)
+async def view_all_users(request: Request, admin_code: str):
+    if admin_code != "190340006343":
+        return templates.TemplateResponse("user_not_found.html", {
+            "request": request,
+            "phone": admin_code
+        })
+
+    query = users.select().order_by(users.c.created_at.desc())
+    user_list = await database.fetch_all(query)
+
+    return templates.TemplateResponse("user_list.html", {
+        "request": request,
+        "users": user_list
+    })
+
+# ✅ created_at бағанын қосу (бір реттік)
 @app.get("/add-created-at")
 async def add_created_at_column():
     try:
@@ -148,7 +149,7 @@ async def add_created_at_column():
     except Exception as e:
         return {"ok": False, "error": str(e)}
 
-# Debug user list JSON
+# ✅ Debug: JSON форматта қолданушылар
 @app.get("/debug-users")
 async def debug_users():
     query = users.select().order_by(users.c.created_at.desc())
