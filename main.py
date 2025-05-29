@@ -15,7 +15,7 @@ engine = sqlalchemy.create_engine(str(database.url))
 metadata.create_all(engine)
 templates = Jinja2Templates(directory="templates")
 
-# SMS Aero параметрлері
+# SMS Aero.ru параметрлері
 SMS_API_KEY = "OOz_jt9g1TfWYsGwbMaMU-DTwBrBVeZq"  # Құпия кілтіңіз
 SMS_SIGN = "SMS Aero"  # Жалпы sender аты
 
@@ -55,7 +55,7 @@ async def send_code(phone: str = Form(...)):
 
     print(f"[SMS] Код {code} жіберілді: {cleaned}")
 
-    url = "https://gate.smsaero.kz/v2/sms/send"
+    url = "https://gate.smsaero.ru/v2/sms/send"
     headers = {
         "Authorization": f"Bearer {SMS_API_KEY}"
     }
