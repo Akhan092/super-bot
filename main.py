@@ -55,7 +55,7 @@ async def send_code(phone: str = Form(...)):
 
     print(f"[SMS] Код {code} жіберілді: {cleaned}")
 
-    url = f"https://smsc.kz/sys/send.php?login={SMS_LOGIN}&psw={SMS_PASSWORD}&phones={cleaned}&mes=Код:%20{code}&fmt=3"
+    url = f"https://smsc.kz/sys/send.php?login={SMS_LOGIN}&psw={SMS_PASSWORD}&phones={cleaned}&mes=Код:%20{code}&charset=utf-8&translit=0&sender=&fmt=3"
     response = requests.get(url)
 
     if response.status_code == 200:
