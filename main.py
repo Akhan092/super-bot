@@ -111,7 +111,7 @@ async def view_all_users(request: Request, admin_code: str):
             "phone": admin_code
         })
 
-    query = users.select()
+    query = users.select().order_by(users.c.created_at.desc())
     user_list = await database.fetch_all(query)
 
     return templates.TemplateResponse("user_list.html", {
