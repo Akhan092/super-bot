@@ -61,7 +61,8 @@
         "login-button": "Кіру",
         forgot: "Құпиясөзді ұмыттыңыз ба?",
         "no-account": "Аккаунт жоқ па?",
-        "register-link": "Тіркелу"
+        "register-link": "Тіркелу",
+        "password-placeholder": "Құпиясөзді енгізіңіз"
       },
       ru: {
         welcome: "Добро пожаловать!",
@@ -72,7 +73,8 @@
         "login-button": "Войти",
         forgot: "Забыли пароль?",
         "no-account": "Нет аккаунта?",
-        "register-link": "Зарегистрироваться"
+        "register-link": "Зарегистрироваться",
+        "password-placeholder": "Введите пароль"
       }
     };
 
@@ -81,6 +83,7 @@
         const el = document.getElementById(key);
         if (el) el.innerText = texts[lang][key];
       }
+      document.getElementById("password").placeholder = texts[lang]["password-placeholder"];
       localStorage.setItem('lang', lang);
     }
 
