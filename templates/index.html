@@ -23,8 +23,8 @@
     <form class="space-y-4 w-full" onsubmit="return validateForm()">
       <div>
         <label id="label-phone" class="block text-sm font-medium text-gray-700 mb-1">Телефон нөмірі</label>
-        <input id="phone" type="tel" placeholder="+7 (777) 777 77 77" maxlength="18"
-               class="w-full border border-gray-300 rounded-lg p-2 focus:ring-blue-500 focus:outline-none" value="+7 " required />
+        <input id="phone" type="tel" maxlength="18" value="+7 "
+               class="w-full border border-gray-300 rounded-lg p-2 focus:ring-blue-500 focus:outline-none" required />
       </div>
 
       <div>
@@ -110,12 +110,36 @@
       }
     }
 
-    // ✅ Телефон форматтау + толық өшірсе "" болу
-    document.getElementById("phone").addEventListener("input", function () {
+    const phoneInput = document.getElementById("phone");
+    let prevValue = "";
+    let prevCursorPos = 0;
+
+    phoneInput.addEventListener("keydown", function (e) {
+      prevValue = this.value;
+      prevCursorPos = this.selectionStart;
+
+      // +7 өшпеуі керек
+      if (e.key === "Backspace" && this.selectionStart <= 4) {
+        e.preventDefault();
+        return;
+      }
+
+      // Бос символ ( ) артында тұрса — бірге өшіреміз
+      const c = this.value.charAt(this.selectionStart - 1);
+      if (e.key === "Backspace" && [' ', ')', '('].includes(c)) {
+        e.preventDefault();
+        const pos = this.selectionStart;
+        this.value = this.value.slice(0, pos - 2) + this.value.slice(pos);
+        this.setSelectionRange(pos - 2, pos - 2);
+      }
+    });
+
+    phoneInput.addEventListener("input", function () {
       let digits = this.value.replace(/\D/g, '');
 
-      if (digits === '') {
-        this.value = '';
+      if (!digits || digits === '7') {
+        this.value = '+7 ';
+        this.setSelectionRange(this.value.length, this.value.length);
         return;
       }
 
@@ -129,11 +153,25 @@
       if (digits.length >= 8) formatted += ' ' + digits.slice(8, 10);
 
       this.value = formatted;
+
+      const diff = this.value.length - prevValue.length;
+      const newPos = prevCursorPos + diff;
+      this.setSelectionRange(newPos, newPos);
+    });
+
+    phoneInput.addEventListener("focus", function () {
+      setTimeout(() => {
+        if (this.selectionStart < 4) {
+          this.setSelectionRange(this.value.length, this.value.length);
+        }
+      }, 0);
     });
 
     window.onload = () => {
       const lang = localStorage.getItem("lang") || "kk";
       setLanguage(lang);
+      phoneInput.value = '+7 ';
+      phoneInput.setSelectionRange(phoneInput.value.length, phoneInput.value.length);
     };
   </script>
 </body>
