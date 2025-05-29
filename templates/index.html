@@ -2,25 +2,26 @@
 <html lang="kk">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Тіл таңдағышпен форма</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
 
-  <!-- 📦 Негізгі контейнер -->
-  <div class="bg-white p-8 rounded-2xl shadow-md w-full max-w-sm relative">
+  <!-- 📦 Контейнер -->
+  <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-md w-full sm:max-w-md relative">
 
-    <!-- 🔤 Тіл таңдау батырмасы – осы контейнер ішінде, жоғарғы оң жақта -->
+    <!-- 🔤 Тіл таңдағыш -->
     <div class="absolute top-0 right-0 mt-2 mr-2 text-sm">
       <button onclick="setLanguage('kk')" class="text-blue-600 hover:underline">KAZ</button> /
       <button onclick="setLanguage('ru')" class="text-blue-600 hover:underline">RU</button>
     </div>
 
-    <!-- 📝 Тақырып және форма -->
+    <!-- 📝 Форма -->
     <h2 id="welcome" class="text-2xl font-bold text-center mb-2">Қош келдіңіз!</h2>
     <p id="subtitle" class="text-sm text-center text-gray-500 mb-6">3 күндік тегін кезеңді бастаңыз</p>
 
-    <form class="space-y-4" onsubmit="return validateForm()">
+    <form class="space-y-4 w-full" onsubmit="return validateForm()">
       <div>
         <label id="label-phone" class="block text-sm font-medium text-gray-700 mb-1">Телефон нөмірі</label>
         <input id="phone" type="tel" placeholder="+7 (777) 777 77 77" maxlength="18"
@@ -49,7 +50,6 @@
     </div>
   </div>
 
-  <!-- 🌐 JavaScript: тіл ауыстыру және логика -->
   <script>
     const texts = {
       kk: {
@@ -108,7 +108,7 @@
       }
     }
 
-    // ✅ Телефон номерін форматтап, тек сандармен шектеу
+    // ✅ Телефон номері шектеу және автоформат
     document.getElementById("phone").addEventListener("input", function () {
       let digits = this.value.replace(/\D/g, '');
       if (digits.startsWith('7')) digits = digits.slice(1);
