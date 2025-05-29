@@ -159,6 +159,7 @@
     function validateForm(event) {
       event.preventDefault();
       const code = document.getElementById("sms_code").value;
+      const phone = document.getElementById("phone").value;
       const lang = localStorage.getItem("lang") || "kk";
 
       if (!/^\d{6}$/.test(code)) {
@@ -166,9 +167,25 @@
         return false;
       }
 
-      // ✅ Код дұрыс болса ғана пароль енгізуге рұқсат
-      document.getElementById("register-form").classList.add("hidden");
-      document.getElementById("password-section").classList.remove("hidden");
+      fetch("/verify_code", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "phone=" + encodeURIComponent(phone) + "&code=" + encodeURIComponent(code)
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          document.getElementById("register-form").classList.add("hidden");
+          document.getElementById("password-section").classList.remove("hidden");
+        } else {
+          alert(texts[lang].error_code);
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        alert("Қате шықты");
+      });
+
       return false;
     }
 
