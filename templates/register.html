@@ -15,7 +15,7 @@
 
     <h2 id="title" class="text-xl font-bold mb-4 text-center">Тіркелу</h2>
 
-    <form id="register-form" method="post" action="/register_user" onsubmit="return validateForm()">
+    <form id="register-form" method="post" action="/register_user" onsubmit="return validateForm(event)">
       <div class="mb-3">
         <label id="label-name" class="block text-sm mb-1">Аты</label>
         <input name="first_name" id="first_name" placeholder="Атыңыз" required class="w-full p-2 border rounded" />
@@ -38,6 +38,18 @@
         <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded w-full">Тіркелу</button>
       </div>
     </form>
+
+    <div class="hidden" id="password-section">
+      <h3 class="text-lg font-semibold mb-3">Құпиясөз орнату</h3>
+      <input id="new_password" type="password" placeholder="Жаңа құпиясөз" class="w-full p-2 border rounded mb-3" />
+      <input id="repeat_password" type="password" placeholder="Құпиясөзді қайталаңыз" class="w-full p-2 border rounded mb-3" />
+      <button onclick="savePassword()" class="bg-blue-600 text-white w-full py-2 rounded">Сақтау</button>
+    </div>
+
+    <div class="hidden text-center mt-4" id="success-section">
+      <p class="text-green-600 font-semibold">Сіз сәтті тіркелдіңіз ✅</p>
+      <a href="/" class="inline-block mt-3 bg-green-600 text-white py-2 px-4 rounded">Кіру</a>
+    </div>
   </div>
 
   <script>
@@ -51,7 +63,9 @@
         "submit-final": "Тіркелу",
         success: "SMS код жіберілді",
         error_code: "Код дұрыс емес",
-        error_form: "Аты мен телефон нөмірі дұрыс толтырылуы керек"
+        error_form: "Аты мен телефон нөмірі дұрыс толтырылуы керек",
+        password_error: "Құпиясөз кемінде 6 таңбадан тұруы және әріп пен сан болуы керек",
+        password_match: "Құпиясөздер сәйкес келмейді"
       },
       ru: {
         title: "Регистрация",
@@ -62,7 +76,9 @@
         "submit-final": "Завершить регистрацию",
         success: "Код отправлен по SMS",
         error_code: "Код неверный",
-        error_form: "Имя и номер телефона должны быть заполнены правильно"
+        error_form: "Имя и номер телефона должны быть заполнены правильно",
+        password_error: "Пароль должен быть не менее 6 символов, с буквами и цифрами",
+        password_match: "Пароли не совпадают"
       }
     };
 
@@ -123,14 +139,37 @@
       });
     }
 
-    function validateForm() {
+    function validateForm(event) {
+      event.preventDefault();
       const code = document.getElementById("sms_code").value;
       const lang = localStorage.getItem("lang") || "kk";
       if (!/^\d{6}$/.test(code)) {
         alert(texts[lang].error_code);
         return false;
       }
-      return true;
+
+      // Егер код дұрыс болса — құпиясөз енгізу бөлігін ашамыз
+      document.getElementById("register-form").classList.add("hidden");
+      document.getElementById("password-section").classList.remove("hidden");
+      return false;
+    }
+
+    function savePassword() {
+      const pass1 = document.getElementById("new_password").value;
+      const pass2 = document.getElementById("repeat_password").value;
+      const lang = localStorage.getItem("lang") || "kk";
+
+      if (!/^(?=.*[a-zA-Z])(?=.*\d).{6,}$/.test(pass1)) {
+        alert(texts[lang].password_error);
+        return;
+      }
+      if (pass1 !== pass2) {
+        alert(texts[lang].password_match);
+        return;
+      }
+
+      document.getElementById("password-section").classList.add("hidden");
+      document.getElementById("success-section").classList.remove("hidden");
     }
   </script>
 </body>
