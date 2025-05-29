@@ -2,18 +2,19 @@
 <html lang="kk">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Тіркелу</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
-  <div class="bg-white p-8 rounded-xl shadow w-full max-w-md relative">
+  <div class="bg-white p-6 sm:p-8 rounded-xl shadow w-full max-w-md relative scale-105 lg:scale-110 text-base sm:text-lg">
     <!-- Тіл таңдағыш -->
     <div class="absolute top-0 right-0 mt-2 mr-2 text-sm">
       <button onclick="setLanguage('kk')" class="text-blue-600 hover:underline">KAZ</button> /
       <button onclick="setLanguage('ru')" class="text-blue-600 hover:underline">RU</button>
     </div>
 
-    <h2 id="title" class="text-xl font-bold mb-4 text-center">Тіркелу</h2>
+    <h2 id="title" class="text-2xl font-bold mb-4 text-center">Тіркелу</h2>
 
     <form id="register-form" method="post" action="/register_user" onsubmit="return validateForm(event)">
       <div class="mb-3">
@@ -41,8 +42,20 @@
 
     <div class="hidden" id="password-section">
       <h3 class="text-lg font-semibold mb-3">Құпиясөз орнату</h3>
-      <input id="new_password" type="password" placeholder="Жаңа құпиясөз" class="w-full p-2 border rounded mb-3" />
-      <input id="repeat_password" type="password" placeholder="Құпиясөзді қайталаңыз" class="w-full p-2 border rounded mb-3" />
+      <div class="mb-3">
+        <div class="relative">
+          <input id="new_password" type="password" placeholder="Жаңа құпиясөз" class="w-full p-2 border rounded" />
+          <button type="button" onclick="toggleNewPassword('new_password')" class="absolute inset-y-0 right-2 flex items-center text-gray-500">👁️</button>
+        </div>
+        <p class="text-gray-500 text-sm mt-1">Пароль должен состоять мин 6 букв a-z и 1 цифр</p>
+      </div>
+      <div class="mb-3">
+        <div class="relative">
+          <input id="repeat_password" type="password" placeholder="Құпиясөзді қайталаңыз" class="w-full p-2 border rounded" />
+          <button type="button" onclick="toggleNewPassword('repeat_password')" class="absolute inset-y-0 right-2 flex items-center text-gray-500">👁️</button>
+        </div>
+        <p class="text-gray-500 text-sm mt-1">Пароль должен состоять мин 6 букв a-z и 1 цифр</p>
+      </div>
       <button onclick="savePassword()" class="bg-blue-600 text-white w-full py-2 rounded">Сақтау</button>
     </div>
 
@@ -148,7 +161,6 @@
         return false;
       }
 
-      // Егер код дұрыс болса — құпиясөз енгізу бөлігін ашамыз
       document.getElementById("register-form").classList.add("hidden");
       document.getElementById("password-section").classList.remove("hidden");
       return false;
@@ -170,6 +182,11 @@
 
       document.getElementById("password-section").classList.add("hidden");
       document.getElementById("success-section").classList.remove("hidden");
+    }
+
+    function toggleNewPassword(id) {
+      const field = document.getElementById(id);
+      field.type = field.type === 'password' ? 'text' : 'password';
     }
   </script>
 </body>
