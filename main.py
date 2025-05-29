@@ -15,8 +15,12 @@ templates = Jinja2Templates(directory="templates")
 SMS_LOGIN = "Ahan1992"
 SMS_PASSWORD = "Ahan5250!"
 
-# 🔄 Сессия кодтарын сақтау (қазір жай dict, продакшнда Redis жақсырақ)
+# 🔄 Уақытша сессия кодтары (продакшн үшін Redis қолдану ұсынылады)
 sms_codes = {}
+
+# 📦 Телефон нөмірін тазалау функциясы
+def clean_phone(phone: str) -> str:
+    return phone.replace("+", "").replace("(", "").replace(")", "").replace(" ", "").replace("-", "")
 
 @app.on_event("startup")
 async def startup():
@@ -36,9 +40,11 @@ async def register_form(request: Request):
 
 @app.post("/send_code")
 async def send_code(phone: str = Form(...)):
-    cleaned = phone.replace("+", "").replace("(", "").replace(")", "").replace(" ", "").replace("-", "")
+    cleaned = clean_phone(phone)
     code = str(random.randint(100000, 999999))
     sms_codes[cleaned] = code
+
+    print(f"[SMS] Код {code} жіберілді: {cleaned}")  # ✅ Debug үшін
 
     url = f"https://smsc.kz/sys/send.php?login={SMS_LOGIN}&psw={SMS_PASSWORD}&phones={cleaned}&mes=Код:%20{code}&fmt=3"
     response = requests.get(url)
@@ -56,8 +62,10 @@ async def register_user(
     password: str = Form(...),
     sms_code: str = Form(...)
 ):
-    cleaned = phone.replace("+", "").replace("(", "").replace(")", "").replace(" ", "").replace("-", "")
+    cleaned = clean_phone(phone)
     expected_code = sms_codes.get(cleaned)
+
+    print(f"[DEBUG] Күтілген код: {expected_code}, енгізілген код: {sms_code}, cleaned: {cleaned}")  # ✅ Debug
 
     if not expected_code or sms_code != expected_code:
         return JSONResponse({"ok": False, "msg": "❌ Код дұрыс емес"}, status_code=400)
