@@ -10,22 +10,22 @@ from sqlalchemy import text
 
 app = FastAPI()
 
-# PostgreSQL engine және Jinja шаблондар
+# 📦 PostgreSQL engine және шаблондар
 engine = sqlalchemy.create_engine(str(database.url))
 metadata.create_all(engine)
 templates = Jinja2Templates(directory="templates")
 
-# Textbelt API
+# 🔑 Textbelt API кілті
 SMS_API_KEY = "58ed0414c9e959d68d66c2b55e0a4c576e2a4c52BgRzbptGWysU5P2wvItnvUbHD"
 
-# СМС кодтарды уақытша сақтау
+# ⏳ СМС кодтарды уақытша сақтау
 sms_codes = {}
 
-# Телефон форматтау
+# ☎️ Телефон форматтау
 def clean_phone(phone: str) -> str:
     return phone.replace("+7", "7").replace("(", "").replace(")", "").replace(" ", "").replace("-", "")
 
-# Базамен байланыс
+# 🔌 Базамен байланыс
 @app.on_event("startup")
 async def startup():
     await database.connect()
@@ -34,22 +34,27 @@ async def startup():
 async def shutdown():
     await database.disconnect()
 
-# Басты бет
+# 🏠 Басты бет (қаласаңыз өзгерте аласыз)
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
-# Тіркелу беті
+# 🧾 Тіркелу беті
 @app.get("/register", response_class=HTMLResponse)
 async def register_form(request: Request):
     return templates.TemplateResponse("register.html", {"request": request})
 
-# ✅ СМС код жіберу және нөмірді тексеру
+# 🔐 Кіру беті → index.html көрсету
+@app.get("/login", response_class=HTMLResponse)
+async def login_page(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
+
+# 📩 СМС код жіберу және тіркелген нөмірді тексеру
 @app.post("/send_code")
 async def send_code(phone: str = Form(...)):
     cleaned = clean_phone(phone)
 
-    # Егер нөмір бұрын тіркелген болса
+    # ✅ Егер нөмір бұрын тіркелген болса
     query = users.select().where(users.c.phone == phone)
     user_exists = await database.fetch_one(query)
     if user_exists:
@@ -59,7 +64,7 @@ async def send_code(phone: str = Form(...)):
             "exists": True
         })
 
-    # Код генерациялау және сақтау
+    # ✅ Жаңа код генерация және СМС жіберу
     code = str(random.randint(100000, 999999))
     sms_codes[cleaned] = code
     print(f"[SMS] Код {code} жіберілді: {cleaned}")
@@ -82,7 +87,7 @@ async def send_code(phone: str = Form(...)):
     else:
         return JSONResponse({"ok": False, "msg": "Қате: код жіберілмеді ❌", "data": data}, status_code=500)
 
-# ✅ СМС кодты тексеру
+# ✅ Код тексеру
 @app.post("/verify_code")
 async def verify_code(phone: str = Form(...), code: str = Form(...)):
     cleaned = clean_phone(phone)
@@ -92,7 +97,7 @@ async def verify_code(phone: str = Form(...), code: str = Form(...)):
         return JSONResponse({"success": True})
     return JSONResponse({"success": False})
 
-# ✅ Қолданушыны тіркеу
+# 👤 Қолданушыны тіркеу
 @app.post("/register_user")
 async def register_user(
     first_name: str = Form(...),
@@ -118,24 +123,7 @@ async def register_user(
     print("✅ Пайдаланушы тіркелді:", phone)
     return JSONResponse({"ok": True, "msg": "✅ Пайдаланушы тіркелді!"})
 
-# 🔐 Барлық қолданушылар (тек админге)
-@app.get("/users{admin_code}", response_class=HTMLResponse)
-async def view_all_users(request: Request, admin_code: str):
-    if admin_code != "190340006343":
-        return templates.TemplateResponse("user_not_found.html", {
-            "request": request,
-            "phone": admin_code
-        })
-
-    query = users.select().order_by(users.c.created_at.desc())
-    user_list = await database.fetch_all(query)
-
-    return templates.TemplateResponse("user_list.html", {
-        "request": request,
-        "users": user_list
-    })
-
-# ✅ created_at бағанын қосу (бір рет қолданылады)
+# 🛠 created_at бағанын қосу
 @app.get("/add-created-at")
 async def add_created_at_column():
     try:
@@ -146,7 +134,7 @@ async def add_created_at_column():
     except Exception as e:
         return {"ok": False, "error": str(e)}
 
-# ✅ Барлық қолданушыларды JSON арқылы көру (debug)
+# 🔍 Барлық қолданушылар (debug)
 @app.get("/debug-users")
 async def debug_users():
     query = users.select().order_by(users.c.created_at.desc())
