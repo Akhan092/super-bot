@@ -44,24 +44,35 @@
     </form>
 
     <!-- 🔐 Құпиясөз енгізу -->
-    <div class="hidden" id="password-section">
-      <h3 class="text-lg font-semibold mb-3">Құпиясөз орнату</h3>
-      <div class="mb-3">
-        <div class="relative">
-          <input id="new_password" type="password" placeholder="Жаңа құпиясөз" class="w-full p-2 border rounded" />
-          <button type="button" onclick="toggleNewPassword('new_password')" class="absolute inset-y-0 right-2 flex items-center text-gray-500">👁️</button>
-        </div>
-        <p class="text-gray-500 text-sm mt-1">Пароль должен состоять мин 6 букв a-z и 1 цифр</p>
-      </div>
-      <div class="mb-3">
-        <div class="relative">
-          <input id="repeat_password" type="password" placeholder="Құпиясөзді қайталаңыз" class="w-full p-2 border rounded" />
-          <button type="button" onclick="toggleNewPassword('repeat_password')" class="absolute inset-y-0 right-2 flex items-center text-gray-500">👁️</button>
-        </div>
-        <p class="text-gray-500 text-sm mt-1">Пароль должен состоять мин 6 букв a-z и 1 цифр</p>
-      </div>
-      <button onclick="savePassword()" class="bg-blue-600 text-white w-full py-2 rounded">Сақтау</button>
-    </div>
+    <!-- 🔐 Құпиясөз енгізу -->
+	<div class="hidden" id="password-section">
+		<h3 class="text-lg font-semibold mb-3">Құпиясөз орнату</h3>
+
+		<!-- 🔑 Жаңа пароль -->
+		<div class="mb-3">
+			<div class="relative">
+			<input id="new_password" type="password" placeholder="Жаңа құпиясөз" class="w-full p-2 border rounded" />
+			<button type="button" onclick="toggleNewPassword('new_password')" class="absolute inset-y-0 right-2 flex items-center text-gray-500">👁️</button>
+			</div>
+			<p id="password-hint-1" class="text-gray-500 text-sm mt-1">
+			Пароль должен состоять мин 6 букв a-z и 1 цифр
+			</p>
+		</div>
+
+		<!-- 🔁 Қайталанатын пароль -->
+		<div class="mb-3">
+			<div class="relative">
+			<input id="repeat_password" type="password" placeholder="Құпиясөзді қайталаңыз" class="w-full p-2 border rounded" />
+			<button type="button" onclick="toggleNewPassword('repeat_password')" class="absolute inset-y-0 right-2 flex items-center text-gray-500">👁️</button>
+			</div>
+			<p id="password-hint-2" class="text-gray-500 text-sm mt-1">
+			Пароль должен состоять мин 6 букв a-z и 1 цифр
+			</p>
+		</div>
+
+		<button onclick="savePassword()" class="bg-blue-600 text-white w-full py-2 rounded">Сақтау</button>
+		</div>
+
 
     <!-- ✅ Сәтті тіркелу -->
     <div class="hidden text-center mt-4" id="success-section">
@@ -104,15 +115,15 @@
     };
 
     function setLanguage(lang) {
-      const t = texts[lang];
-      document.getElementById("title").innerText = t.title;
-      document.getElementById("label-name").innerText = t["label-name"];
-      document.getElementById("label-phone").innerText = t["label-phone"];
-      document.getElementById("label-code").innerText = t["label-code"];
-      document.querySelector("#send-button-block button").innerText = t["submit-initial"];
-      document.querySelector("#final-submit-block button").innerText = t["submit-final"];
-      document.getElementById("first_name").placeholder = t["placeholder_name"];
-      localStorage.setItem('lang', lang);
+		const t = texts[lang];
+		document.getElementById("title").innerText = t.title;
+		document.getElementById("label-name").innerText = t["label-name"];
+		document.getElementById("label-phone").innerText = t["label-phone"];
+		document.getElementById("label-code").innerText = t["label-code"];
+		document.querySelector("#send-button-block button").innerText = t["submit-initial"];
+		document.querySelector("#final-submit-block button").innerText = t["submit-final"];
+		document.getElementById("first_name").placeholder = t["placeholder_name"];
+		localStorage.setItem('lang', lang);
     }
 
     window.onload = () => {
