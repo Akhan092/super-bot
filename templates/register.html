@@ -208,13 +208,35 @@
         return;
       }
 
-      document.getElementById("password-section").classList.add("hidden");
-      document.getElementById("success-section").classList.remove("hidden");
-    }
+      // ✅ Қолданушының барлық дерегін жинаймыз
+      const first_name = document.getElementById("first_name").value;
+      const phone = document.getElementById("phone").value;
+      const sms_code = document.getElementById("sms_code").value;
 
-    function toggleNewPassword(id) {
-      const field = document.getElementById(id);
-      field.type = field.type === 'password' ? 'text' : 'password';
+      fetch("/register_user", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          first_name,
+          last_name: "-",            // last_name өрісі жоқ болған соң уақытша "-"
+          phone,
+          password: pass1,
+          sms_code
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.ok) {
+          document.getElementById("password-section").classList.add("hidden");
+          document.getElementById("success-section").classList.remove("hidden");
+        } else {
+          alert(data.msg || "Қате");
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        alert("Қате шықты");
+      });
     }
   </script>
 </body>
