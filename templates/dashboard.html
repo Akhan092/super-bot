@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="kk">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -24,47 +24,35 @@
     </h1>
   </div>
 
-  <!-- 📆 Контейнер -->
+  <!-- 📦 Магазин тізімі -->
   <div class="mt-8 px-6 flex justify-center">
     <div class="bg-white shadow rounded-xl w-full max-w-6xl p-6">
-
-      <!-- 🔝 Заголовок және қосу кнопкасы -->
       <div class="flex justify-between items-center mb-6">
         <h2 id="store-title" class="text-xl font-semibold text-gray-800">Магазиндеріңіз</h2>
         <button onclick="openModal()" id="add-button"
-          class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm">
+                class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm">
           + Магазин қосу
         </button>
       </div>
-
-      <!-- 🔈 Магазин карточкалары -->
       <div id="store-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        <!-- JS арқылы қосылатын карточкалар осында түседі -->
+        <!-- Магазин карточкалары осында түседі -->
       </div>
-
     </div>
   </div>
 
-  <!-- 🚪 Модал терезе -->
+  <!-- 🪟 Модал -->
   <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
     <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-md relative">
-      <!-- ❌ Жабу -->
       <button onclick="closeModal()" class="absolute top-2 right-3 text-gray-400 hover:text-black text-xl">&times;</button>
-
-      <!-- 📒 Заголовок -->
       <h2 id="modal-title" class="text-xl font-bold text-center mb-4">Добавление магазина</h2>
 
-      <!-- 🖼 Kaspi иконкасы -->
       <div class="flex justify-center items-center space-x-2 mb-4">
-        <img src="https://upload.wikimedia.org/wikipedia/ru/a/aa/Logo_of_Kaspi_bank.png"
-             alt="Kaspi" class="w-10 h-10 object-contain">
+        <img src="https://upload.wikimedia.org/wikipedia/ru/a/aa/Logo_of_Kaspi_bank.png" alt="Kaspi"
+             class="w-10 h-10 object-contain">
         <span class="text-lg font-semibold text-gray-800">Kaspi</span>
       </div>
 
-      <!-- ✉️ по email -->
       <p id="email-label" class="text-center text-sm text-gray-500 mb-2">по email</p>
-
-      <!-- 📝 Формалар -->
       <input id="store-email" type="email" placeholder="Email"
              class="border p-2 rounded w-full mb-3" />
 
@@ -76,7 +64,6 @@
         </button>
       </div>
 
-      <!-- ✅ Добавить -->
       <button id="modal-add-button"
               class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 text-sm">
         Добавить
@@ -84,110 +71,106 @@
     </div>
   </div>
 
-  <!-- 🔻 HTML басы өзгермейді -->
-<!-- ... -->
+  <!-- ✅ JavaScript -->
+  <script>
+    const texts = {
+      kk: {
+        logout: "Шығу",
+        greeting: "Сәлем, ",
+        store_title: "Магазиндеріңіз",
+        add_button: "+ Магазин қосу",
+        modal_title: "Магазин қосу",
+        modal_email_label: "email арқылы",
+        modal_add: "Қосу"
+      },
+      ru: {
+        logout: "Выйти",
+        greeting: "Привет, ",
+        store_title: "Ваши магазины",
+        add_button: "+ Добавить магазин",
+        modal_title: "Добавление магазина",
+        modal_email_label: "по email",
+        modal_add: "Добавить"
+      }
+    };
 
-<!-- ✅ Скрипт соңында: Kaspi магазин қосу логикасы -->
-<script>
-  const texts = {
-    kk: {
-      logout: "Шығу",
-      greeting: "Сәлем, ",
-      store_title: "Магазиндеріңіз",
-      add_button: "+ Магазин қосу",
-      modal_title: "Магазин қосу",
-      modal_email_label: "email арқылы",
-      modal_add: "Қосу"
-    },
-    ru: {
-      logout: "Выйти",
-      greeting: "Привет, ",
-      store_title: "Ваши магазины",
-      add_button: "+ Добавить магазин",
-      modal_title: "Добавление магазина",
-      modal_email_label: "по email",
-      modal_add: "Добавить"
-    }
-  };
+    function setLanguage(lang) {
+      const t = texts[lang];
+      document.getElementById("logout-button").innerText = t.logout;
+      document.getElementById("store-title").innerText = t.store_title;
+      document.getElementById("add-button").innerText = t.add_button;
+      document.getElementById("modal-title").innerText = t.modal_title;
+      document.getElementById("email-label").innerText = t.modal_email_label;
+      document.getElementById("modal-add-button").innerText = t.modal_add;
 
-  function setLanguage(lang) {
-    const t = texts[lang];
-    document.getElementById("logout-button").innerText = t.logout;
-    document.getElementById("store-title").innerText = t.store_title;
-    document.getElementById("add-button").innerText = t.add_button;
-    document.getElementById("modal-title").innerText = t.modal_title;
-    document.getElementById("email-label").innerText = t.modal_email_label;
-    document.getElementById("modal-add-button").innerText = t.modal_add;
+      const name = document.getElementById("greeting").getAttribute("data-name");
+      document.getElementById("greeting").innerText = t.greeting + name;
 
-    const name = document.getElementById("greeting").getAttribute("data-name");
-    document.getElementById("greeting").innerText = t.greeting + name;
-
-    localStorage.setItem("lang", lang);
-  }
-
-  function openModal() {
-    document.getElementById("modal").classList.remove("hidden");
-  }
-
-  function closeModal() {
-    document.getElementById("modal").classList.add("hidden");
-  }
-
-  function togglePassword() {
-    const input = document.getElementById("store-password");
-    input.type = input.type === "password" ? "text" : "password";
-  }
-
-  window.onload = () => {
-    const lang = localStorage.getItem("lang") || "kk";
-    setLanguage(lang);
-  };
-
-  // ✅ Kaspi магазин қосу логикасы
-  document.getElementById("modal-add-button").addEventListener("click", async () => {
-    const login = document.getElementById("store-email").value.trim();
-    const password = document.getElementById("store-password").value.trim();
-
-    if (!login || !password) {
-      alert("⚠️ Логин мен парольді толтырыңыз");
-      return;
+      localStorage.setItem("lang", lang);
     }
 
-    try {
-      const res = await fetch("/add_kaspi_shop", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({ login, password })
-      });
+    function openModal() {
+      document.getElementById("modal").classList.remove("hidden");
+    }
 
-      const data = await res.json();
+    function closeModal() {
+      document.getElementById("modal").classList.add("hidden");
+    }
 
-      if (data.ok) {
-        alert("✅ Магазин қосылды: " + data.name);
-        closeModal();
+    function togglePassword() {
+      const input = document.getElementById("store-password");
+      input.type = input.type === "password" ? "text" : "password";
+    }
 
-        // ➕ UI-ге магазин карточкасын қосу
-        const card = document.createElement("div");
-        card.className = "border p-4 rounded shadow bg-white";
-        card.innerHTML = `
-          <h3 class="font-bold text-lg mb-1">${data.name}</h3>
-          <p class="text-sm text-gray-500">${login}</p>
-        `;
-        document.getElementById("store-list").appendChild(card);
+    window.onload = () => {
+      const lang = localStorage.getItem("lang") || "kk";
+      setLanguage(lang);
+    };
 
-        // Форма тазалау
-        document.getElementById("store-email").value = "";
-        document.getElementById("store-password").value = "";
+    // ✅ Магазинді қосу логикасы
+    document.getElementById("modal-add-button").addEventListener("click", async () => {
+      const login = document.getElementById("store-email").value.trim();
+      const password = document.getElementById("store-password").value.trim();
+      const phone = localStorage.getItem("user_phone");
 
-      } else {
-        alert("❌ Қате: " + data.msg);
+      if (!login || !password || !phone) {
+        alert("⚠️ Барлық өрістерді толтырыңыз.");
+        return;
       }
 
-    } catch (e) {
-      console.error(e);
-      alert("❌ Серверге қосылу қатесі");
-    }
-  });
-</script>
+      try {
+        const res = await fetch("/add_kaspi_shop", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({ login, password, phone })
+        });
+
+        const data = await res.json();
+
+        if (data.ok) {
+          alert("✅ Магазин қосылды: " + data.name);
+          closeModal();
+
+          const card = document.createElement("div");
+          card.className = "border p-4 rounded shadow bg-white";
+          card.innerHTML = `
+            <h3 class="font-bold text-lg mb-1">${data.name}</h3>
+            <p class="text-sm text-gray-500">${login}</p>
+          `;
+          document.getElementById("store-list").appendChild(card);
+
+          document.getElementById("store-email").value = "";
+          document.getElementById("store-password").value = "";
+
+        } else {
+          alert("❌ Қате: " + data.msg);
+        }
+
+      } catch (e) {
+        console.error(e);
+        alert("❌ Серверге қосыла алмады.");
+      }
+    });
+  </script>
 </body>
 </html>
