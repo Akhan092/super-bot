@@ -251,3 +251,55 @@ async def login_check(phone: str = Form(...), password: str = Form(...)):
     query = users.select().order_by(users.c.created_at.desc())
     result = await database.fetch_all(query)
     return [dict(u) for u in result]
+
+@app.post("/add_kaspi_shop")
+async def add_kaspi_shop(
+    login: str = Form(...),
+    password: str = Form(...)
+):
+    import subprocess
+    import uuid
+
+    # Уақытша credentials файлы жасау
+    cred_file = f"temp_{uuid.uuid4().hex}.txt"
+    with open(cred_file, "w", encoding="utf-8") as f:
+        f.write(f"{login}\n{password}")
+
+    try:
+        result = subprocess.run(
+            ["python", "get_shop_name.py", cred_file],
+            capture_output=True,
+            text=True,
+            timeout=40
+        )
+        os.remove(cred_file)
+
+        if result.returncode != 0:
+            return JSONResponse({"ok": False, "msg": "Kaspi жүйесіне кіру мүмкін болмады"})
+
+        for line in result.stdout.splitlines():
+            if line.startswith("🏬 Магазин атауы:"):
+                shop_name = line.split(":")[1].strip()
+                break
+        else:
+            return JSONResponse({"ok": False, "msg": "Магазин атауы табылмады"})
+
+        # Егер базаға сақтауды қаласаңыз, shops таблицасы болуы керек
+        # Мысал:
+        # INSERT INTO shops (name, login, password, created_at)
+
+        query = text("""
+            INSERT INTO kaspi_shops (shop_name, login, password, created_at)
+            VALUES (:shop_name, :login, :password, NOW())
+        """)
+        await database.execute(query, {
+            "shop_name": shop_name,
+            "login": login,
+            "password": password
+        })
+
+        return JSONResponse({"ok": True, "name": shop_name})
+
+    except Exception as e:
+        return JSONResponse({"ok": False, "msg": str(e)}, status_code=500)
+
