@@ -197,6 +197,10 @@ async def add_created_at_column():
     except Exception as e:
         return {"ok": False, "error": str(e)}
 
+@app.get("/dashboard", response_class=HTMLResponse)
+async def dashboard(request: Request):
+    return templates.TemplateResponse("dashboard.html", {"request": request})
+
 # ✅ Debug: JSON форматта қолданушылар
 @app.get("/debug-users")
 async def debug_users():
