@@ -51,8 +51,10 @@ async def forgot_password(request: Request):
 
 # ✅ СМС код жіберу және тіркелген нөмірді тексеру
 @app.post("/send_code")
-async def send_code(phone: str = Form(...)):
-    cleaned = clean_phone(phone)
+async def send_code(
+    phone: str = Form(...),
+    mode: str = Form("default")  # ➕ register немесе reset
+):
 
     # 🔒 Егер нөмір бұрын тіркелген болса — тоқтату
     query = users.select().where(users.c.phone == phone)
