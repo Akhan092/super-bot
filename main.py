@@ -200,6 +200,23 @@ async def add_created_at_column():
 # ✅ Debug: JSON форматта қолданушылар
 @app.get("/debug-users")
 async def debug_users():
+
+@app.post("/login_check")
+async def login_check(phone: str = Form(...), password: str = Form(...)):
+    cleaned = clean_phone(phone)
+    
+    query = users.select().where(users.c.phone == phone)
+    user = await database.fetch_one(query)
+
+    if not user:
+        return JSONResponse({"ok": False, "msg": "❌ Мұндай нөмір тіркелмеген"}, status_code=400)
+
+    if user["password"] != password:
+        return JSONResponse({"ok": False, "msg": "❌ Құпиясөз дұрыс емес"}, status_code=400)
+
+    print(f"✅ Кіру сәтті: {phone}")
+    return JSONResponse({"ok": True})
+
     query = users.select().order_by(users.c.created_at.desc())
     result = await database.fetch_all(query)
     return [dict(u) for u in result]
