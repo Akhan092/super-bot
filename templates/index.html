@@ -113,15 +113,15 @@
 		})
 		.then(res => res.json())
 		.then(data => {
-			if (data.ok) {
-			window.location.href = "/dashboard"; // ✅ Логин сәтті
-			} else {
-			// 🔴 Серверден "құпиясөз дұрыс емес" деп келсе
-			const lang = localStorage.getItem("lang") || "kk";
-			passwordError.innerText = texts[lang]["password-wrong"];
-			passwordError.classList.remove("hidden");
-			}
+  			if (data.ok) {
+    				window.location.href = "/dashboard?phone=" + encodeURIComponent(phone);
+  			} else {
+    				const lang = localStorage.getItem("lang") || "kk";
+    				passwordError.innerText = texts[lang]["password-wrong"];
+    				passwordError.classList.remove("hidden");
+  			}
 		})
+
 		.catch(err => {
 			const lang = localStorage.getItem("lang") || "kk";
 			passwordError.innerText = texts[lang]["server-error"];
