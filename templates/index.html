@@ -63,7 +63,8 @@
         "no-account": "Аккаунт жоқ па?",
         "register-link": "Тіркелу",
         "password-placeholder": "Құпиясөзді енгізіңіз",
-		"password-wrong": "Құпиясөз қате"
+		"password-wrong": "Құпиясөз қате",
+		"server-error": "Сервермен байланыс қатесі"
       },
       ru: {
         welcome: "Добро пожаловать!",
@@ -75,7 +76,8 @@
         "no-account": "Нет аккаунта?",
         "register-link": "Зарегистрироваться",
         "password-placeholder": "Введите пароль",
-		"password-wrong": "Неверный пароль"
+		"password-wrong": "Неверный пароль",
+		"server-error": "Ошибка соединения с сервером"
       }
     };
 
@@ -121,7 +123,8 @@
 			}
 		})
 		.catch(err => {
-			passwordError.innerText = "Сервермен байланыс қатесі";
+			const lang = localStorage.getItem("lang") || "kk";
+			passwordError.innerText = texts[lang]["server-error"];
 			passwordError.classList.remove("hidden");
 			console.error(err);
 		});
