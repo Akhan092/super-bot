@@ -62,7 +62,8 @@
         "forgot": "Құпиясөзді ұмыттыңыз ба?",
         "no-account": "Аккаунт жоқ па?",
         "register-link": "Тіркелу",
-        "password-placeholder": "Құпиясөзді енгізіңіз"
+        "password-placeholder": "Құпиясөзді енгізіңіз",
+		"password-wrong": "Құпиясөз қате"
       },
       ru: {
         welcome: "Добро пожаловать!",
@@ -73,7 +74,8 @@
         "forgot": "Забыли пароль?",
         "no-account": "Нет аккаунта?",
         "register-link": "Зарегистрироваться",
-        "password-placeholder": "Введите пароль"
+        "password-placeholder": "Введите пароль",
+		"password-wrong": "Неверный пароль"
       }
     };
 
@@ -113,7 +115,8 @@
 			window.location.href = "/dashboard"; // ✅ Логин сәтті
 			} else {
 			// 🔴 Серверден "құпиясөз дұрыс емес" деп келсе
-			passwordError.innerText = "Құпиясөз қате";
+			const lang = localStorage.getItem("lang") || "kk";
+			passwordError.innerText = texts[lang]["password-wrong"];
 			passwordError.classList.remove("hidden");
 			}
 		})
