@@ -266,12 +266,10 @@ async def add_kaspi_shop(
         print("📥 Келген мәліметтер:", login, phone)
 
         # Телефонды тазалау
-        cleaned = phone.replace("+7", "7").replace("(", "").replace(")", "").replace(" ", "").replace("-", "")
-        print("📞 Тазаланған номер:", cleaned)
-
-        # Қолданушыны екі форматпен іздеу
-        query = users.select().where((users.c.phone == cleaned) | (users.c.phone == phone))
-        user = await database.fetch_one(query)
+        print("📞 Келген номер:", phone)
+        query = users.select().where(users.c.phone == phone)
+        
+                user = await database.fetch_one(query)
 
         if not user:
             print("❌ Қолданушы табылмады")
