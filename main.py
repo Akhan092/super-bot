@@ -199,17 +199,18 @@ async def add_created_at_column():
 
 @app.get("/dashboard", response_class=HTMLResponse)
 async def dashboard(request: Request, phone: str = ""):
-    # Телефон тазалау
     cleaned = clean_phone(phone)
 
-    # Базадан аты-жөнін алу
+    # 1. Дәл телефонмен іздеу
     query = users.select().where(users.c.phone == phone)
     user = await database.fetch_one(query)
 
+    # 2. Егер табылмаса — тазаланған нұсқамен
     if not user:
         query = users.select().where(users.c.phone == cleaned)
         user = await database.fetch_one(query)
 
+    # 3. Нәтиже
     name = user["first_name"] if user else "Қонақ"
 
     return templates.TemplateResponse("dashboard.html", {
