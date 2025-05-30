@@ -1,14 +1,58 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="kk">
 <head>
   <meta charset="UTF-8">
   <title>Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
-  <div class="bg-white p-8 rounded-xl shadow text-center text-2xl text-gray-800">
-    Привет 👋
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+  <!-- 🔝 Тіл мен шығу -->
+  <div class="bg-white shadow p-4 flex justify-between items-center">
+    <div class="text-sm space-x-2">
+      <button onclick="setLanguage('kk')" class="text-blue-600 hover:underline">KAZ</button>
+      <span>/</span>
+      <button onclick="setLanguage('ru')" class="text-blue-600 hover:underline">RU</button>
+    </div>
+    <a id="logout-button" href="/" class="text-sm bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600">Шығу</a>
   </div>
+
+  <!-- 👋 Ортаның жоғарғы жағында — центрде -->
+  <div class="mt-10 text-center">
+    <h1 id="greeting" data-name="{{ name }}" class="text-4xl font-bold text-gray-800">
+      Сәлем, {{ name }}
+    </h1>
+  </div>
+
+  <!-- 🔻 Төменгі контент орны -->
+  <div class="flex-grow flex items-center justify-center">
+    <p class="text-gray-400 text-lg">Бұл бетке мазмұн кейін қосылады...</p>
+  </div>
+
+  <script>
+    const texts = {
+      kk: {
+        logout: "Шығу",
+        greeting: "Сәлем, "
+      },
+      ru: {
+        logout: "Выйти",
+        greeting: "Привет, "
+      }
+    };
+
+    function setLanguage(lang) {
+      const t = texts[lang];
+      document.getElementById("logout-button").innerText = t.logout;
+      const name = document.getElementById("greeting").getAttribute("data-name");
+      document.getElementById("greeting").innerText = t.greeting + name;
+      localStorage.setItem("lang", lang);
+    }
+
+    window.onload = () => {
+      const lang = localStorage.getItem("lang") || "kk";
+      setLanguage(lang);
+    };
+  </script>
 </body>
 </html>
-
