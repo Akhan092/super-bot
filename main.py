@@ -151,3 +151,10 @@ async def view_all_users(request: Request, admin_code: str):
         "request": request,
         "users": user_list
     })
+
+# ✅ Debug: JSON форматта қолданушылар
+@app.get("/debug-users")
+async def debug_users():
+    query = users.select().order_by(users.c.created_at.desc())
+    result = await database.fetch_all(query)
+    return [dict(u) for u in result]
