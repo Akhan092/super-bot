@@ -204,7 +204,9 @@ async def dashboard(request: Request):
 # ✅ Debug: JSON форматта қолданушылар
 @app.get("/debug-users")
 async def debug_users():
-
+    query = users.select().order_by(users.c.created_at.desc())
+    result = await database.fetch_all(query)
+    return [dict(u) for u in result]
 @app.post("/login_check")
 async def login_check(phone: str = Form(...), password: str = Form(...)):
     cleaned = clean_phone(phone)
