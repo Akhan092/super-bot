@@ -198,10 +198,23 @@ async def add_created_at_column():
         return {"ok": False, "error": str(e)}
 
 @app.get("/dashboard", response_class=HTMLResponse)
-async def dashboard(request: Request):
+async def dashboard(request: Request, phone: str = ""):
+    # Телефон тазалау
+    cleaned = clean_phone(phone)
+
+    # Базадан аты-жөнін алу
+    query = users.select().where(users.c.phone == phone)
+    user = await database.fetch_one(query)
+
+    if not user:
+        query = users.select().where(users.c.phone == cleaned)
+        user = await database.fetch_one(query)
+
+    name = user["first_name"] if user else "Қонақ"
+
     return templates.TemplateResponse("dashboard.html", {
         "request": request,
-        "name": "Бека"  # ← қолданушы аты
+        "name": name
     })
 
 # ✅ Debug: JSON форматта қолданушылар
