@@ -8,6 +8,7 @@ import sqlalchemy
 import random
 import requests
 import os
+import uuid
 
 from database import database, users, metadata, kaspi_shops  # ✅ БІР ЖОЛҒА біріктіріңіз
 
