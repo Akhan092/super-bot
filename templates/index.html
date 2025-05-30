@@ -112,16 +112,12 @@
 		.then(res => res.json())
 		.then(data => {
 		  if (data.ok) {
-		    // ✅ Тек сандардан тұратын телефон нөмірін сақтау (87771234567)
+		    // ✅ Тек сандардан тұратын нөмірді сақтау: 87777777777
 		    const cleaned = phone.replace(/\D/g, '');
 		    localStorage.setItem("user_phone", cleaned);
 		
-		    // ✅ Dashboard бетіне өту
-		    window.location.href = "/dashboard?phone=" + encodeURIComponent(cleaned);
-		  } else {
-		    const lang = localStorage.getItem("lang") || "kk";
-		    passwordError.innerText = texts[lang]["password-wrong"];
-		    passwordError.classList.remove("hidden");
+		    // бетке өту
+		    window.location.href = "/dashboard?phone=" + encodeURIComponent(phone);
 		  }
 		})
 
