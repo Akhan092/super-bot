@@ -199,7 +199,10 @@ async def add_created_at_column():
 
 @app.get("/dashboard", response_class=HTMLResponse)
 async def dashboard(request: Request):
-    return templates.TemplateResponse("dashboard.html", {"request": request})
+    return templates.TemplateResponse("dashboard.html", {
+        "request": request,
+        "name": "Бека"  # ← қолданушы аты
+    })
 
 # ✅ Debug: JSON форматта қолданушылар
 @app.get("/debug-users")
