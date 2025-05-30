@@ -268,8 +268,7 @@ async def add_kaspi_shop(
         # Телефонды тазалау
         print("📞 Келген номер:", phone)
         query = users.select().where(users.c.phone == phone)
-        
-                user = await database.fetch_one(query)
+        user = await database.fetch_one(query)
 
         if not user:
             print("❌ Қолданушы табылмады")
