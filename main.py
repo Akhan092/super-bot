@@ -53,18 +53,19 @@ async def forgot_password(request: Request):
 @app.post("/send_code")
 async def send_code(
     phone: str = Form(...),
-    mode: str = Form("default")  # ➕ register немесе reset
+    mode: str = Form("default")
 ):
+    cleaned = clean_phone(phone)  # ✅ << ҚОСУ КЕРЕК
 
-    # 🔒 Егер нөмір бұрын тіркелген болса — тоқтату
-    query = users.select().where(users.c.phone == phone)
-    user_exists = await database.fetch_one(query)
-    if user_exists:
-        return JSONResponse({
-            "ok": False,
-            "msg": "Бұл нөмір тіркелген",
-            "exists": True
-        })
+    if mode == "register":
+        query = users.select().where(users.c.phone == phone)
+        user_exists = await database.fetch_one(query)
+        if user_exists:
+            return JSONResponse({
+                "ok": False,
+                "msg": "Бұл нөмір тіркелген",
+                "exists": True
+            })
 
     # ✅ Код генерациялау және сақтау
     code = str(random.randint(100000, 999999))
