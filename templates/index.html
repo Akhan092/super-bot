@@ -112,13 +112,14 @@
 		.then(res => res.json())
 		.then(data => {
 		  if (data.ok) {
-		    // ✅ Тек сандардан тұратын нөмірді сақтау: 87777777777
-		    const cleaned = phone.replace(/\D/g, '');
-		    localStorage.setItem("user_phone", "77750523394");
-
+		    // ✅ Форматтау: 77750523394 → +7 (775) 052 33 94
+		    const cleaned = phone.replace(/\D/g, '').slice(-10); // Соңғы 10 сан
+		    const formatted = '+7 (' + cleaned.slice(0, 3) + ') ' + cleaned.slice(3, 6) + ' ' + cleaned.slice(6, 8) + ' ' + cleaned.slice(8, 10);
+		    
+		    localStorage.setItem("user_phone", formatted);
 		
 		    // бетке өту
-		    window.location.href = "/dashboard?phone=" + encodeURIComponent(phone);
+		    window.location.href = "/dashboard?phone=" + encodeURIComponent(formatted);
 		  }
 		})
 
