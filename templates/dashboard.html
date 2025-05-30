@@ -84,60 +84,110 @@
     </div>
   </div>
 
-  <script>
-    const texts = {
-      kk: {
-        logout: "Шығу",
-        greeting: "Сәлем, ",
-        store_title: "Магазиндеріңіз",
-        add_button: "+ Магазин қосу",
-        modal_title: "Магазин қосу",
-        modal_email_label: "email арқылы",
-        modal_add: "Қосу"
-      },
-      ru: {
-        logout: "Выйти",
-        greeting: "Привет, ",
-        store_title: "Ваши магазины",
-        add_button: "+ Добавить магазин",
-        modal_title: "Добавление магазина",
-        modal_email_label: "по email",
-        modal_add: "Добавить"
+  <!-- 🔻 HTML басы өзгермейді -->
+<!-- ... -->
+
+<!-- ✅ Скрипт соңында: Kaspi магазин қосу логикасы -->
+<script>
+  const texts = {
+    kk: {
+      logout: "Шығу",
+      greeting: "Сәлем, ",
+      store_title: "Магазиндеріңіз",
+      add_button: "+ Магазин қосу",
+      modal_title: "Магазин қосу",
+      modal_email_label: "email арқылы",
+      modal_add: "Қосу"
+    },
+    ru: {
+      logout: "Выйти",
+      greeting: "Привет, ",
+      store_title: "Ваши магазины",
+      add_button: "+ Добавить магазин",
+      modal_title: "Добавление магазина",
+      modal_email_label: "по email",
+      modal_add: "Добавить"
+    }
+  };
+
+  function setLanguage(lang) {
+    const t = texts[lang];
+    document.getElementById("logout-button").innerText = t.logout;
+    document.getElementById("store-title").innerText = t.store_title;
+    document.getElementById("add-button").innerText = t.add_button;
+    document.getElementById("modal-title").innerText = t.modal_title;
+    document.getElementById("email-label").innerText = t.modal_email_label;
+    document.getElementById("modal-add-button").innerText = t.modal_add;
+
+    const name = document.getElementById("greeting").getAttribute("data-name");
+    document.getElementById("greeting").innerText = t.greeting + name;
+
+    localStorage.setItem("lang", lang);
+  }
+
+  function openModal() {
+    document.getElementById("modal").classList.remove("hidden");
+  }
+
+  function closeModal() {
+    document.getElementById("modal").classList.add("hidden");
+  }
+
+  function togglePassword() {
+    const input = document.getElementById("store-password");
+    input.type = input.type === "password" ? "text" : "password";
+  }
+
+  window.onload = () => {
+    const lang = localStorage.getItem("lang") || "kk";
+    setLanguage(lang);
+  };
+
+  // ✅ Kaspi магазин қосу логикасы
+  document.getElementById("modal-add-button").addEventListener("click", async () => {
+    const login = document.getElementById("store-email").value.trim();
+    const password = document.getElementById("store-password").value.trim();
+
+    if (!login || !password) {
+      alert("⚠️ Логин мен парольді толтырыңыз");
+      return;
+    }
+
+    try {
+      const res = await fetch("/add_kaspi_shop", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ login, password })
+      });
+
+      const data = await res.json();
+
+      if (data.ok) {
+        alert("✅ Магазин қосылды: " + data.name);
+        closeModal();
+
+        // ➕ UI-ге магазин карточкасын қосу
+        const card = document.createElement("div");
+        card.className = "border p-4 rounded shadow bg-white";
+        card.innerHTML = `
+          <h3 class="font-bold text-lg mb-1">${data.name}</h3>
+          <p class="text-sm text-gray-500">${login}</p>
+        `;
+        document.getElementById("store-list").appendChild(card);
+
+        // Форма тазалау
+        document.getElementById("store-email").value = "";
+        document.getElementById("store-password").value = "";
+
+      } else {
+        alert("❌ Қате: " + data.msg);
       }
-    };
 
-    function setLanguage(lang) {
-      const t = texts[lang];
-      document.getElementById("logout-button").innerText = t.logout;
-      document.getElementById("store-title").innerText = t.store_title;
-      document.getElementById("add-button").innerText = t.add_button;
-      document.getElementById("modal-title").innerText = t.modal_title;
-      document.getElementById("email-label").innerText = t.modal_email_label;
-      document.getElementById("modal-add-button").innerText = t.modal_add;
-
-      const name = document.getElementById("greeting").getAttribute("data-name");
-      document.getElementById("greeting").innerText = t.greeting + name;
-
-      localStorage.setItem("lang", lang);
+    } catch (e) {
+      console.error(e);
+      alert("❌ Серверге қосылу қатесі");
     }
-
-    function openModal() {
-      document.getElementById("modal").classList.remove("hidden");
-    }
-
-    function closeModal() {
-      document.getElementById("modal").classList.add("hidden");
-    }
-
-    function togglePassword() {
-      const input = document.getElementById("store-password");
-      input.type = input.type === "password" ? "text" : "password";
-    }
-
-    window.onload = () => {
-      const lang = localStorage.getItem("lang") || "kk";
-      setLanguage(lang);
-    };
-  </script>
+  });
+</script>
 </body>
 </html>
