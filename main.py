@@ -1,15 +1,15 @@
 from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
-from database import database, users, metadata
+from sqlalchemy import text
+from datetime import datetime
 import sqlalchemy
 import random
 import requests
-from datetime import datetime
-from sqlalchemy import text
-from database import kaspi_shops  # егер kaspi_shops кестесі бар болса
 import os
-from database import database, users, metadata, kaspi_shops
+
+from database import database, users, metadata, kaspi_shops  # ✅ ДҰРЫС
+
 
 
 app = FastAPI()
