@@ -269,8 +269,8 @@ async def add_kaspi_shop(
         cleaned = phone.replace("+7", "7").replace("(", "").replace(")", "").replace(" ", "").replace("-", "")
         print("📞 Тазаланған номер:", cleaned)
 
-        # Қолданушыны табу
-        query = users.select().where(users.c.phone == cleaned)
+        # Қолданушыны екі форматпен іздеу
+        query = users.select().where((users.c.phone == cleaned) | (users.c.phone == phone))
         user = await database.fetch_one(query)
 
         if not user:
