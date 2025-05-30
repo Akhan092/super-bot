@@ -7,8 +7,9 @@ from datetime import datetime
 import sqlalchemy
 import random
 import requests
-import os
 import uuid
+import os
+import subprocess
 
 from database import database, users, metadata, kaspi_shops  # ✅ БІР ЖОЛҒА біріктіріңіз
 
