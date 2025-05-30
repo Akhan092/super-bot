@@ -258,50 +258,8 @@ async def login_check(phone: str = Form(...), password: str = Form(...)):
 @app.post("/add_kaspi_shop")
 async def add_kaspi_shop(
     login: str = Form(...),
-    password: str = Form(...)
-):
-    # Уақытша credentials файлы жасау
-    cred_file = f"temp_{uuid.uuid4().hex}.txt"
-    with open(cred_file, "w", encoding="utf-8") as f:
-        f.write(f"{login}\n{password}")
-
-    try:
-        result = subprocess.run(
-            ["python", "get_shop_name.py", cred_file],
-            capture_output=True,
-            text=True,
-            timeout=40
-        )
-        os.remove(cred_file)
-
-        if result.returncode != 0:
-            return JSONResponse({"ok": False, "msg": "Kaspi жүйесіне кіру мүмкін болмады"})
-
-        for line in result.stdout.splitlines():
-            if line.startswith("🏬 Магазин атауы:"):
-                shop_name = line.split(":")[1].strip()
-                break
-        else:
-            return JSONResponse({"ok": False, "msg": "Магазин атауы табылмады"})
-
-        # Егер базаға сақтауды қаласаңыз, shops таблицасы болуы керек
-        # Мысал:
-        # INSERT INTO shops (name, login, password, created_at)
-
-        query = text("""
-            INSERT INTO kaspi_shops (shop_name, login, password, created_at)
-            VALUES (:shop_name, :login, :password, NOW())
-        """)
-        await database.execute(query, {
-            "shop_name": shop_name,
-            "login": login,
-            "password": password
-        })
-@app.post("/add_kaspi_shop")
-async def add_kaspi_shop(
-    login: str = Form(...),
     password: str = Form(...),
-    phone: str = Form(...)  # ➕ Пайдаланушының телефоны
+    phone: str = Form(...)  # ✅ Пайдаланушыға байлау үшін
 ):
     # 🔍 Пайдаланушыны табу
     cleaned = clean_phone(phone)
@@ -319,11 +277,13 @@ async def add_kaspi_shop(
         return JSONResponse({"ok": False, "msg": "❌ Бұл Kaspi логин бұрын тіркелген"})
 
     # 🧾 Уақытша credentials.txt жасау
+    import uuid
     cred_file = f"temp_{uuid.uuid4().hex}.txt"
     with open(cred_file, "w", encoding="utf-8") as f:
         f.write(f"{login}\n{password}")
 
     try:
+        import subprocess
         result = subprocess.run(
             ["python", "get_shop_name.py", cred_file],
             capture_output=True,
@@ -346,11 +306,11 @@ async def add_kaspi_shop(
             return JSONResponse({"ok": False, "msg": "Магазин атауы табылмады"}, status_code=500)
 
         # 💾 Базаға жазу
-        query = text("""
+        insert_query = text("""
             INSERT INTO kaspi_shops (user_id, shop_name, login, password, created_at)
             VALUES (:user_id, :shop_name, :login, :password, NOW())
         """)
-        await database.execute(query, {
+        await database.execute(insert_query, {
             "user_id": user_id,
             "shop_name": shop_name,
             "login": login,
@@ -361,3 +321,4 @@ async def add_kaspi_shop(
 
     except Exception as e:
         return JSONResponse({"ok": False, "msg": str(e)}, status_code=500)
+
