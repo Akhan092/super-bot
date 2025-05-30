@@ -1,7 +1,6 @@
 from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse
 from database import database, users, metadata
 import sqlalchemy
 import random
@@ -44,6 +43,11 @@ async def home(request: Request):
 @app.get("/register", response_class=HTMLResponse)
 async def register_form(request: Request):
     return templates.TemplateResponse("register.html", {"request": request})
+
+# Парольды жанарту беті	
+@app.get("/forgot_password", response_class=HTMLResponse)
+async def forgot_password(request: Request):
+    return templates.TemplateResponse("forgot_password.html", {"request": request})
 
 # ✅ СМС код жіберу және тіркелген нөмірді тексеру
 @app.post("/send_code")
@@ -122,39 +126,14 @@ async def register_user(
     print("✅ Пайдаланушы тіркелді:", phone)
     return JSONResponse({"ok": True, "msg": "✅ Пайдаланушы тіркелді!"})
 
-# ✅ Құпиясөзді жаңарту (reset)
-@app.post("/reset_password")
-async def reset_password(
-    phone: str = Form(...),
-    password: str = Form(...)
-):
-    cleaned = clean_phone(phone)
-
-    if cleaned not in sms_codes:
-        return JSONResponse({"ok": False, "msg": "Код тексерілмеген немесе уақыты өтті"}, status_code=400)
-
-    query = users.update().where(users.c.phone == phone).values(password=password)
-    await database.execute(query)
-    print(f"🔐 Құпиясөз жаңартылды: {phone}")
-    return JSONResponse({"ok": True, "msg": "Құпиясөз сәтті жаңартылды ✅"})
-
 # 🔒 Қолданушылар тізімі (админге)
 @app.get("/users{admin_code}", response_class=HTMLResponse)
 async def view_all_users(request: Request, admin_code: str):
     if admin_code != "190340006343":
-        return HTMLResponse(
-            content=f"""
-            <html>
-              <head><title>Рұқсат жоқ</title></head>
-              <body style='font-family:sans-serif;text-align:center;padding:50px'>
-                <h2 style='color:red;'>Рұқсат жоқ</h2>
-                <p>Код: {admin_code}</p>
-                <a href='/'>← Басты бетке оралу</a>
-              </body>
-            </html>
-            """,
-            status_code=403
-        )
+        return templates.TemplateResponse("user_not_found.html", {
+            "request": request,
+            "phone": admin_code
+        })
 
     query = users.select().order_by(users.c.created_at.desc())
     user_list = await database.fetch_all(query)
