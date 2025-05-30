@@ -7,6 +7,8 @@ import random
 import requests
 from datetime import datetime
 from sqlalchemy import text
+from database import kaspi_shops  # егер kaspi_shops кестесі бар болса
+import os
 
 app = FastAPI()
 
@@ -297,6 +299,84 @@ async def add_kaspi_shop(
             "login": login,
             "password": password
         })
+
+
+@app.post("/add_kaspi_shop")
+async def add_kaspi_shop(
+    login: str = Form(...),
+    password: str = Form(...),
+    phone: str = Form(...)  # ✅ Жіберуші user-ді анықтау үшін
+):
+    import subprocess
+    import uuid
+
+    cleaned = clean_phone(phone)
+
+    # 🔍 Қолданушыны табу
+    query = users.select().where(users.c.phone == cleaned)
+    user = await database.fetch_one(query)
+
+    if not user:
+        return JSONResponse({"ok": False, "msg": "Қолданушы табылмады"}, status_code=400)
+
+    user_id = user["id"]
+
+    # 🔁 Бұл логин бұрын тіркелген бе?
+    query = kaspi_shops.select().where(kaspi_shops.c.login == login)
+    existing_shop = await database.fetch_one(query)
+
+    if existing_shop:
+        return JSONResponse({"ok": False, "msg": "Бұл магазин бұрын тіркелген"}, status_code=400)
+
+    # 🔐 Уақытша credentials файлы
+    cred_file = f"temp_{uuid.uuid4().hex}.txt"
+    with open(cred_file, "w", encoding="utf-8") as f:
+        f.write(f"{login}\n{password}")
+
+    try:
+        # 📁 Жол нақты болуы керек (егер басқа жерде тұрса)
+        script_path = "get_shop_name.py"
+
+        result = subprocess.run(
+            ["python", script_path, cred_file],
+            capture_output=True,
+            text=True,
+            timeout=40
+        )
+        os.remove(cred_file)
+
+        if result.returncode != 0:
+            return JSONResponse({
+                "ok": False,
+                "msg": "Kaspi жүйесіне кіру мүмкін болмады",
+                "stderr": result.stderr
+            }, status_code=500)
+
+        # 🏬 Магазин атауын парсинг
+        shop_name = None
+        for line in result.stdout.splitlines():
+            if "🏬 Магазин атауы:" in line:
+                shop_name = line.split(":", 1)[1].strip()
+                break
+
+        if not shop_name:
+            return JSONResponse({"ok": False, "msg": "Магазин атауы табылмады"}, status_code=500)
+
+        # ✅ Базаға сақтау
+        query = kaspi_shops.insert().values(
+            user_id=user_id,
+            login=login,
+            password=password,
+            shop_name=shop_name,
+            created_at=datetime.utcnow()
+        )
+        await database.execute(query)
+
+        return JSONResponse({"ok": True, "name": shop_name})
+
+    except Exception as e:
+        return JSONResponse({"ok": False, "msg": str(e)}, status_code=500)
+
 
         return JSONResponse({"ok": True, "name": shop_name})
 
