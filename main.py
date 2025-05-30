@@ -80,7 +80,28 @@ async def send_code(
     }
 
     response = requests.post("https://textbelt.com/text", data=payload)
+    try:
+        print("📤 Textbelt request payload:", payload)
+        print("📨 Textbelt response (raw):", response.text)
+        data = response.json()
+        print("✅ Textbelt response (parsed):", data)
+    except Exception as e:
+        print("❌ JSON parse error:", str(e))
+        return JSONResponse({
+            "ok": False,
+            "msg": "Жауапты талдау қатесі",
+            "error": str(e),
+            "raw": response.text
+        }, status_code=500)
 
+    if data.get("success"):
+        return JSONResponse({"ok": True, "msg": "Код жіберілді ✅"})
+    else:
+        return JSONResponse({
+            "ok": False,
+            "msg": data.get("error", "Қате: код жіберілмеді ❌"),
+            "data": data
+        }, status_code=500)
     try:
         data = response.json()
     except Exception as e:
