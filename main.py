@@ -1,8 +1,7 @@
-# ✅ Құпиясөзді қалпына келтіруге толық қолдау қосылған FastAPI сервер
-
 from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse
 from database import database, users, metadata
 import sqlalchemy
 import random
@@ -46,15 +45,20 @@ async def home(request: Request):
 async def register_form(request: Request):
     return templates.TemplateResponse("register.html", {"request": request})
 
-# Құпиясөзді ұмыттым беті
-@app.get("/forgot_password", response_class=HTMLResponse)
-async def forgot_password(request: Request):
-    return templates.TemplateResponse("forgot_password.html", {"request": request})
-
-# ✅ СМС код жіберу (барлық режимдер үшін)
+# ✅ СМС код жіберу және тіркелген нөмірді тексеру
 @app.post("/send_code")
 async def send_code(phone: str = Form(...)):
     cleaned = clean_phone(phone)
+
+    # 🔒 Егер нөмір бұрын тіркелген болса — тоқтату
+    query = users.select().where(users.c.phone == phone)
+    user_exists = await database.fetch_one(query)
+    if user_exists:
+        return JSONResponse({
+            "ok": False,
+            "msg": "Бұл нөмір тіркелген",
+            "exists": True
+        })
 
     # ✅ Код генерациялау және сақтау
     code = str(random.randint(100000, 999999))
@@ -126,7 +130,6 @@ async def reset_password(
 ):
     cleaned = clean_phone(phone)
 
-    # Тексерілмеген нөмір — қауіпсіздік
     if cleaned not in sms_codes:
         return JSONResponse({"ok": False, "msg": "Код тексерілмеген немесе уақыты өтті"}, status_code=400)
 
@@ -139,10 +142,19 @@ async def reset_password(
 @app.get("/users{admin_code}", response_class=HTMLResponse)
 async def view_all_users(request: Request, admin_code: str):
     if admin_code != "190340006343":
-        return templates.TemplateResponse("user_not_found.html", {
-            "request": request,
-            "phone": admin_code
-        })
+        return HTMLResponse(
+            content=f"""
+            <html>
+              <head><title>Рұқсат жоқ</title></head>
+              <body style='font-family:sans-serif;text-align:center;padding:50px'>
+                <h2 style='color:red;'>Рұқсат жоқ</h2>
+                <p>Код: {admin_code}</p>
+                <a href='/'>← Басты бетке оралу</a>
+              </body>
+            </html>
+            """,
+            status_code=403
+        )
 
     query = users.select().order_by(users.c.created_at.desc())
     user_list = await database.fetch_all(query)
@@ -151,6 +163,17 @@ async def view_all_users(request: Request, admin_code: str):
         "request": request,
         "users": user_list
     })
+
+# ✅ created_at бағанын қосу (бір реттік)
+@app.get("/add-created-at")
+async def add_created_at_column():
+    try:
+        await database.execute(text(
+            "ALTER TABLE users ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        ))
+        return {"ok": True, "msg": "✅ created_at бағаны қосылды"}
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
 
 # ✅ Debug: JSON форматта қолданушылар
 @app.get("/debug-users")
