@@ -209,17 +209,20 @@ async def debug_users():
 async def login_check(phone: str = Form(...), password: str = Form(...)):
     cleaned = clean_phone(phone)
 
+    # Ең бірінші — іздеуді номер бойынша
     query = users.select().where(users.c.phone == phone)
     user = await database.fetch_one(query)
 
+    # Егер табылмаса, тазаланған нұсқамен іздейміз
     if not user:
-        # Егер тазаланған нұсқа болса, соны ізде
         query = users.select().where(users.c.phone == cleaned)
         user = await database.fetch_one(query)
 
+    # Егер қолданушы жоқ болса
     if not user:
         return JSONResponse({"ok": False, "msg": "❌ Мұндай нөмір тіркелмеген"}, status_code=400)
 
+    # Құпиясөз дұрыс па
     if user["password"] != password:
         return JSONResponse({"ok": False, "msg": "❌ Құпиясөз дұрыс емес"}, status_code=400)
 
