@@ -111,18 +111,20 @@
 		})
 		.then(res => res.json())
 		.then(data => {
-  			if (data.ok) {
-				// ✅ ЛОКАЛ ЖАДҚА САҚТАУ:
-				localStorage.setItem("user_phone", phone);
-
-				// ✅ Dashboard бетіне өту
-				window.location.href = "/dashboard?phone=" + encodeURIComponent(phone);
-			} else {
-				const lang = localStorage.getItem("lang") || "kk";
-				passwordError.innerText = texts[lang]["password-wrong"];
-				passwordError.classList.remove("hidden");
-			}
+		  if (data.ok) {
+		    // ✅ Тек сандардан тұратын телефон нөмірін сақтау (87771234567)
+		    const cleaned = phone.replace(/\D/g, '');
+		    localStorage.setItem("user_phone", cleaned);
+		
+		    // ✅ Dashboard бетіне өту
+		    window.location.href = "/dashboard?phone=" + encodeURIComponent(cleaned);
+		  } else {
+		    const lang = localStorage.getItem("lang") || "kk";
+		    passwordError.innerText = texts[lang]["password-wrong"];
+		    passwordError.classList.remove("hidden");
+		  }
 		})
+
 		.catch(err => {
 			const lang = localStorage.getItem("lang") || "kk";
 			passwordError.innerText = texts[lang]["server-error"];
