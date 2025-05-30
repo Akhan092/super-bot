@@ -100,37 +100,39 @@
 		const password = document.getElementById("password").value.trim();
 		const passwordError = document.getElementById('password-error');
 
-		// Қате алдын ала жасырып қоямыз
 		passwordError.classList.add('hidden');
 
-		// Серверге сұраныс
 		fetch("/login_check", {
 			method: "POST",
 			headers: {
-			"Content-Type": "application/x-www-form-urlencoded"
+				"Content-Type": "application/x-www-form-urlencoded"
 			},
 			body: new URLSearchParams({ phone, password })
 		})
 		.then(res => res.json())
 		.then(data => {
   			if (data.ok) {
-  				window.location.href = "/dashboard?phone=" + encodeURIComponent(phone);
-			} else {
-    				const lang = localStorage.getItem("lang") || "kk";
-    				passwordError.innerText = texts[lang]["password-wrong"];
-    				passwordError.classList.remove("hidden");
-  			}
-		})
+				// ✅ ЛОКАЛ ЖАДҚА САҚТАУ:
+				localStorage.setItem("user_phone", phone);
 
+				// ✅ Dashboard бетіне өту
+				window.location.href = "/dashboard?phone=" + encodeURIComponent(phone);
+			} else {
+				const lang = localStorage.getItem("lang") || "kk";
+				passwordError.innerText = texts[lang]["password-wrong"];
+				passwordError.classList.remove("hidden");
+			}
+		})
 		.catch(err => {
 			const lang = localStorage.getItem("lang") || "kk";
 			passwordError.innerText = texts[lang]["server-error"];
 			passwordError.classList.remove("hidden");
 			console.error(err);
 		});
-
+	
 		return false; // форма сабмит болмасын
 	}
+
 
 	const phoneInput = document.getElementById("phone");
     let prevValue = "";
