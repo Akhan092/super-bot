@@ -157,14 +157,19 @@
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
           body: new URLSearchParams({ login, password, phone })
         });
-  
-        const data = await res.json();
-  
+      
+        let data;
+        try {
+          data = await res.json();
+        } catch (e) {
+          alert("❌ Сервер JSON қайтара алмады (Internal Server Error)");
+          return;
+        }
+      
         if (data.ok) {
           alert("✅ Магазин қосылды: " + data.name);
           closeModal();
-  
-          // UI-ге қосу
+      
           const card = document.createElement("div");
           card.className = "border p-4 rounded shadow bg-white";
           card.innerHTML = `
@@ -172,16 +177,17 @@
             <p class="text-sm text-gray-500">${login}</p>
           `;
           document.getElementById("store-list").appendChild(card);
-  
+      
           document.getElementById("store-email").value = "";
           document.getElementById("store-password").value = "";
         } else {
           alert("❌ Қате: " + data.msg);
         }
+      
       } catch (e) {
         console.error(e);
         alert("❌ Серверге қосыла алмады.");
-      }
+}
   });
   </script>
 </body>
