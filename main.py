@@ -210,7 +210,7 @@ async def dashboard(request: Request, phone: str = ""):
 
     # 2. Егер табылмаса — тазаланған нұсқамен
     if not user:
-        query = users.select().where(users.c.phone == cleaned)
+        query = users.select().where((users.c.phone == cleaned) | (users.c.phone == phone))
         user = await database.fetch_one(query)
 
     # 3. Нәтиже
@@ -237,7 +237,7 @@ async def login_check(phone: str = Form(...), password: str = Form(...)):
 
     # Егер табылмаса, тазаланған нұсқамен іздейміз
     if not user:
-        query = users.select().where(users.c.phone == cleaned)
+        query = users.select().where((users.c.phone == cleaned) | (users.c.phone == phone))
         user = await database.fetch_one(query)
 
     # Егер қолданушы жоқ болса
