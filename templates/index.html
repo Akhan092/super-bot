@@ -122,10 +122,12 @@
       .then(res => res.json())
       .then(data => {
         if (data.ok) {
-          window.location.href = "/dashboard"; // ✅ логин сәтті болса
-        } else {
-          alert(data.msg || "Қате: телефон немесе құпиясөз дұрыс емес");
-        }
+			window.location.href = "/dashboard";
+		} else {
+			passwordError.innerText = data.msg || "Қате: телефон немесе құпиясөз дұрыс емес";
+			passwordError.classList.remove("hidden");
+		}
+
       })
       .catch(err => {
         alert("Сервермен байланыс қатесі");
