@@ -301,44 +301,42 @@ async def add_kaspi_shop(
         })
 
 
+from database import kaspi_shops  # Егер бөлек таблицада болса
+import os
+
 @app.post("/add_kaspi_shop")
 async def add_kaspi_shop(
     login: str = Form(...),
     password: str = Form(...),
-    phone: str = Form(...)  # ✅ Жіберуші user-ді анықтау үшін
+    phone: str = Form(...)  # 🔑 Пайдаланушының нөмірі – магазин иесі
 ):
     import subprocess
     import uuid
 
     cleaned = clean_phone(phone)
 
-    # 🔍 Қолданушыны табу
+    # 1. Қолданушыны табу
     query = users.select().where(users.c.phone == cleaned)
     user = await database.fetch_one(query)
-
     if not user:
         return JSONResponse({"ok": False, "msg": "Қолданушы табылмады"}, status_code=400)
 
     user_id = user["id"]
 
-    # 🔁 Бұл логин бұрын тіркелген бе?
+    # 2. Kaspi логин бұрын тіркелген бе?
     query = kaspi_shops.select().where(kaspi_shops.c.login == login)
-    existing_shop = await database.fetch_one(query)
+    existing = await database.fetch_one(query)
+    if existing:
+        return JSONResponse({"ok": False, "msg": "Бұл Kaspi логин тіркелген"}, status_code=400)
 
-    if existing_shop:
-        return JSONResponse({"ok": False, "msg": "Бұл магазин бұрын тіркелген"}, status_code=400)
-
-    # 🔐 Уақытша credentials файлы
+    # 3. Уақытша credentials.txt жасау
     cred_file = f"temp_{uuid.uuid4().hex}.txt"
     with open(cred_file, "w", encoding="utf-8") as f:
         f.write(f"{login}\n{password}")
 
     try:
-        # 📁 Жол нақты болуы керек (егер басқа жерде тұрса)
-        script_path = "get_shop_name.py"
-
         result = subprocess.run(
-            ["python", script_path, cred_file],
+            ["python", "get_shop_name.py", cred_file],
             capture_output=True,
             text=True,
             timeout=40
@@ -346,13 +344,8 @@ async def add_kaspi_shop(
         os.remove(cred_file)
 
         if result.returncode != 0:
-            return JSONResponse({
-                "ok": False,
-                "msg": "Kaspi жүйесіне кіру мүмкін болмады",
-                "stderr": result.stderr
-            }, status_code=500)
+            return JSONResponse({"ok": False, "msg": "Kaspi жүйесіне кіру мүмкін болмады", "stderr": result.stderr}, status_code=500)
 
-        # 🏬 Магазин атауын парсинг
         shop_name = None
         for line in result.stdout.splitlines():
             if "🏬 Магазин атауы:" in line:
@@ -362,7 +355,7 @@ async def add_kaspi_shop(
         if not shop_name:
             return JSONResponse({"ok": False, "msg": "Магазин атауы табылмады"}, status_code=500)
 
-        # ✅ Базаға сақтау
+        # 4. Базаға сақтау
         query = kaspi_shops.insert().values(
             user_id=user_id,
             login=login,
@@ -376,10 +369,3 @@ async def add_kaspi_shop(
 
     except Exception as e:
         return JSONResponse({"ok": False, "msg": str(e)}, status_code=500)
-
-
-        return JSONResponse({"ok": True, "name": shop_name})
-
-    except Exception as e:
-        return JSONResponse({"ok": False, "msg": str(e)}, status_code=500)
-
