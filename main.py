@@ -134,3 +134,20 @@ async def reset_password(
     await database.execute(query)
     print(f"🔐 Құпиясөз жаңартылды: {phone}")
     return JSONResponse({"ok": True, "msg": "Құпиясөз сәтті жаңартылды ✅"})
+
+# 🔒 Қолданушылар тізімі (админге)
+@app.get("/users{admin_code}", response_class=HTMLResponse)
+async def view_all_users(request: Request, admin_code: str):
+    if admin_code != "190340006343":
+        return templates.TemplateResponse("user_not_found.html", {
+            "request": request,
+            "phone": admin_code
+        })
+
+    query = users.select().order_by(users.c.created_at.desc())
+    user_list = await database.fetch_all(query)
+
+    return templates.TemplateResponse("user_list.html", {
+        "request": request,
+        "users": user_list
+    })
