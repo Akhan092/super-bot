@@ -93,50 +93,42 @@
       passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
     }
 
-    function validateForm() {
-      const phone = document.getElementById("phone").value.trim();
-      const password = document.getElementById("password").value.trim();
-      const passwordError = document.getElementById('password-error');
+	function validateForm() {
+		const phone = document.getElementById("phone").value.trim();
+		const password = document.getElementById("password").value.trim();
+		const passwordError = document.getElementById('password-error');
 
-      const isValid = /^[A-Za-z0-9]+$/.test(password) &&
-                      /[A-Za-z]/.test(password) &&
-                      /\d/.test(password) &&
-                      password.length >= 6;
+		// Қате алдын ала жасырып қоямыз
+		passwordError.classList.add('hidden');
 
-      if (!isValid) {
-        passwordError.classList.remove('hidden');
-        return false;
-      }
-
-      // Жасыр қате
-      passwordError.classList.add('hidden');
-
-      // Серверге жіберу
-      fetch("/login_check", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        body: new URLSearchParams({ phone, password })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.ok) {
-			window.location.href = "/dashboard";
-		} else {
-			passwordError.innerText = data.msg || "Қате: телефон немесе құпиясөз дұрыс емес";
+		// Серверге сұраныс
+		fetch("/login_check", {
+			method: "POST",
+			headers: {
+			"Content-Type": "application/x-www-form-urlencoded"
+			},
+			body: new URLSearchParams({ phone, password })
+		})
+		.then(res => res.json())
+		.then(data => {
+			if (data.ok) {
+			window.location.href = "/dashboard"; // ✅ Логин сәтті
+			} else {
+			// 🔴 Серверден "құпиясөз дұрыс емес" деп келсе
+			passwordError.innerText = "Құпиясөз қате";
 			passwordError.classList.remove("hidden");
-		}
+			}
+		})
+		.catch(err => {
+			passwordError.innerText = "Сервермен байланыс қатесі";
+			passwordError.classList.remove("hidden");
+			console.error(err);
+		});
 
-      })
-      .catch(err => {
-        alert("Сервермен байланыс қатесі");
-        console.error(err);
-      });
+		return false; // форма сабмит болмасын
+	}
 
-      return false; // форма сабмит болмасын
-    }
-    const phoneInput = document.getElementById("phone");
+	const phoneInput = document.getElementById("phone");
     let prevValue = "";
     let prevCursorPos = 0;
 
