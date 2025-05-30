@@ -94,9 +94,9 @@
     }
 
     function validateForm() {
-      const passwordInput = document.getElementById('password');
+      const phone = document.getElementById("phone").value.trim();
+      const password = document.getElementById("password").value.trim();
       const passwordError = document.getElementById('password-error');
-      const password = passwordInput.value;
 
       const isValid = /^[A-Za-z0-9]+$/.test(password) &&
                       /[A-Za-z]/.test(password) &&
@@ -106,12 +106,34 @@
       if (!isValid) {
         passwordError.classList.remove('hidden');
         return false;
-      } else {
-        passwordError.classList.add('hidden');
-        return true;
       }
-    }
 
+      // Жасыр қате
+      passwordError.classList.add('hidden');
+
+      // Серверге жіберу
+      fetch("/login_check", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: new URLSearchParams({ phone, password })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.ok) {
+          window.location.href = "/dashboard"; // ✅ логин сәтті болса
+        } else {
+          alert(data.msg || "Қате: телефон немесе құпиясөз дұрыс емес");
+        }
+      })
+      .catch(err => {
+        alert("Сервермен байланыс қатесі");
+        console.error(err);
+      });
+
+      return false; // форма сабмит болмасын
+    }
     const phoneInput = document.getElementById("phone");
     let prevValue = "";
     let prevCursorPos = 0;
