@@ -149,7 +149,7 @@
         return;
       }
   
-      const phone = formatPhone(rawPhone); // ✅ Базадағы форматпен жібереміз
+      const phone = rawPhone;
   
       try {
         const res = await fetch("/add_kaspi_shop", {
