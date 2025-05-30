@@ -103,6 +103,25 @@ async def verify_code(phone: str = Form(...), code: str = Form(...)):
         return JSONResponse({"success": True})
     return JSONResponse({"success": False})
 
+@app.post("/reset_password")
+async def reset_password(
+    phone: str = Form(...),
+    password: str = Form(...)
+):
+    cleaned = clean_phone(phone)
+
+    # 🔒 Егер бұл телефонмен SMS код алынбаған болса – қауіпсіздік
+    if cleaned not in sms_codes:
+        return JSONResponse({"ok": False, "msg": "Код тексерілмеген немесе уақыты өтті"}, status_code=400)
+
+    # ✅ Құпиясөзді жаңарту
+    query = users.update().where(users.c.phone == phone).values(password=password)
+    await database.execute(query)
+
+    print(f"🔐 Құпиясөз жаңартылды: {phone}")
+    return JSONResponse({"ok": True, "msg": "Құпиясөз сәтті жаңартылды ✅"})
+
+
 # ✅ Қолданушыны тіркеу
 @app.post("/register_user")
 async def register_user(
