@@ -122,9 +122,15 @@
       input.type = input.type === "password" ? "text" : "password";
     }
 
-    window.onload = () => {
-      const lang = localStorage.getItem("lang") || "kk";
-      setLanguage(lang);
+    window.onload = function() {
+      const phone = localStorage.getItem("user_phone");
+      console.log("Сақталған номер:", phone);
+  
+      if (!phone) {
+        alert("Қате: қолданушы нөмірі табылмады.");
+      } else {
+        // серверге жіберу немесе формаларға қою
+      }
     };
 
     // ✅ Магазинді қосу логикасы
