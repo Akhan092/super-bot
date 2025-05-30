@@ -2,7 +2,7 @@ from sqlalchemy import Table, Column, Integer, String, DateTime, MetaData
 from databases import Database
 from datetime import datetime
 
-DATABASE_URL = "postgresql://...ваш_url..."
+DATABASE_URL = "postgresql://superbotdb_rclo_user:XcneYf7IkosTX2Rb2AbR14HvujBRyfKh@dpg-d0rh1bjuibrs73d82dpg-a:5432/superbotdb_rclo"
 
 database = Database(DATABASE_URL)
 metadata = MetaData()
