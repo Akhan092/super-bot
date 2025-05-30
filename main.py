@@ -308,28 +308,32 @@ import os
 async def add_kaspi_shop(
     login: str = Form(...),
     password: str = Form(...),
-    phone: str = Form(...)  # 🔑 Пайдаланушының нөмірі – магазин иесі
+    phone: str = Form(...)  # Пайдаланушының номері (авторизацияланған)
 ):
     import subprocess
     import uuid
+    import os
+
+    from database import kaspi_shops
 
     cleaned = clean_phone(phone)
 
-    # 1. Қолданушыны табу
-    query = users.select().where(users.c.phone == cleaned)
-    user = await database.fetch_one(query)
+    # 1. Пайдаланушыны тексеру
+    user_query = users.select().where(users.c.phone == cleaned)
+    user = await database.fetch_one(user_query)
     if not user:
         return JSONResponse({"ok": False, "msg": "Қолданушы табылмады"}, status_code=400)
 
     user_id = user["id"]
 
-    # 2. Kaspi логин бұрын тіркелген бе?
-    query = kaspi_shops.select().where(kaspi_shops.c.login == login)
-    existing = await database.fetch_one(query)
-    if existing:
-        return JSONResponse({"ok": False, "msg": "Бұл Kaspi логин тіркелген"}, status_code=400)
+    # 2. Бұрын тіркелген Kaspi логинді тексеру
+    exists = await database.fetch_one(
+        text("SELECT 1 FROM kaspi_shops WHERE login = :login"), {"login": login}
+    )
+    if exists:
+        return JSONResponse({"ok": False, "msg": "Бұл Kaspi логин бұрын тіркелген"}, status_code=400)
 
-    # 3. Уақытша credentials.txt жасау
+    # 3. Credentials файлы жасау
     cred_file = f"temp_{uuid.uuid4().hex}.txt"
     with open(cred_file, "w", encoding="utf-8") as f:
         f.write(f"{login}\n{password}")
@@ -344,8 +348,9 @@ async def add_kaspi_shop(
         os.remove(cred_file)
 
         if result.returncode != 0:
-            return JSONResponse({"ok": False, "msg": "Kaspi жүйесіне кіру мүмкін болмады", "stderr": result.stderr}, status_code=500)
+            return JSONResponse({"ok": False, "msg": "Kaspi жүйесіне кіру мүмкін болмады"})
 
+        # Магазин атын алу
         shop_name = None
         for line in result.stdout.splitlines():
             if "🏬 Магазин атауы:" in line:
@@ -355,15 +360,17 @@ async def add_kaspi_shop(
         if not shop_name:
             return JSONResponse({"ok": False, "msg": "Магазин атауы табылмады"}, status_code=500)
 
-        # 4. Базаға сақтау
-        query = kaspi_shops.insert().values(
-            user_id=user_id,
-            login=login,
-            password=password,
-            shop_name=shop_name,
-            created_at=datetime.utcnow()
-        )
-        await database.execute(query)
+        # 4. Базаға жазу
+        insert_query = text("""
+            INSERT INTO kaspi_shops (user_id, shop_name, login, password, created_at)
+            VALUES (:user_id, :shop_name, :login, :password, NOW())
+        """)
+        await database.execute(insert_query, {
+            "user_id": user_id,
+            "shop_name": shop_name,
+            "login": login,
+            "password": password
+        })
 
         return JSONResponse({"ok": True, "name": shop_name})
 
