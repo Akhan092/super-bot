@@ -1,3 +1,5 @@
+# ✅ Құпиясөзді қалпына келтіруге толық қолдау қосылған FastAPI сервер
+
 from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
@@ -44,20 +46,15 @@ async def home(request: Request):
 async def register_form(request: Request):
     return templates.TemplateResponse("register.html", {"request": request})
 
-# ✅ СМС код жіберу және тіркелген нөмірді тексеру
+# Құпиясөзді ұмыттым беті
+@app.get("/forgot_password", response_class=HTMLResponse)
+async def forgot_password(request: Request):
+    return templates.TemplateResponse("forgot_password.html", {"request": request})
+
+# ✅ СМС код жіберу (барлық режимдер үшін)
 @app.post("/send_code")
 async def send_code(phone: str = Form(...)):
     cleaned = clean_phone(phone)
-
-    # 🔒 Егер нөмір бұрын тіркелген болса — тоқтату
-    query = users.select().where(users.c.phone == phone)
-    user_exists = await database.fetch_one(query)
-    if user_exists:
-        return JSONResponse({
-            "ok": False,
-            "msg": "Бұл нөмір тіркелген",
-            "exists": True
-        })
 
     # ✅ Код генерациялау және сақтау
     code = str(random.randint(100000, 999999))
@@ -121,37 +118,19 @@ async def register_user(
     print("✅ Пайдаланушы тіркелді:", phone)
     return JSONResponse({"ok": True, "msg": "✅ Пайдаланушы тіркелді!"})
 
-# 🔒 Қолданушылар тізімі (админге)
-@app.get("/users{admin_code}", response_class=HTMLResponse)
-async def view_all_users(request: Request, admin_code: str):
-    if admin_code != "190340006343":
-        return templates.TemplateResponse("user_not_found.html", {
-            "request": request,
-            "phone": admin_code
-        })
+# ✅ Құпиясөзді жаңарту (reset)
+@app.post("/reset_password")
+async def reset_password(
+    phone: str = Form(...),
+    password: str = Form(...)
+):
+    cleaned = clean_phone(phone)
 
-    query = users.select().order_by(users.c.created_at.desc())
-    user_list = await database.fetch_all(query)
+    # Тексерілмеген нөмір — қауіпсіздік
+    if cleaned not in sms_codes:
+        return JSONResponse({"ok": False, "msg": "Код тексерілмеген немесе уақыты өтті"}, status_code=400)
 
-    return templates.TemplateResponse("user_list.html", {
-        "request": request,
-        "users": user_list
-    })
-
-# ✅ created_at бағанын қосу (бір реттік)
-@app.get("/add-created-at")
-async def add_created_at_column():
-    try:
-        await database.execute(text(
-            "ALTER TABLE users ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
-        ))
-        return {"ok": True, "msg": "✅ created_at бағаны қосылды"}
-    except Exception as e:
-        return {"ok": False, "error": str(e)}
-
-# ✅ Debug: JSON форматта қолданушылар
-@app.get("/debug-users")
-async def debug_users():
-    query = users.select().order_by(users.c.created_at.desc())
-    result = await database.fetch_all(query)
-    return [dict(u) for u in result]
+    query = users.update().where(users.c.phone == phone).values(password=password)
+    await database.execute(query)
+    print(f"🔐 Құпиясөз жаңартылды: {phone}")
+    return JSONResponse({"ok": True, "msg": "Құпиясөз сәтті жаңартылды ✅"})
