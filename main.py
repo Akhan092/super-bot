@@ -9,6 +9,8 @@ from datetime import datetime
 from sqlalchemy import text
 from database import kaspi_shops  # егер kaspi_shops кестесі бар болса
 import os
+from database import database, users, metadata, kaspi_shops
+
 
 app = FastAPI()
 
