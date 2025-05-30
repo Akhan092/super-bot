@@ -1,3 +1,4 @@
+# 🔝 Файлдың ең басы
 from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
@@ -8,9 +9,7 @@ import random
 import requests
 import os
 
-from database import database, users, metadata, kaspi_shops  # ✅ ДҰРЫС
-
-
+from database import database, users, metadata, kaspi_shops  # ✅ БІР ЖОЛҒА біріктіріңіз
 
 app = FastAPI()
 
@@ -261,9 +260,6 @@ async def add_kaspi_shop(
     login: str = Form(...),
     password: str = Form(...)
 ):
-    import subprocess
-    import uuid
-
     # Уақытша credentials файлы жасау
     cred_file = f"temp_{uuid.uuid4().hex}.txt"
     with open(cred_file, "w", encoding="utf-8") as f:
@@ -301,21 +297,12 @@ async def add_kaspi_shop(
             "login": login,
             "password": password
         })
-
-
-from database import kaspi_shops  # Егер бөлек таблицада болса
-import os
-
 @app.post("/add_kaspi_shop")
 async def add_kaspi_shop(
     login: str = Form(...),
     password: str = Form(...),
     phone: str = Form(...)  # ➕ Пайдаланушының телефоны
 ):
-    import subprocess
-    import uuid
-    import os
-
     # 🔍 Пайдаланушыны табу
     cleaned = clean_phone(phone)
     query = users.select().where(users.c.phone == cleaned)
