@@ -128,35 +128,43 @@
   
       if (!phone) {
         alert("Қате: қолданушы нөмірі табылмады.");
-      } else {
-        // серверге жіберу немесе формаларға қою
       }
     };
-
+  
+    function formatPhone(rawPhone) {
+      return '+7 (' + rawPhone.slice(0, 3) + ') ' +
+                   rawPhone.slice(3, 6) + ' ' +
+                   rawPhone.slice(6, 8) + ' ' +
+                   rawPhone.slice(8, 10);
+    }
+  
     // ✅ Магазинді қосу логикасы
     document.getElementById("modal-add-button").addEventListener("click", async () => {
       const login = document.getElementById("store-email").value.trim();
       const password = document.getElementById("store-password").value.trim();
-      const phone = localStorage.getItem("user_phone");
-
-      if (!login || !password || !phone) {
+      const rawPhone = localStorage.getItem("user_phone");
+  
+      if (!login || !password || !rawPhone) {
         alert("⚠️ Барлық өрістерді толтырыңыз.");
         return;
       }
-
+  
+      const phone = formatPhone(rawPhone); // ✅ Базадағы форматпен жібереміз
+  
       try {
         const res = await fetch("/add_kaspi_shop", {
           method: "POST",
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
           body: new URLSearchParams({ login, password, phone })
         });
-
+  
         const data = await res.json();
-
+  
         if (data.ok) {
           alert("✅ Магазин қосылды: " + data.name);
           closeModal();
-
+  
+          // UI-ге қосу
           const card = document.createElement("div");
           card.className = "border p-4 rounded shadow bg-white";
           card.innerHTML = `
@@ -164,18 +172,17 @@
             <p class="text-sm text-gray-500">${login}</p>
           `;
           document.getElementById("store-list").appendChild(card);
-
+  
           document.getElementById("store-email").value = "";
           document.getElementById("store-password").value = "";
-
         } else {
           alert("❌ Қате: " + data.msg);
         }
-
       } catch (e) {
         console.error(e);
         alert("❌ Серверге қосыла алмады.");
       }
+  });
     });
   </script>
 </body>
