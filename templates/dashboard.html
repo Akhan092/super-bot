@@ -22,39 +22,40 @@
     <h1 id="greeting" data-name="{{ name }}" class="text-4xl font-bold text-gray-800">
       Сәлем, {{ name }}
 
-<h2 class="text-xl font-semibold mt-6 mb-2">Kaspi Магазиндеріңіз:</h2>
-{% if shops %}
-  <ul class="list-disc pl-5 text-sm space-y-2">
-    {% for shop in shops %}
-      <li>
-        <strong>{{ shop.shop_name }}</strong> ({{ shop.login }})<br>
-        🔐 Пароль: <span class="text-red-600 font-semibold">{{ shop.password }}</span><br>
-        📅 Тіркелген: {{ shop.created_at.strftime('%Y-%m-%d %H:%M:%S') }}
-      </li>
-    {% endfor %}
-  </ul>
-{% else %}
-  <p class="text-red-500 text-sm">Сізде әлі магазин тіркелмеген.</p>
-{% endif %}
-      
-    </h1>
-  </div>
-
   <!-- 📦 Магазин тізімі -->
   <div class="mt-8 px-6 flex justify-center">
     <div class="bg-white shadow rounded-xl w-full max-w-6xl p-6">
+      
+      <!-- 🔝 Тақырып пен кнопка -->
       <div class="flex justify-between items-center mb-6">
-        <h2 id="store-title" class="text-xl font-semibold text-gray-800">Магазиндеріңіз</h2>
+        <h2 id="store-title" class="text-xl font-semibold text-gray-800">Kaspi Магазиндеріңіз</h2>
         <button onclick="openModal()" id="add-button"
                 class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm">
           + Магазин қосу
         </button>
       </div>
+  
+      <!-- 🧩 Магазин карточкалары осы контейнер ішінде -->
       <div id="store-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        <!-- Магазин карточкалары осында түседі -->
+        {% for shop in shops %}
+        <div class="border rounded-xl shadow p-4 bg-white relative">
+          <h3 class="text-lg font-bold mb-1">{{ shop.shop_name }}</h3>
+          <p class="text-sm text-gray-600">Логин: {{ shop.login }}</p>
+          <p class="text-sm text-red-600">Пароль: {{ shop.password }}</p>
+          <p class="text-xs text-blue-600 mt-1">
+            Тіркелген: {{ shop.created_at.strftime('%Y-%m-%d %H:%M:%S') }}
+          </p>
+          <button onclick="deleteStore('{{ shop.shop_name }}', this)"
+                  class="absolute top-2 right-2 text-sm text-red-500 hover:underline">
+            Өшіру
+          </button>
+        </div>
+        {% endfor %}
       </div>
+  
     </div>
   </div>
+
 
   <!-- 🪟 Модал -->
   <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
