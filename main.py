@@ -423,3 +423,13 @@ async def add_merchant_id_column():
         return {"ok": True, "msg": "✅ merchant_id бағаны қосылды"}
     except Exception as e:
         return {"ok": False, "error": str(e)}
+
+@app.get("/add-merchant-id")
+async def add_merchant_id_column():
+    try:
+        await database.execute(text(
+            "ALTER TABLE kaspi_shops ADD COLUMN IF NOT EXISTS merchant_id VARCHAR"
+        ))
+        return {"ok": True, "msg": "✅ merchant_id бағаны қосылды"}
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
