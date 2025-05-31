@@ -254,7 +254,9 @@ async def dashboard(request: Request, phone: str = ""):
     return templates.TemplateResponse("dashboard.html", {
         "request": request,
         "name": name,
-        "shops": [dict(s) for s in shops]
+        "shops": [dict(s) for s in shops],
+        "datetime": datetime,
+        "timedelta": timedelta
     })
 
 # ✅ Debug: JSON форматта қолданушылар
