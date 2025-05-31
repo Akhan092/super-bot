@@ -328,3 +328,39 @@ async def add_kaspi_shop(
 def get_kaspi_shops():
     shops = load_shops()
     return jsonify(shops)
+
+@app.get("/get_kaspi_shops")
+async def get_kaspi_shops(phone: str = Query(...)):
+    query = users.select().where(users.c.phone == phone)
+    user = await database.fetch_one(query)
+    if not user:
+        return JSONResponse({"ok": False, "msg": "Қолданушы табылмады"}, status_code=400)
+
+    user_id = user["id"]
+
+    shop_query = kaspi_shops.select().where(kaspi_shops.c.user_id == user_id).order_by(kaspi_shops.c.created_at.desc())
+    result = await database.fetch_all(shop_query)
+
+    shops = []
+    for row in result:
+        shops.append({
+            "id": row["id"],
+            "name": row["shop_name"],
+            "expires": (row["created_at"] + timedelta(days=30)).strftime("%Y-%m-%d %H:%M:%S")
+        })
+
+    return shops
+
+@app.post("/delete_kaspi_shop")
+async def delete_kaspi_shop(name: str = Form(...), phone: str = Form(...)):
+    query = users.select().where(users.c.phone == phone)
+    user = await database.fetch_one(query)
+    if not user:
+        return JSONResponse({"ok": False, "msg": "Қолданушы табылмады"}, status_code=400)
+
+    delete_query = kaspi_shops.delete().where(
+        (kaspi_shops.c.shop_name == name) & (kaspi_shops.c.user_id == user["id"])
+    )
+    await database.execute(delete_query)
+    return {"ok": True}
+
