@@ -143,27 +143,28 @@
       input.type = input.type === "password" ? "text" : "password";
     }
 
-    function renderStoreCard(store) {
+    function renderStoreCard(shop) {
       const card = document.createElement("div");
       card.className = "border p-4 rounded shadow bg-white relative";
     
-      const createdAt = store.created_at
-        ? new Date(store.created_at).toLocaleString()
-        : new Date().toLocaleString();
+      const createdAt = new Date(shop.created_at).toLocaleString("kk-KZ", {
+        day: "2-digit", month: "2-digit", year: "numeric",
+        hour: "2-digit", minute: "2-digit"
+      });
     
       card.innerHTML = `
-        <h3 class="font-bold text-lg mb-1">${store.name || store.shop_name}</h3>
-        <p class="text-sm text-gray-600">Логин: ${store.login}</p>
-        <p class="text-sm text-red-600">Пароль: ${store.password}</p>
+        <h3 class="text-lg font-bold mb-1">${shop.name || shop.shop_name}</h3>
+        <p class="text-sm text-gray-600">Логин: ${shop.login}</p>
+        <p class="text-sm text-red-600">Пароль: ${shop.password}</p>
         <p class="text-xs text-blue-500 mt-1">Тіркелген: ${createdAt}</p>
-        <button onclick="deleteStore('${store.shop_name}', this)"
+        <button onclick="deleteStore('${shop.name}', this)"
                 class="absolute top-2 right-2 text-sm text-red-500 hover:underline">
           Өшіру
         </button>
       `;
-    
       document.getElementById("store-list").appendChild(card);
     }
+
 
 
 
