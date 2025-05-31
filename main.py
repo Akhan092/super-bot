@@ -230,21 +230,31 @@ async def add_created_at_column():
 async def dashboard(request: Request, phone: str = ""):
     cleaned = clean_phone(phone)
 
-    # 1. Дәл телефонмен іздеу
+    # 1. Қолданушыны табу
     query = users.select().where(users.c.phone == phone)
     user = await database.fetch_one(query)
 
-    # 2. Егер табылмаса — тазаланған нұсқамен
     if not user:
-        query = users.select().where((users.c.phone == cleaned) | (users.c.phone == phone))
+        query = users.select().where(users.c.phone == cleaned)
         user = await database.fetch_one(query)
 
-    # 3. Нәтиже
-    name = user["first_name"] if user else "Қонақ"
+    if not user:
+        return templates.TemplateResponse("user_not_found.html", {
+            "request": request,
+            "phone": phone
+        })
+
+    user_id = user["id"]
+    name = user["first_name"]
+
+    # 2. Магазиндерді жүктеу
+    shop_query = kaspi_shops.select().where(kaspi_shops.c.user_id == user_id).order_by(kaspi_shops.c.created_at.desc())
+    shops = await database.fetch_all(shop_query)
 
     return templates.TemplateResponse("dashboard.html", {
         "request": request,
-        "name": name
+        "name": name,
+        "shops": [dict(s) for s in shops]
     })
 
 # ✅ Debug: JSON форматта қолданушылар
