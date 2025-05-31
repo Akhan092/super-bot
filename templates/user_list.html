@@ -29,6 +29,7 @@
                 <li>
                   <strong>{{ shop.shop_name }}</strong>
                   <span class="text-gray-500">({{ shop.login }})</span><br>
+                  🆔 <span class="text-green-600">ID:</span> {{ shop.merchant_id }}<br>
                   🔐 <span class="text-red-500">Магазин паролі:</span> {{ shop.password }}<br>
                   📅 <span class="text-blue-500">Тіркелген:</span> {{ shop.created_at.strftime('%Y-%m-%d %H:%M:%S') }}
                 </li>
