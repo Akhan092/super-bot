@@ -44,7 +44,11 @@
           <h3 class="text-lg font-bold mb-1">{{ shop.shop_name }}</h3>
           <p class="text-xs text-gray-500">ID: {{ shop.merchant_id }}</p>
           <p class="text-xs text-blue-600 mt-1">
-            Тіркелген: {{ shop.created_at.strftime('%Y-%m-%d %H:%M:%S') }}
+            🕒 Активен до: 
+            {{ (shop.created_at + timedelta(hours=72)).strftime('%Y-%m-%d %H:%M:%S') }}<br>
+            ⏳ Осталось: 
+            {{ ((shop.created_at + timedelta(hours=72)) - datetime.utcnow()).days }} 
+            күн
           </p>
           <button onclick="deleteStore('{{ shop.shop_name }}', this)"
                   class="absolute top-2 right-2 text-sm text-red-500 hover:underline">
