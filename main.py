@@ -414,3 +414,12 @@ async def delete_kaspi_shop(name: str = Form(...), phone: str = Form(...)):
     await database.execute(delete_query)
     return {"ok": True}
 
+@app.get("/add-merchant-id-column")
+async def add_merchant_id_column():
+    try:
+        await database.execute(text(
+            "ALTER TABLE kaspi_shops ADD COLUMN merchant_id TEXT"
+        ))
+        return {"ok": True, "msg": "✅ merchant_id бағаны қосылды"}
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
