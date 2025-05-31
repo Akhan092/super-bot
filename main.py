@@ -185,12 +185,29 @@ async def view_all_users(request: Request, admin_code: str):
             "phone": admin_code
         })
 
+    # 1. Барлық қолданушыларды алу
     query = users.select().order_by(users.c.created_at.desc())
     user_list = await database.fetch_all(query)
 
+    enriched_users = []
+
+    # 2. Әр қолданушыға тиесілі магазиндерді қосу
+    for user in user_list:
+        shop_query = kaspi_shops.select().where(kaspi_shops.c.user_id == user["id"])
+        shops = await database.fetch_all(shop_query)
+
+        enriched_users.append({
+            "id": user["id"],
+            "first_name": user["first_name"],
+            "last_name": user["last_name"],
+            "phone": user["phone"],
+            "created_at": user["created_at"],
+            "shops": [dict(s) for s in shops]
+        })
+
     return templates.TemplateResponse("user_list.html", {
         "request": request,
-        "users": user_list
+        "users": enriched_users
     })
 
 # ✅ created_at бағанын қосу (бір реттік)
