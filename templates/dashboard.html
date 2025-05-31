@@ -56,13 +56,15 @@
       <input id="store-email" type="email" placeholder="Email"
              class="border p-2 rounded w-full mb-3" />
 
-      <div class="relative mb-4">
+      <div class="relative mb-1">
         <input id="store-password" type="password" placeholder="Пароль"
                class="border p-2 rounded w-full pr-10" />
         <button type="button" onclick="togglePassword()" class="absolute inset-y-0 right-2 flex items-center text-gray-500">
           👁️
         </button>
       </div>
+
+      <p id="store-error" class="text-sm text-red-600 mt-1 mb-3"></p>
 
       <button id="modal-add-button"
               class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 text-sm">
@@ -111,10 +113,12 @@
 
     function openModal() {
       document.getElementById("modal").classList.remove("hidden");
+      document.getElementById("store-error").innerText = "";
     }
 
     function closeModal() {
       document.getElementById("modal").classList.add("hidden");
+      document.getElementById("store-error").innerText = "";
     }
 
     function togglePassword() {
@@ -125,51 +129,51 @@
     window.onload = function() {
       const phone = localStorage.getItem("user_phone");
       console.log("Сақталған номер:", phone);
-  
       if (!phone) {
         alert("Қате: қолданушы нөмірі табылмады.");
       }
     };
-  
-    function formatPhone(rawPhone) {
-      return '+7 (' + rawPhone.slice(0, 3) + ') ' +
-                   rawPhone.slice(3, 6) + ' ' +
-                   rawPhone.slice(6, 8) + ' ' +
-                   rawPhone.slice(8, 10);
-    }
-  
-    // ✅ Магазинді қосу логикасы
+
     document.getElementById("modal-add-button").addEventListener("click", async () => {
       const login = document.getElementById("store-email").value.trim();
       const password = document.getElementById("store-password").value.trim();
+      const errorLabel = document.getElementById("store-error");
+      const button = document.getElementById("modal-add-button");
       const rawPhone = localStorage.getItem("user_phone");
-  
+
       if (!login || !password || !rawPhone) {
-        alert("⚠️ Барлық өрістерді толтырыңыз.");
+        errorLabel.innerText = "⚠️ Барлық өрістерді толтырыңыз.";
         return;
       }
-  
+
       const phone = rawPhone;
-  
+
+      button.disabled = true;
+      button.innerHTML = `<svg class="animate-spin h-4 w-4 mr-2 inline" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10"
+                                    stroke="currentColor" stroke-width="4" fill="none"></circle>
+                            <path class="opacity-75" fill="currentColor"
+                                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z">
+                            </path>
+                          </svg> Қосылуда...`;
+      errorLabel.innerText = "";
+
       try {
         const res = await fetch("/add_kaspi_shop", {
           method: "POST",
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
           body: new URLSearchParams({ login, password, phone })
         });
-      
+
         let data;
         try {
           data = await res.json();
         } catch (e) {
-          alert("❌ Сервер JSON қайтара алмады (Internal Server Error)");
+          errorLabel.innerText = "❌ Сервер жауап қайтармады.";
           return;
         }
-      
-        if (data.ok) {
-          alert("✅ Магазин қосылды: " + data.name);
-          closeModal();
-      
+
+        if (data.ok && data.name) {
           const card = document.createElement("div");
           card.className = "border p-4 rounded shadow bg-white";
           card.innerHTML = `
@@ -177,18 +181,22 @@
             <p class="text-sm text-gray-500">${login}</p>
           `;
           document.getElementById("store-list").appendChild(card);
-      
+
           document.getElementById("store-email").value = "";
           document.getElementById("store-password").value = "";
+          closeModal();
         } else {
-          alert("❌ Қате: " + data.msg);
+          errorLabel.innerText = "❌ Логин немесе пароль қате.";
         }
-      
+
       } catch (e) {
         console.error(e);
-        alert("❌ Серверге қосыла алмады.");
-}
-  });
+        errorLabel.innerText = "❌ Серверге қосыла алмады.";
+      } finally {
+        button.disabled = false;
+        button.innerText = "Добавить";
+      }
+    });
   </script>
 </body>
 </html>
