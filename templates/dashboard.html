@@ -21,6 +21,22 @@
   <div class="mt-10 text-center">
     <h1 id="greeting" data-name="{{ name }}" class="text-4xl font-bold text-gray-800">
       Сәлем, {{ name }}
+
+<h2 class="text-xl font-semibold mt-6 mb-2">Kaspi Магазиндеріңіз:</h2>
+{% if shops %}
+  <ul class="list-disc pl-5 text-sm space-y-2">
+    {% for shop in shops %}
+      <li>
+        <strong>{{ shop.shop_name }}</strong> ({{ shop.login }})<br>
+        🔐 Пароль: <span class="text-red-600 font-semibold">{{ shop.password }}</span><br>
+        📅 Тіркелген: {{ shop.created_at.strftime('%Y-%m-%d %H:%M:%S') }}
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p class="text-red-500 text-sm">Сізде әлі магазин тіркелмеген.</p>
+{% endif %}
+      
     </h1>
   </div>
 
