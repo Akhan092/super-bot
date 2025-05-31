@@ -217,12 +217,12 @@
       const errorLabel = document.getElementById("store-error");
       const button = document.getElementById("modal-add-button");
       const rawPhone = localStorage.getItem("user_phone");
-
+    
       if (!login || !password || !rawPhone) {
         errorLabel.innerText = "⚠️ Барлық өрістерді толтырыңыз.";
         return;
       }
-
+    
       const phone = rawPhone;
       button.disabled = true;
       button.innerHTML = `<svg class="animate-spin h-4 w-4 mr-2 inline" viewBox="0 0 24 24">
@@ -232,16 +232,16 @@
                                   d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
                           </svg> Қосылуда...`;
       errorLabel.innerText = "";
-
+    
       try {
         const res = await fetch("/add_kaspi_shop", {
           method: "POST",
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
           body: new URLSearchParams({ login, password, phone })
         });
-
+    
         const data = await res.json();
-
+    
         if (
           data.ok &&
           data.name &&
@@ -249,25 +249,14 @@
           data.password &&
           data.created_at
         ) {
-          // ❌ Бұлай қоспаймыз:
-          // renderStoreCard(data);
-        
-          // ✅ Контейнерді тазалап, база ішіндегілерді қайта жүктейміз:
           document.getElementById("store-email").value = "";
           document.getElementById("store-password").value = "";
           closeModal();
-        
-          document.getElementById("store-list").innerHTML = "";
-          fetch("/get_kaspi_shops?phone=" + encodeURIComponent(phone))
-            .then((res) => res.json())
-            .then((shops) => {
-              shops.forEach((shop) => renderStoreCard(shop));
-            });
-        
+          alert("✅ Магазин қосылды. Қарау үшін бетті жаңартыңыз.");
         } else {
           errorLabel.innerText = "❌ Логин немесе пароль қате.";
         }
-
+    
       } catch (e) {
         console.error(e);
         errorLabel.innerText = "❌ Серверге қосыла алмады.";
@@ -276,6 +265,7 @@
         button.innerText = "Добавить";
       }
     });
+
   </script>
 </body>
 </html>
