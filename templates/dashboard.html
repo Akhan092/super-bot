@@ -249,12 +249,14 @@
           data.password &&
           data.created_at
         ) {
-          // Модалды тазалау
+          // ❌ Бұлай қоспаймыз:
+          // renderStoreCard(data);
+        
+          // ✅ Контейнерді тазалап, база ішіндегілерді қайта жүктейміз:
           document.getElementById("store-email").value = "";
           document.getElementById("store-password").value = "";
           closeModal();
         
-          // Контейнерді тазалап, база ішіндегілерді қайта жүктеу
           document.getElementById("store-list").innerHTML = "";
           fetch("/get_kaspi_shops?phone=" + encodeURIComponent(phone))
             .then((res) => res.json())
@@ -265,8 +267,6 @@
         } else {
           errorLabel.innerText = "❌ Логин немесе пароль қате.";
         }
-
-
 
       } catch (e) {
         console.error(e);
