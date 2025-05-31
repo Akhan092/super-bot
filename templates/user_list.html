@@ -6,31 +6,41 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 min-h-screen px-4 py-10">
-  <div class="bg-white p-6 rounded-xl shadow max-w-4xl w-full mx-auto">
+  <div class="bg-white p-6 rounded-xl shadow max-w-5xl w-full mx-auto">
     <h2 class="text-2xl font-bold mb-6">Тіркелген қолданушылар</h2>
-    <table class="w-full table-auto border border-gray-300">
-      <thead class="bg-gray-200">
-        <tr>
-          <th class="border p-2 text-left">Аты</th>
-          <th class="border p-2 text-left">Тегі</th>
-          <th class="border p-2 text-left">Телефон</th>
-          <th class="border p-2 text-left">Құпиясөз</th>
-          <th class="border p-2 text-left">Тіркелген уақыты</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for user in users %}
-        <tr class="hover:bg-gray-50">
-          <td class="border p-2">{{ user.first_name }}</td>
-          <td class="border p-2">{{ user.last_name }}</td>
-          <td class="border p-2">{{ user.phone }}</td>
-          <td class="border p-2">{{ user.password }}</td>
-          <td class="border p-2">{{ user.created_at.strftime('%Y-%m-%d %H:%M:%S') if user.created_at else '' }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+    
+    {% for user in users %}
+    <div class="mb-6 border border-gray-200 rounded-lg p-4 bg-gray-50">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div><strong>Аты:</strong> {{ user.first_name }}</div>
+        <div><strong>Тегі:</strong> {{ user.last_name }}</div>
+        <div><strong>Телефон:</strong> {{ user.phone }}</div>
+        <div><strong>Құпиясөз:</strong> {{ user.password }}</div>
+        <div><strong>Тіркелген уақыты:</strong> 
+          {{ user.created_at.strftime('%Y-%m-%d %H:%M:%S') if user.created_at else '' }}
+        </div>
+      </div>
+
+      <div class="mt-4">
+        <h3 class="text-lg font-semibold text-gray-700 mb-2">Kaspi Магазиндері:</h3>
+        {% if user.shops %}
+          <ul class="list-disc pl-5 text-sm text-green-800 space-y-1">
+            {% for shop in user.shops %}
+              <li>
+                {{ shop.shop_name }}
+                <span class="text-gray-500">({{ shop.login }})</span>
+                <span class="text-xs text-blue-500">– Активен до 
+                  {{ (shop.created_at + timedelta(days=30)).strftime('%Y-%m-%d %H:%M:%S') }}
+                </span>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="text-sm text-red-500">Бұл қолданушыда магазин тіркелмеген ❌</p>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
   </div>
 </body>
 </html>
-
