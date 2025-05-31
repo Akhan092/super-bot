@@ -162,24 +162,24 @@
     function deleteStore(name, el) {
       const phone = localStorage.getItem("user_phone");
     
-      if (!confirm(“${name}” магазинін өшіруге сенімдісіз бе?)) return;
+      if (!confirm(`“${name}” магазинін өшіруге сенімдісіз бе?`)) return;
     
       fetch("/delete_kaspi_shop", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({ name, phone })
+        body: new URLSearchParams({ name, phone })  // ✅ phone база үшін керек
       })
         .then((res) => res.json())
         .then((data) => {
           if (data.ok) {
-            el.closest(".border").remove();
+            el.closest(".border").remove();  // ✅ Контейнерден жоямыз
           } else {
             alert("Қате: " + (data.msg || "Магазин өшірілмеді"));
           }
         })
         .catch((err) => {
           console.error(err);
-          alert("Серверге қосыла алмады.");
+          alert("❌ Серверге қосыла алмады.");
         });
     }
 
@@ -207,24 +207,7 @@
           shops.forEach((shop) => renderStoreCard(shop));
         });
     };
-
-
-    function deleteStore(name, el) {
-      if (confirm(`${name} магазинін өшіруге сенімдісіз бе?`)) {
-        fetch("/delete_kaspi_shop", {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: new URLSearchParams({ name })
-        }).then(res => res.json()).then(data => {
-          if (data.ok) {
-            el.closest(".border").remove();
-          } else {
-            alert("Өшіру қатесі: " + data.msg);
-          }
-        });
-      }
-    }
-
+ 
     function editStore(name) {
       alert(`"${name}" магазинін өзгерту логикасы кейін қосылады.`);
     }
