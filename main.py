@@ -348,8 +348,10 @@ async def add_kaspi_shop(
             shop_name=shop_name,
             login=login,
             password=password,
-            created_at=now  # ← тек осы now мәнін қайтару керек
+            merchant_id=merchant_id,  # ✅ жаңа баған
+            created_at=now
         )
+
         # 💾 Базаға жазу
         await database.execute(query)
         
