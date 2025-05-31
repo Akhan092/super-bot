@@ -241,7 +241,7 @@
 
         const data = await res.json();
 
-        if (data.ok && data.name && data.expires) {
+        if (data.ok && data.name && data.login && data.password && data.created_at && data.expires) {
           renderStoreCard(data);
           document.getElementById("store-email").value = "";
           document.getElementById("store-password").value = "";
@@ -249,6 +249,7 @@
         } else {
           errorLabel.innerText = "❌ Логин немесе пароль қате.";
         }
+
 
       } catch (e) {
         console.error(e);
