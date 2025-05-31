@@ -324,20 +324,18 @@ async def add_kaspi_shop(
         print("❌ /add_kaspi_shop ішінде қате:", str(e))
         return JSONResponse({"ok": False, "msg": str(e)}, status_code=500)
 
-@app.route("/get_kaspi_shops")
-def get_kaspi_shops():
-    shops = load_shops()
-    return jsonify(shops)
-
 @app.get("/get_kaspi_shops")
 async def get_kaspi_shops(phone: str = Query(...)):
+    # 🔍 Қолданушыны телефон арқылы табу
     query = users.select().where(users.c.phone == phone)
     user = await database.fetch_one(query)
+
     if not user:
         return JSONResponse({"ok": False, "msg": "Қолданушы табылмады"}, status_code=400)
 
     user_id = user["id"]
 
+    # 🔄 Kaspi магазиндерін осы қолданушыға қарай жүктеу
     shop_query = kaspi_shops.select().where(kaspi_shops.c.user_id == user_id).order_by(kaspi_shops.c.created_at.desc())
     result = await database.fetch_all(shop_query)
 
