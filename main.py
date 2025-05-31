@@ -323,3 +323,8 @@ async def add_kaspi_shop(
     except Exception as e:
         print("❌ /add_kaspi_shop ішінде қате:", str(e))
         return JSONResponse({"ok": False, "msg": str(e)}, status_code=500)
+
+@app.route("/get_kaspi_shops")
+def get_kaspi_shops():
+    shops = load_shops()
+    return jsonify(shops)
