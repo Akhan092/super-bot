@@ -22,7 +22,7 @@ kaspi_shops = Table(
     "kaspi_shops",
     metadata,
     Column("id", Integer, primary_key=True),
-    Column("user_id", Integer),  # Қай қолданушы қосқанын сақтау
+    Column("user_id", Integer),
     Column("login", String(100), nullable=False),
     Column("password", String(255), nullable=False),
     Column("shop_name", String(255)),
