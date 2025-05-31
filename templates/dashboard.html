@@ -241,14 +241,30 @@
 
         const data = await res.json();
 
-        if (data.ok && data.name && data.login && data.password && data.created_at && data.expires) {
-          renderStoreCard(data);
+        if (
+          data.ok &&
+          data.name &&
+          data.login &&
+          data.password &&
+          data.created_at
+        ) {
+          // Модалды тазалау
           document.getElementById("store-email").value = "";
           document.getElementById("store-password").value = "";
           closeModal();
+        
+          // Контейнерді тазалап, база ішіндегілерді қайта жүктеу
+          document.getElementById("store-list").innerHTML = "";
+          fetch("/get_kaspi_shops?phone=" + encodeURIComponent(phone))
+            .then((res) => res.json())
+            .then((shops) => {
+              shops.forEach((shop) => renderStoreCard(shop));
+            });
+        
         } else {
           errorLabel.innerText = "❌ Логин немесе пароль қате.";
         }
+
 
 
       } catch (e) {
