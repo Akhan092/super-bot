@@ -3,7 +3,7 @@ from fastapi import FastAPI, Form, Request, Query
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import text
-from datetime import datetime
+from datetime import datetime, timedelta
 import sqlalchemy
 import random
 import requests
