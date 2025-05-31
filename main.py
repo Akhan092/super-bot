@@ -368,6 +368,7 @@ async def add_kaspi_shop(
             "name": shop_name,
             "login": login,
             "password": password,
+            "merchant_id": shop_row["merchant_id"],
             "created_at": shop_row["created_at"].strftime("%Y-%m-%d %H:%M:%S"),
             "expires": (shop_row["created_at"] + timedelta(days=30)).strftime("%Y-%m-%d %H:%M:%S")
         })
