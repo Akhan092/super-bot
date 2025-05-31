@@ -23,8 +23,10 @@ kaspi_shops = Table(
     metadata,
     Column("id", Integer, primary_key=True),
     Column("user_id", Integer),
-    Column("login", String(100), nullable=False),
-    Column("password", String(255), nullable=False),
-    Column("shop_name", String(255)),
-    Column("created_at", DateTime, default=datetime.utcnow)
+    Column("shop_name", String),
+    Column("login", String),
+    Column("password", String),
+    Column("merchant_id", String),  # ✅ ОСЫ ЖОЛДЫ ҚОС
+    Column("created_at", DateTime),
 )
+
