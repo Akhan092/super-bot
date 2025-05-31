@@ -350,7 +350,14 @@ async def add_kaspi_shop(
         await database.execute(query)
 
         print("✅ Магазин базаға қосылды:", shop_name)
-        return JSONResponse({"ok": True, "name": shop_name})
+        return JSONResponse({
+            "ok": True,
+            "name": shop_name,
+            "login": login,
+            "password": password,
+            "created_at": now.strftime("%Y-%m-%d %H:%M:%S"),
+            "expires": (now + timedelta(days=30)).strftime("%Y-%m-%d %H:%M:%S")
+        })
 
     except Exception as e:
         print("❌ /add_kaspi_shop ішінде қате:", str(e))
