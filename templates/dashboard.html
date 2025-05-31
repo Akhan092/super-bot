@@ -166,6 +166,7 @@
     }
 
 
+
     function deleteStore(name, el) {
       const phone = localStorage.getItem("user_phone");
     
@@ -188,18 +189,6 @@
           console.error(err);
           alert("❌ Серверге қосыла алмады.");
         });
-    }
-
-
-      card.innerHTML = `
-        <h3 class="font-bold text-lg mb-1">${store.name}</h3>
-        <p class="text-sm text-green-600 font-medium mb-2">Активен до ${formattedDate}</p>
-        <div class="absolute top-2 right-2 space-x-2 text-sm">
-          <button onclick="editStore('${store.name}')" class="text-blue-600 hover:underline">Өзгерту</button>
-          <button onclick="deleteStore('${store.name}', this)" class="text-red-500 hover:underline">Өшіру</button>
-        </div>
-      `;
-      document.getElementById("store-list").appendChild(card);
     }
 
     window.onload = function () {
