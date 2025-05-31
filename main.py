@@ -10,6 +10,8 @@ import requests
 import uuid
 import os
 import subprocess
+import httpx
+from fastapi import Form, JSONResponse
 
 from database import database, users, metadata, kaspi_shops  # ✅ БІР ЖОЛҒА біріктіріңіз
 
@@ -267,7 +269,7 @@ async def add_kaspi_shop(
         print("🟢 /add_kaspi_shop басталды")
         print("📥 Келген мәліметтер:", login, phone)
 
-        # Дәл келген номермен қолданушы іздейміз
+        # 🔎 Қолданушыны іздеу
         query = users.select().where(users.c.phone == phone)
         user = await database.fetch_one(query)
 
@@ -278,44 +280,32 @@ async def add_kaspi_shop(
         user_id = user["id"]
         print("👤 Қолданушы ID:", user_id)
 
-        # Бұрын тіркелген бе?
+        # 🔁 Бұрын тіркелген бе?
         check_query = kaspi_shops.select().where(kaspi_shops.c.login == login)
         exists = await database.fetch_one(check_query)
         if exists:
             print("⚠️ Kaspi логин бұрын тіркелген")
             return JSONResponse({"ok": False, "msg": "❌ Бұл Kaspi логин бұрын тіркелген"})
 
-        # 📝 Уақытша файл жасау
-        cred_file = f"temp_{uuid.uuid4().hex}.txt"
-        with open(cred_file, "w", encoding="utf-8") as f:
-            f.write(f"{login}\n{password}")
+        # 🌐 Сыртқы серверге сұраныс (Kaspi ботқа)
+        print("🌐 Kaspi ботқа сұраныс жіберілуде...")
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            response = await client.post("http://45.136.57.219:5000/check_kaspi", data={
+                "login": login,
+                "password": password
+            })
 
-        print("📤 get_shop_name.py шақырылуда...")
+        if response.status_code != 200:
+            print("❌ Kaspi бот жауап бермеді")
+            return JSONResponse({"ok": False, "msg": "Kaspi сервері жауап қатпады"}, status_code=500)
 
-        # Скриптті орындау
-        result = subprocess.run(
-            ["python", "get_shop_name.py", cred_file],
-            capture_output=True,
-            text=True,
-            timeout=40
-        )
-        os.remove(cred_file)
+        data = response.json()
+        if not data.get("ok"):
+            print("❌ Kaspi бот қатесі:", data.get("msg"))
+            return JSONResponse({"ok": False, "msg": data.get("msg", "Kaspi жауап қатесі")}, status_code=400)
 
-        print("📥 stdout:", result.stdout)
-        print("📥 stderr:", result.stderr)
-
-        if result.returncode != 0:
-            return JSONResponse({"ok": False, "msg": "Kaspi жүйесіне кіру мүмкін болмады"})
-
-        # 🏬 Магазин атауын табу
-        shop_name = None
-        for line in result.stdout.splitlines():
-            if "🏬 Магазин атауы:" in line:
-                shop_name = line.split(":", 1)[1].strip()
-                break
-
-        if not shop_name:
-            return JSONResponse({"ok": False, "msg": "Магазин атауы табылмады"}, status_code=500)
+        shop_name = data["shop_name"]
+        print("✅ Kaspi боттан магазин атауы алынды:", shop_name)
 
         # 💾 Базаға жазу
         query = kaspi_shops.insert().values(
@@ -327,7 +317,7 @@ async def add_kaspi_shop(
         )
         await database.execute(query)
 
-        print("✅ Магазин қосылды:", shop_name)
+        print("✅ Магазин базаға қосылды:", shop_name)
         return JSONResponse({"ok": True, "name": shop_name})
 
     except Exception as e:
