@@ -338,7 +338,9 @@ async def add_kaspi_shop(
 
         shop_name = data["shop_name"]
         print("✅ Kaspi боттан магазин атауы алынды:", shop_name)
-
+        
+        now = datetime.utcnow()
+        
         # 💾 Базаға жазу
         query = kaspi_shops.insert().values(
             user_id=user_id,
