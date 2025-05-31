@@ -337,7 +337,7 @@ async def add_kaspi_shop(
             return JSONResponse({"ok": False, "msg": data.get("msg", "Kaspi жауап қатесі")}, status_code=400)
 
         shop_name = data["shop_name"]
-        merchant_id = data.get("merchant_id", "")  # Егер жоқ болса, бос қылады
+        merchant_id = data["merchant_id"]  # Егер жоқ болса, бос қылады
         print("✅ Kaspi боттан магазин атауы алынды:", shop_name)
         
         now = datetime.utcnow()
@@ -368,7 +368,7 @@ async def add_kaspi_shop(
             "name": shop_name,
             "login": login,
             "password": password,
-            "merchant_id": shop_row["merchant_id"],
+            "merchant_id": merchant_id,
             "created_at": shop_row["created_at"].strftime("%Y-%m-%d %H:%M:%S"),
             "expires": (shop_row["created_at"] + timedelta(days=30)).strftime("%Y-%m-%d %H:%M:%S")
         })
