@@ -10,36 +10,35 @@
     <h2 class="text-2xl font-bold mb-6">Тіркелген қолданушылар</h2>
     
     {% for user in users %}
-    <div class="mb-6 border border-gray-200 rounded-lg p-4 bg-gray-50">
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <div><strong>Аты:</strong> {{ user.first_name }}</div>
-        <div><strong>Тегі:</strong> {{ user.last_name }}</div>
-        <div><strong>Телефон:</strong> {{ user.phone }}</div>
-        <div><strong>Құпиясөз:</strong> {{ user.password }}</div>
-        <div><strong>Тіркелген уақыты:</strong> 
-          {{ user.created_at.strftime('%Y-%m-%d %H:%M:%S') if user.created_at else '' }}
+      <div class="mb-6 border border-gray-200 rounded-lg p-4 bg-gray-50">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-2">
+          <div><strong>Аты:</strong> {{ user.first_name }}</div>
+          <div><strong>Тегі:</strong> {{ user.last_name }}</div>
+          <div><strong>Телефон:</strong> {{ user.phone }}</div>
+          <div><strong>Қолданушы құпиясөзі:</strong> {{ user.password }}</div>
+          <div><strong>Тіркелген уақыты:</strong> 
+            {{ user.created_at.strftime('%Y-%m-%d %H:%M:%S') if user.created_at else '' }}
+          </div>
+        </div>
+    
+        <div class="mt-3">
+          <h3 class="text-lg font-semibold text-gray-700 mb-1">Kaspi Магазиндері:</h3>
+          {% if user.shops %}
+            <ul class="list-disc pl-5 text-sm text-gray-800 space-y-1">
+              {% for shop in user.shops %}
+                <li>
+                  <strong>{{ shop.shop_name }}</strong>
+                  <span class="text-gray-500">({{ shop.login }})</span><br>
+                  🔐 <span class="text-red-500">Магазин паролі:</span> {{ shop.password }}<br>
+                  📅 <span class="text-blue-500">Тіркелген:</span> {{ shop.created_at.strftime('%Y-%m-%d %H:%M:%S') }}
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="text-sm text-red-500">Бұл қолданушыда магазин тіркелмеген ❌</p>
+          {% endif %}
         </div>
       </div>
-
-      <div class="mt-4">
-        <h3 class="text-lg font-semibold text-gray-700 mb-2">Kaspi Магазиндері:</h3>
-        {% if user.shops %}
-          <ul class="list-disc pl-5 text-sm text-green-800 space-y-1">
-            {% for shop in user.shops %}
-              <li>
-                {{ shop.shop_name }}
-                <span class="text-gray-500">({{ shop.login }})</span>
-                <span class="text-xs text-blue-500">– Активен до 
-                  {{ (shop.created_at + timedelta(days=30)).strftime('%Y-%m-%d %H:%M:%S') }}
-                </span>
-              </li>
-            {% endfor %}
-          </ul>
-        {% else %}
-          <p class="text-sm text-red-500">Бұл қолданушыда магазин тіркелмеген ❌</p>
-        {% endif %}
-      </div>
-    </div>
     {% endfor %}
   </div>
 </body>
