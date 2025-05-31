@@ -205,10 +205,14 @@ async def view_all_users(request: Request, admin_code: str):
             "shops": [dict(s) for s in shops]
         })
 
+    from datetime import timedelta  # қосылған болу керек
+
     return templates.TemplateResponse("user_list.html", {
         "request": request,
-        "users": enriched_users
+        "users": enriched_users,
+        "timedelta": timedelta  # МІНЕ ОСЫ ЖЕРІ МАҢЫЗДЫ
     })
+
 
 # ✅ created_at бағанын қосу (бір реттік)
 @app.get("/add-created-at")
