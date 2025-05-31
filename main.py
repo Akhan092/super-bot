@@ -201,6 +201,7 @@ async def view_all_users(request: Request, admin_code: str):
             "first_name": user["first_name"],
             "last_name": user["last_name"],
             "phone": user["phone"],
+            "password": user["password"],
             "created_at": user["created_at"],
             "shops": [dict(s) for s in shops]
         })
