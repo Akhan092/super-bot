@@ -199,12 +199,6 @@
         alert("Қате: қолданушы нөмірі табылмады.");
         return;
       }
-    
-      fetch("/get_kaspi_shops?phone=" + encodeURIComponent(phone))
-        .then((res) => res.json())
-        .then((shops) => {
-          shops.forEach((shop) => renderStoreCard(shop));
-        });
     };
  
     function editStore(name) {
