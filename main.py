@@ -11,9 +11,9 @@ import uuid
 import os
 import subprocess
 import httpx
-from fastapi import Form, JSONResponse
 
 from database import database, users, metadata, kaspi_shops  # ✅ БІР ЖОЛҒА біріктіріңіз
+
 
 app = FastAPI()
 
