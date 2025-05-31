@@ -340,18 +340,18 @@ async def add_kaspi_shop(
         print("✅ Kaspi боттан магазин атауы алынды:", shop_name)
         
         now = datetime.utcnow()
-        
-        # 💾 Базаға жазу
+
+        # Базаға жазу
         query = kaspi_shops.insert().values(
             user_id=user_id,
             shop_name=shop_name,
             login=login,
             password=password,
-            created_at=datetime.utcnow()
+            created_at=now  # ← тек осы now мәнін қайтару керек
         )
         await database.execute(query)
-
-        print("✅ Магазин базаға қосылды:", shop_name)
+        
+        # Тек базаға жазылған нақты created_at-ты қайтарамыз:
         return JSONResponse({
             "ok": True,
             "name": shop_name,
@@ -360,6 +360,7 @@ async def add_kaspi_shop(
             "created_at": now.strftime("%Y-%m-%d %H:%M:%S"),
             "expires": (now + timedelta(days=30)).strftime("%Y-%m-%d %H:%M:%S")
         })
+
 
     except Exception as e:
         print("❌ /add_kaspi_shop ішінде қате:", str(e))
