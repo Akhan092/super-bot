@@ -349,18 +349,25 @@ async def add_kaspi_shop(
             password=password,
             created_at=now  # ← тек осы now мәнін қайтару керек
         )
+        # 💾 Базаға жазу
         await database.execute(query)
         
-        # Тек базаға жазылған нақты created_at-ты қайтарамыз:
+        # Нақты created_at мәнін база ішінен аламыз
+        select_query = kaspi_shops.select().where(
+            (kaspi_shops.c.user_id == user_id) &
+            (kaspi_shops.c.login == login)
+        ).order_by(kaspi_shops.c.created_at.desc())
+        
+        shop_row = await database.fetch_one(select_query)
+        
         return JSONResponse({
             "ok": True,
             "name": shop_name,
             "login": login,
             "password": password,
-            "created_at": now.strftime("%Y-%m-%d %H:%M:%S"),
-            "expires": (now + timedelta(days=30)).strftime("%Y-%m-%d %H:%M:%S")
+            "created_at": shop_row["created_at"].strftime("%Y-%m-%d %H:%M:%S"),
+            "expires": (shop_row["created_at"] + timedelta(days=30)).strftime("%Y-%m-%d %H:%M:%S")
         })
-
 
     except Exception as e:
         print("❌ /add_kaspi_shop ішінде қате:", str(e))
