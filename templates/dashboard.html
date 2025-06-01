@@ -22,12 +22,12 @@
 	    </div>
 	  </div>
 		
-	  <!-- 📱 Мобильді меню (гамбургер басқанда ашылады) -->
-	  <div id="mobile-menu" class="absolute top-[64px] left-0 right-0 bg-white border-t border-gray-300 shadow-md hidden z-40 sm:hidden px-4 py-4">
-	    <ul class="space-y-4">
-	      <li><a href="#" class="text-blue-600 font-medium">📁 Мои магазины</a></li>
-	    </ul>
-	  </div>
+	  <!-- 📱 Мобильді меню -->
+	<div id="mobile-menu" class="absolute top-[64px] left-0 right-0 bg-white border-t border-gray-300 shadow-md hidden z-40 sm:hidden px-4 py-4">
+	  <ul class="space-y-4">
+	    <li><a href="#" class="text-blue-600 font-medium">📁 Мои магазины</a></li>
+	  </ul>
+	</div>
 
 		
 	  <!-- Шығу батырмасы -->
@@ -454,18 +454,18 @@
 	    el.innerHTML = expText;
 	  });
 	  function toggleMobileMenu() {
-	    const menu = document.getElementById("mobile-menu");
-	    const isVisible = !menu.classList.contains("hidden");
-	
-	    // Барлық басқа менюді жасыру (қаласаңыз)
-	    document.querySelectorAll("#mobile-menu").forEach(m => m.classList.add("hidden"));
-	
-	    if (!isVisible) {
-	      menu.classList.remove("hidden");
-	    } else {
-	      menu.classList.add("hidden");
-	    }
-	  }
+		  const menu = document.getElementById("mobile-menu");
+		
+		  const isOpen = !menu.classList.contains("hidden");
+		
+		  // Барлық менюді жабу (егер бірнеше болса)
+		  document.querySelectorAll("#mobile-menu").forEach(el => el.classList.add("hidden"));
+		
+		  // Егер жабық болса – аш
+		  if (!isOpen) {
+		    menu.classList.remove("hidden");
+		  }
+		}
 
   </script>
 
