@@ -134,6 +134,11 @@
       // 🔁 "Иә / Жоқ" батырмалары
       document.getElementById("confirm-yes").innerText = (lang === "kk") ? "Иә" : "Да";
       document.getElementById("confirm-no").innerText = (lang === "kk") ? "Жоқ" : "Нет";
+      const deleteButtons = document.querySelectorAll("button[id^='delete-button']");
+      deleteButtons.forEach(btn => {
+        btn.innerText = (lang === "kk") ? "Өшіру" : "Удалить";
+      });
+
 
       // 🔁 Сұрақ мәтіні
      document.getElementById("confirm-question").innerHTML =
