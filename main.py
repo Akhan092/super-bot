@@ -313,14 +313,7 @@ async def add_kaspi_shop(
 
         user_id = user["id"]
         print("👤 Қолданушы ID:", user_id)
-
-        # 🔁 Бұрын тіркелген бе?
-        check_query = kaspi_shops.select().where(kaspi_shops.c.merchant_id == merchant_id)
-        exists = await database.fetch_one(check_query)
-        if exists:
-            print("⚠️ Kaspi логин бұрын тіркелген")
-            return JSONResponse({"ok": False, "msg": "❌ Бұл Kaspi логин бұрын тіркелген"})
-
+      
         # 🌐 Сыртқы серверге сұраныс (Kaspi ботқа)
         print("🌐 Kaspi ботқа сұраныс жіберілуде...")
         async with httpx.AsyncClient(timeout=60.0) as client:
@@ -343,7 +336,14 @@ async def add_kaspi_shop(
         print("✅ Kaspi боттан магазин атауы алынды:", shop_name)
         
         now = datetime.utcnow()
-
+ 
+        # 🔁 Бұрын тіркелген бе?
+        check_query = kaspi_shops.select().where(kaspi_shops.c.merchant_id == merchant_id)
+        exists = await database.fetch_one(check_query)
+        if exists:
+            print("⚠️ Kaspi логин бұрын тіркелген")
+            return JSONResponse({"ok": False, "msg": "❌ Бұл Kaspi логин бұрын тіркелген"})
+            
         # Базаға жазу
         query = kaspi_shops.insert().values(
             user_id=user_id,
