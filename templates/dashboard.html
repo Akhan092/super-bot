@@ -126,20 +126,40 @@
     };
 
     function setLanguage(lang) {
-      const t = texts[lang];
-      document.getElementById("logout-button").innerText = t.logout;
-      document.getElementById("store-title").innerText = t.store_title;
-      document.getElementById("add-button").innerText = t.add_button;
-      document.getElementById("modal-title").innerText = t.modal_title;
-      document.getElementById("email-label").innerText = t.modal_email_label;
-      document.getElementById("modal-add-button").innerText = t.modal_add;
-      // 🔁 "Иә / Жоқ" батырмалары
-      document.getElementById("confirm-yes").innerText = (lang === "kk") ? "Иә" : "Да";
-      document.getElementById("confirm-no").innerText = (lang === "kk") ? "Жоқ" : "Нет";
-      const deleteButtons = document.querySelectorAll("button[id^='delete-button']");
-      deleteButtons.forEach(btn => {
-        btn.innerText = (lang === "kk") ? "Өшіру" : "Удалить";
-      });
+	  const t = texts[lang];
+	
+	  document.getElementById("logout-button").innerText = t.logout;
+	  document.getElementById("store-title").innerText = t.store_title;
+	  document.getElementById("add-button").innerText = t.add_button;
+	  document.getElementById("modal-title").innerText = t.modal_title;
+	  document.getElementById("email-label").innerText = t.modal_email_label;
+	  document.getElementById("modal-add-button").innerText = t.modal_add;
+	
+	  // 🔁 "Иә / Да" / "Жоқ / Нет" батырмалары
+	  document.getElementById("confirm-yes").innerText = (lang === "kk") ? "Иә" : "Да";
+	  document.getElementById("confirm-no").innerText = (lang === "kk") ? "Жоқ" : "Нет";
+	
+	  // 🔁 Өшіру батырмаларын өзгерту
+	  const deleteButtons = document.querySelectorAll("button[id^='delete-button']");
+	  deleteButtons.forEach(btn => {
+	    btn.innerText = (lang === "kk") ? "Өшіру" : "Удалить";
+	  });
+	
+	  // 🔁 Модал сұрағы
+	  document.getElementById("confirm-question").innerHTML =
+	    (lang === "kk")
+	      ? `<span id="confirm-shop-name"></span> магазинін өшіруге сенімдісіз бе?`
+	      : `Вы уверены, что хотите удалить магазин <span id="confirm-shop-name"></span>?`;
+	
+	  // 🔁 Сәлем
+	  const name = document.getElementById("greeting").getAttribute("data-name");
+	  document.getElementById("greeting").innerText = t.greeting + name;
+	
+	  // 🌐 Тілді сақтау (браузер жады)
+	  localStorage.setItem("lang", lang);
+	  window.currentLang = lang; // ✅ Осы жол керек
+	}
+		
 
 
       // 🔁 Сұрақ мәтіні
