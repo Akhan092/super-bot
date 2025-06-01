@@ -2,89 +2,103 @@
 <html lang="kk">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen px-4">
+<body class="bg-gray-100 min-h-screen flex flex-col">
 
-  <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-md max-w-md w-full text-base sm:text-lg mx-auto space-y-6">
+  <!-- 🔝 Тіл мен шығу -->
+	<div class="bg-white shadow p-4 flex justify-between items-center text-sm sm:text-base px-4 sm:px-8">
+	  <div class="space-x-2">
+		<button onclick="setLanguage('kk')" class="text-blue-600 hover:underline">KAZ</button>
+		<span>/</span>
+		<button onclick="setLanguage('ru')" class="text-blue-600 hover:underline">RU</button>
+	  </div>
+	  <a id="logout-button" href="/" class="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600">
+		Шығу
+	  </a>
+	</div>
 
-    <!-- 🔝 Тіл мен шығу -->
-    <div class="flex justify-between items-center">
-      <div class="text-sm space-x-2">
-        <button onclick="setLanguage('kk')" class="text-blue-600 hover:underline">KAZ</button>
-        <span class="text-gray-400">/</span>
-        <button onclick="setLanguage('ru')" class="text-blue-600 hover:underline">RU</button>
+	<!-- 👋 Сәлем -->
+	<div class="mt-10 px-4 sm:px-0 flex justify-center">
+	  <h1 id="greeting" data-name="{{ name }}"
+		  class="text-3xl sm:text-4xl font-bold text-gray-800 text-center">
+		Сәлем, {{ name }}
+	  </h1>
+	</div>
+
+	<!-- 📦 Магазин тізімі -->
+	<div class="mt-8 px-4 sm:px-6 flex justify-center">
+	  <div class="bg-white shadow rounded-xl w-full max-w-6xl p-4 sm:p-6">
+		
+		<!-- 🔝 Тақырып пен кнопка -->
+		<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 space-y-2 sm:space-y-0">
+		  <h2 id="store-title" class="text-lg sm:text-xl font-semibold text-gray-800">
+			Kaspi Магазиндеріңіз
+		  </h2>
+		  <button onclick="openModal()" id="add-button"
+				  class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm">
+			+ Магазин қосу
+		  </button>
+		</div>
+
+		<!-- 🧩 Магазин карточкалары осы контейнер ішінде -->
+		<div id="store-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+		  {% for shop in shops %}
+		  <div class="border rounded-xl shadow p-4 bg-white relative">
+			<h3 class="text-lg font-bold mb-1">{{ shop.shop_name }}</h3>
+			<p class="text-xs text-gray-500">ID: {{ shop.merchant_id }}</p>
+			<p class="text-xs text-blue-600 mt-1">
+			  🕒 Активен до: 
+			  {{ (shop.created_at + timedelta(hours=72)).strftime('%Y-%m-%d %H:%M:%S') }}<br>
+			  ⏳ Осталось: 
+			  {{ ((shop.created_at + timedelta(hours=72)) - datetime.utcnow()).days }} күн
+			</p>
+			<button onclick="deleteStore('{{ shop.shop_name }}', this)"
+					class="absolute top-2 right-2 text-sm text-red-500 hover:underline">
+			  Өшіру
+			</button>
+		  </div>
+		  {% endfor %}
+		</div>
+
+	  </div>
+	</div>
+
+
+
+  <!-- 🪟 Модал -->
+  <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-md relative">
+      <button onclick="closeModal()" class="absolute top-2 right-3 text-gray-400 hover:text-black text-xl">&times;</button>
+      <h2 id="modal-title" class="text-xl font-bold text-center mb-4">Добавление магазина</h2>
+
+      <div class="flex justify-center items-center space-x-2 mb-4">
+        <img src="https://upload.wikimedia.org/wikipedia/ru/a/aa/Logo_of_Kaspi_bank.png" alt="Kaspi"
+             class="w-10 h-10 object-contain">
+        <span class="text-lg font-semibold text-gray-800">Kaspi</span>
       </div>
-      <a id="logout-button" href="/" class="text-sm bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600">Шығу</a>
-    </div>
 
-    <!-- 👋 Сәлемдесу -->
-    <h1 id="greeting" data-name="{{ name }}" class="text-2xl font-bold text-center text-gray-800">
-      Сәлем, {{ name }}
-    </h1>
+      <p id="email-label" class="text-center text-sm text-gray-500 mb-2">по email</p>
+      <input id="store-email" type="email" placeholder="Email"
+             class="border p-2 rounded w-full mb-3" />
 
-    <!-- 📦 Магазин тізімі -->
-    <div>
-      <div class="flex justify-between items-center mb-4">
-        <h2 id="store-title" class="text-lg font-semibold text-gray-800">Kaspi Магазиндеріңіз</h2>
-        <button onclick="openModal()" id="add-button"
-                class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-sm">
-          + Магазин қосу
+      <div class="relative mb-1">
+        <input id="store-password" type="password" placeholder="Пароль"
+               class="border p-2 rounded w-full pr-10" />
+        <button type="button" onclick="togglePassword()" class="absolute inset-y-0 right-2 flex items-center text-gray-500">
+          👁️
         </button>
       </div>
 
-      <div id="store-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {% for shop in shops %}
-        <div class="border rounded-xl shadow p-4 bg-white relative">
-          <h3 class="text-lg font-bold mb-1">{{ shop.shop_name }}</h3>
-          <p class="text-xs text-gray-500">ID: {{ shop.merchant_id }}</p>
-          <p class="text-xs text-blue-600 mt-1">
-            🕒 Активен до: {{ (shop.created_at + timedelta(hours=72)).strftime('%Y-%m-%d %H:%M:%S') }}<br>
-            ⏳ Осталось: {{ ((shop.created_at + timedelta(hours=72)) - datetime.utcnow()).days }} күн
-          </p>
-          <button onclick="deleteStore('{{ shop.shop_name }}', this)"
-                  class="absolute top-2 right-2 text-sm text-red-500 hover:underline">
-            Өшіру
-          </button>
-        </div>
-        {% endfor %}
-      </div>
+      <p id="store-error" class="text-sm text-red-600 mt-1 mb-3"></p>
+
+      <button id="modal-add-button"
+              class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 text-sm">
+        Добавить
+      </button>
     </div>
   </div>
-
-
-    <!-- 🔐 Модал (қосымша магазин) -->
-    <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-      <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-sm relative">
-        <button onclick="closeModal()" class="absolute top-2 right-3 text-gray-400 hover:text-black text-xl">&times;</button>
-        <h2 id="modal-title" class="text-xl font-bold text-center mb-4">Магазин қосу</h2>
-  
-        <div class="flex justify-center items-center space-x-2 mb-4">
-          <img src="https://upload.wikimedia.org/wikipedia/ru/a/aa/Logo_of_Kaspi_bank.png" alt="Kaspi"
-               class="w-10 h-10 object-contain">
-          <span class="text-lg font-semibold text-gray-800">Kaspi</span>
-        </div>
-  
-        <p id="email-label" class="text-center text-sm text-gray-500 mb-2">email арқылы</p>
-        <input id="store-email" type="email" placeholder="Email"
-               class="border p-2 rounded w-full mb-3" />
-  
-        <div class="relative mb-3">
-          <input id="store-password" type="password" placeholder="Пароль"
-                 class="border p-2 rounded w-full pr-10" />
-          <button type="button" onclick="togglePassword()" class="absolute inset-y-0 right-2 flex items-center text-gray-500">👁️</button>
-        </div>
-  
-        <p id="store-error" class="text-sm text-red-600 mt-1 mb-3"></p>
-  
-        <button id="modal-add-button"
-                class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 text-sm">
-          Қосу
-        </button>
-      </div>
-    </div>
 
   <!-- ✅ JavaScript -->
   <script>
