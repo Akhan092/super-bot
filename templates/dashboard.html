@@ -458,18 +458,18 @@
 	    el.innerHTML = expText;
 	  });
 	  function toggleMobileMenu() {
-		  const menu = document.getElementById("mobile-menu");
-		
-		  const isOpen = !menu.classList.contains("hidden");
-		
-		  // Барлық менюді жабу (егер бірнеше болса)
-		  document.querySelectorAll("#mobile-menu").forEach(el => el.classList.add("hidden"));
-		
-		  // Егер жабық болса – аш
-		  if (!isOpen) {
-		    menu.classList.remove("hidden");
-		  }
-		}
+	  const menu = document.getElementById("mobile-menu");
+	  const overlay = document.getElementById("mobile-overlay");
+	  const isOpen = !menu.classList.contains("hidden");
+	
+	  if (isOpen) {
+	    menu.classList.add("hidden");
+	    overlay.classList.add("hidden");
+	  } else {
+	    menu.classList.remove("hidden");
+	    overlay.classList.remove("hidden");
+	  }
+	}
 
   </script>
 
