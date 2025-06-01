@@ -170,6 +170,21 @@
       localStorage.setItem("lang", lang);
       document.cookie = `lang=${lang}; path=/`;
 
+      // 🔁 expires-section жаңарту (Активен до, Осталось)
+      const now = new Date();
+      document.querySelectorAll(".expires-section").forEach(el => {
+          const createdAt = new Date(el.dataset.created);
+	  const expiresAt = new Date(createdAt.getTime() + 72 * 60 * 60 * 1000);
+	  const daysLeft = Math.max(0, Math.floor((expiresAt - now) / (1000 * 60 * 60 * 24)));
+	
+	  const dateFormatted = expiresAt.toLocaleString(lang === "kk" ? "kk-KZ" : "ru-RU", {
+	    day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit"
+	  });
+	
+	  const expText = `${texts[lang].expires_label} ${dateFormatted}<br>${texts[lang].left_label} ${daysLeft} ${texts[lang].days_unit}`;
+	  el.innerHTML = expText;
+      });
+
     }
 
     function openModal() {
