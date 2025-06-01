@@ -242,59 +242,69 @@
     }
 
     document.getElementById("modal-add-button").addEventListener("click", async () => {
-      const login = document.getElementById("store-email").value.trim();
-      const password = document.getElementById("store-password").value.trim();
-      const errorLabel = document.getElementById("store-error");
-      const button = document.getElementById("modal-add-button");
-      const rawPhone = localStorage.getItem("user_phone");
-    
-      if (!login || !password || !rawPhone) {
-        errorLabel.innerText = "⚠️ Барлық өрістерді толтырыңыз.";
-        return;
-      }
-    
-      const phone = rawPhone;
-      button.disabled = true;
-      button.innerHTML = `<svg class="animate-spin h-4 w-4 mr-2 inline" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10"
-                                    stroke="currentColor" stroke-width="4" fill="none"></circle>
-                            <path class="opacity-75" fill="currentColor"
-                                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
-                          </svg> Қосылуда...`;
-      errorLabel.innerText = "";
-    
-      try {
-        const res = await fetch("/add_kaspi_shop", {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: new URLSearchParams({ login, password, phone })
-        });
-    
-        const data = await res.json();
-    
-        if (
-          data.ok &&
-          data.name &&
-          data.login &&
-          data.password &&
-          data.created_at
-        ) {
-          document.getElementById("store-email").value = "";
-          document.getElementById("store-password").value = "";
-          closeModal();
-          window.location.reload();
-        } else {
-          errorLabel.innerText = "❌ Логин немесе пароль қате.";
-        }
-    
-      } catch (e) {
-        console.error(e);
-        errorLabel.innerText = "❌ Серверге қосыла алмады.";
-      } finally {
-        button.disabled = false;
-        button.innerText = "Добавить";
-      }
-    });
+	  const login = document.getElementById("store-email").value.trim();
+	  const password = document.getElementById("store-password").value.trim();
+	  const errorLabel = document.getElementById("store-error");
+	  const button = document.getElementById("modal-add-button");
+	  const rawPhone = localStorage.getItem("user_phone");
+	
+	  if (!login || !password || !rawPhone) {
+	    errorLabel.innerText = "⚠️ Барлық өрістерді толтырыңыз.";
+	    return;
+	  }
+	
+	  const phone = rawPhone;
+	  button.disabled = true;
+	  button.innerHTML = `<svg class="animate-spin h-4 w-4 mr-2 inline" viewBox="0 0 24 24">
+	                        <circle class="opacity-25" cx="12" cy="12" r="10"
+	                                stroke="currentColor" stroke-width="4" fill="none"></circle>
+	                        <path class="opacity-75" fill="currentColor"
+	                              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+	                      </svg> Қосылуда...`;
+	  errorLabel.innerText = "";
+	
+	  try {
+	    const res = await fetch("/add_kaspi_shop", {
+	      method: "POST",
+	      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+	      body: new URLSearchParams({ login, password, phone })
+	    });
+	
+	    const data = await res.json();
+	
+	    if (
+	      data.ok &&
+	      data.name &&
+	      data.login &&
+	      data.password &&
+	      data.created_at
+	    ) {
+	      document.getElementById("store-email").value = "";
+	      document.getElementById("store-password").value = "";
+	      closeModal();
+	      window.location.reload();
+	    } else {
+	      // ❗ нақты қай қате екенін анықтап шығару
+	      if (data.msg && data.msg.includes("бұрын тіркелген")) {
+	        errorLabel.innerText = data.msg; // "⚠️ Бұл Kaspi магазин бұрын тіркелген"
+	      } else if (data.msg && data.msg.includes("Логин") || data.msg.includes("пароль")) {
+	        errorLabel.innerText = "❌ Логин немесе пароль қате.";
+	      } else if (data.msg) {
+	        errorLabel.innerText = "❌ " + data.msg;
+	      } else {
+	        errorLabel.innerText = "❌ Белгісіз қате.";
+	      }
+	    }
+	
+	  } catch (e) {
+	    console.error(e);
+	    errorLabel.innerText = "❌ Серверге қосыла алмады.";
+	  } finally {
+	    button.disabled = false;
+	    button.innerText = "Добавить";
+	  }
+	});
+
 
 	function deleteStore(name, el) {
 	    deleteShopName = name;
