@@ -47,18 +47,16 @@
 		  <div class="border rounded-xl shadow p-4 bg-white relative">
 			<h3 class="text-lg font-bold mb-1">{{ shop.shop_name }}</h3>
 			<p class="text-xs text-gray-500">ID: {{ shop.merchant_id }}</p>
+			{% set lang = request.cookies.get("lang") or "kk" %}
+			{% set expires = shop.created_at + timedelta(hours=72) %}
+			{% set days_left = ((shop.created_at + timedelta(hours=72)) - datetime.utcnow()).days %}
 			<p class="text-xs text-blue-600 mt-1">
-			  🕒 Активен до: 
-			  {% set lang = request.cookies.get("lang") or "kk" %}
-			  {% set expires = shop.created_at + timedelta(hours=72) %}
-			  {% if lang == "kk" %}
-			    {{ expires.strftime('%d.%m.%Y, %H:%M') }}
-			  {% else %}
-			    {{ expires.strftime('%d.%m.%Y, %H:%M') }}
-			  {% endif %}
-			  ⏳ Осталось: 
-			  {{ ((shop.created_at + timedelta(hours=72)) - datetime.utcnow()).days }} күн
+			  🕒 {% if lang == "kk" %}Активтілік мерзімі:{% else %}Активен до:{% endif %}
+			  {{ expires.strftime('%d.%m.%Y, %H:%M') }}<br>
+			  ⏳ {% if lang == "kk" %}Қалды:{% else %}Осталось:{% endif %}
+			  {{ days_left }} {% if lang == "kk" %}күн{% else %}дней{% endif %}
 			</p>
+
 			<button id="delete-button-{{ loop.index }}"
 		               onclick="deleteStore('{{ shop.shop_name }}', this)"
 		               class="absolute top-2 right-2 text-sm text-red-500 hover:underline">
