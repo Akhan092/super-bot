@@ -165,6 +165,8 @@
       document.getElementById("greeting").innerText = t.greeting + name;
 
       localStorage.setItem("lang", lang);
+      document.cookie = `lang=${lang}; path=/`;
+
     }
 
     function openModal() {
