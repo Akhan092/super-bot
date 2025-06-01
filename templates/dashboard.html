@@ -203,12 +203,20 @@
 
 
     window.onload = function () {
-      const phone = localStorage.getItem("user_phone");
-      if (!phone) {
-        alert("Қате: қолданушы нөмірі табылмады.");
-        return;
-      }
-    };
+	  const phone = localStorage.getItem("user_phone");
+	  if (!phone) {
+	    alert("Қате: қолданушы нөмірі табылмады.");
+	    return;
+	  }
+	
+	  // 🔤 Тілді анықтау
+	  const savedLang = localStorage.getItem("lang");
+	  const browserLang = navigator.language.startsWith("ru") ? "ru" : "kk";
+	  const lang = savedLang || browserLang;
+	
+	  setLanguage(lang); // 🟢 Мәтіндерді дұрыс тілде көрсету
+	};
+
  
     function editStore(name) {
       alert(`"${name}" магазинін өзгерту логикасы кейін қосылады.`);
