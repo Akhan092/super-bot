@@ -287,6 +287,49 @@
       }
     });
 
+	function deleteStore(name, el) {
+	    deleteShopName = name;
+	    deleteShopElement = el;
+	
+	    console.log("deleteStore шақырылды:", name);
+	
+	    document.getElementById("confirm-shop-name").innerText = `“${name}”`;
+	    document.getElementById("confirm-modal").classList.remove("hidden");
+	  }
+	
+	  function confirmDelete() {
+	    const phone = localStorage.getItem("user_phone");
+	
+	    fetch("/delete_kaspi_shop", {
+	      method: "POST",
+	      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+	      body: new URLSearchParams({ name: deleteShopName, phone })
+	    })
+	      .then(res => res.json())
+	      .then(data => {
+	        if (data.ok) {
+	          deleteShopElement.closest(".border").remove();
+	        } else {
+	          alert("Қате: " + (data.msg || "Магазин өшірілмеді"));
+	        }
+	      })
+	      .catch(err => {
+	        console.error(err);
+	        alert("❌ Серверге қосыла алмады.");
+	      })
+	      .finally(() => {
+	        document.getElementById("confirm-modal").classList.add("hidden");
+	        deleteShopName = "";
+	        deleteShopElement = null;
+	      });
+	  }
+	
+	  function cancelDelete() {
+	    document.getElementById("confirm-modal").classList.add("hidden");
+	    deleteShopName = "";
+	    deleteShopElement = null;
+	  }
+
   </script>
 
 <!-- 🗑️ Магазин өшіруді растау модалы -->
