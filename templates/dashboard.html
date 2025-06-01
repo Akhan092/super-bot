@@ -35,28 +35,29 @@
 	</div>	
 
 
-	<!-- ✅ Сол жақ мәзір -->
-	<aside class="fixed top-16 left-0 w-1/6 h-full bg-white shadow-md px-4 py-6 z-40">
-	    <h2 class="text-lg font-semibold mb-4">📁 Меню</h2>
-	    <ul class="space-y-2 text-sm">
-	      <li><a href="#" class="text-blue-600 font-medium">Мои магазины</a></li>
-	    </ul>
-	  </aside>
+	<!-- ✅ Сол жақ мәзір (тек sm және одан үлкен құрылғыларда ғана көрінеді) -->
+	<aside class="hidden sm:block fixed top-16 left-0 w-1/6 h-full bg-white shadow-md px-4 py-6 z-40">
+	  <h2 class="text-lg font-semibold mb-4">📁 Меню</h2>
+	  <ul class="space-y-2 text-sm">
+	    <li><a href="#" class="text-blue-600 font-medium">Мои магазины</a></li>
+	  </ul>
+	</aside>
 	
-	  <!-- 📦 Контент (5/6) -->
-	  <main class="ml-[16.67%] w-[83.33%] pt-24 px-4 sm:px-8">
-	    
-	    <!-- 👋 Сәлем -->
-	    <div class="flex justify-center mb-6">
-	      <h1 id="greeting" data-name="{{ name }}"
-	          class="text-3xl sm:text-4xl font-bold text-gray-800 text-center">
-	        Сәлем, {{ name }}
-	      </h1>
-	    </div>
+	<!-- 📦 Контент (мобилде толық ен, sm+ құрылғыларда оңға ығысқан) -->
+	<main class="w-full sm:ml-[16.67%] sm:w-[83.33%] pt-24 px-4 sm:px-8">
+	  
+	  <!-- 👋 Сәлем -->
+	  <div class="flex justify-center mb-6">
+	    <h1 id="greeting" data-name="{{ name }}"
+	        class="text-3xl sm:text-4xl font-bold text-gray-800 text-center">
+	      Сәлем, {{ name }}
+	    </h1>
+	  </div>
 	
-	    <!-- 🏪 Магазин тізімі -->
-	    <div class="flex justify-center">
-	      <div class="bg-white shadow rounded-xl w-full max-w-6xl p-4 sm:p-6">
+	  <!-- 🏪 Магазин тізімі -->
+	  <div class="flex justify-center">
+	    <div class="bg-white shadow rounded-xl w-full max-w-6xl p-4 sm:p-6">
+
 		
 		<!-- 🔝 Тақырып пен кнопка -->
 		<div class="flex flex-wrap justify-between items-center gap-2 mb-6">
