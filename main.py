@@ -303,7 +303,7 @@ async def add_kaspi_shop(
         print("🟢 /add_kaspi_shop басталды")
         print("📥 Келген мәліметтер:", login, phone)
 
-        # 🔎 Қолданушыны іздеу
+        # 🔎 Қолданушыны табу
         query = users.select().where(users.c.phone == phone)
         user = await database.fetch_one(query)
 
@@ -313,8 +313,8 @@ async def add_kaspi_shop(
 
         user_id = user["id"]
         print("👤 Қолданушы ID:", user_id)
-      
-        # 🌐 Сыртқы серверге сұраныс (Kaspi ботқа)
+
+        # 🌐 Kaspi ботқа сұраныс (логин + пароль дұрыстығын тексеру)
         print("🌐 Kaspi ботқа сұраныс жіберілуде...")
         async with httpx.AsyncClient(timeout=60.0) as client:
             response = await client.post("http://45.136.57.219:5000/check_kaspi", data={
@@ -327,48 +327,47 @@ async def add_kaspi_shop(
             return JSONResponse({"ok": False, "msg": "Kaspi сервері жауап қатпады"}, status_code=500)
 
         data = response.json()
-        if not data.get("ok"):
-            print("❌ Kaspi бот қатесі:", data.get("msg"))
-            return JSONResponse({"ok": False, "msg": data.get("msg", "Kaspi жауап қатесі")}, status_code=400)
 
-        shop_name = data["shop_name"]
-        merchant_id = data["merchant_id"]  # Егер жоқ болса, бос қылады
-        print("✅ Kaspi боттан магазин атауы алынды:", shop_name)
-        
-        now = datetime.utcnow()
- 
-        # 🔁 Бұрын тіркелген бе?
+        # 🔴 Логин немесе пароль дұрыс емес
+        if not data.get("ok"):
+            print("❌ Kaspi логин/пароль қатесі:", data.get("msg"))
+            return JSONResponse({"ok": False, "msg": "❌ Логин немесе пароль қате."}, status_code=400)
+
+        # ✅ Логин/пароль дұрыс болса, магазин мәліметін аламыз
+        shop_name = data.get("shop_name")
+        merchant_id = data.get("merchant_id")
+        print("✅ Магазин:", shop_name, "| ID:", merchant_id)
+
+        # 🔁 merchant_id бұрын базаға қосылған ба?
         check_query = kaspi_shops.select().where(kaspi_shops.c.merchant_id == merchant_id)
         exists = await database.fetch_one(check_query)
         if exists:
-            print("⚠️ Бұл Kaspi магазин біздің жүйеде бұрын тіркелген")
+            print("⚠️ Бұл магазин біздің жүйеде тіркелген")
             return JSONResponse({
                 "ok": False,
-                "msg": "❌ Бұл Kaspi магазин біздің жүйеде бұрын тіркелген"
+                "msg": "⚠️ Бұл Kaspi магазин біздің жүйеде бұрын тіркелген"
             })
 
-            
-        # Базаға жазу
-        query = kaspi_shops.insert().values(
+        # ✅ Егер бәрі дұрыс болса — базаға қосамыз
+        now = datetime.utcnow()
+        insert_query = kaspi_shops.insert().values(
             user_id=user_id,
             shop_name=shop_name,
             login=login,
             password=password,
-            merchant_id=merchant_id,  # ✅ жаңа баған
+            merchant_id=merchant_id,
             created_at=now
         )
+        await database.execute(insert_query)
 
-        # 💾 Базаға жазу
-        await database.execute(query)
-        
-        # Нақты created_at мәнін база ішінен аламыз
+        # created_at нақтысын қайта оқу
         select_query = kaspi_shops.select().where(
             (kaspi_shops.c.user_id == user_id) &
-            (kaspi_shops.c.login == login)
+            (kaspi_shops.c.merchant_id == merchant_id)
         ).order_by(kaspi_shops.c.created_at.desc())
-        
+
         shop_row = await database.fetch_one(select_query)
-        
+
         return JSONResponse({
             "ok": True,
             "name": shop_name,
