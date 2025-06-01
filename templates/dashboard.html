@@ -49,7 +49,13 @@
 			<p class="text-xs text-gray-500">ID: {{ shop.merchant_id }}</p>
 			<p class="text-xs text-blue-600 mt-1">
 			  🕒 Активен до: 
-			  {{ (shop.created_at + timedelta(hours=72)).strftime('%Y-%m-%d %H:%M:%S') }}<br>
+			  {% set lang = request.cookies.get("lang") or "kk" %}
+			  {% set expires = shop.created_at + timedelta(hours=72) %}
+			  {% if lang == "kk" %}
+			    {{ expires.strftime('%d.%m.%Y, %H:%M') }}
+			  {% else %}
+			    {{ expires.strftime('%d.%m.%Y, %H:%M') }}
+			  {% endif %}
 			  ⏳ Осталось: 
 			  {{ ((shop.created_at + timedelta(hours=72)) - datetime.utcnow()).days }} күн
 			</p>
