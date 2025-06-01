@@ -22,12 +22,13 @@
 	    </div>
 	  </div>
 		
-	  <!-- 📱 Мобильді меню (☰ басқанда ашылады) -->
-	  <div id="mobile-menu" class="absolute top-[64px] left-0 right-0 bg-white shadow-md hidden z-40 sm:hidden px-4 py-4">
+	  <!-- 📱 Мобильді меню (гамбургер басқанда ашылады) -->
+	  <div id="mobile-menu" class="absolute top-[64px] left-0 right-0 bg-white border-t border-gray-300 shadow-md hidden z-40 sm:hidden px-4 py-4">
 	    <ul class="space-y-4">
 	      <li><a href="#" class="text-blue-600 font-medium">📁 Мои магазины</a></li>
 	    </ul>
 	  </div>
+
 		
 	  <!-- Шығу батырмасы -->
 	  <a id="logout-button" href="/" class="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600">Шығу</a>
@@ -453,9 +454,18 @@
 	    el.innerHTML = expText;
 	  });
 	  function toggleMobileMenu() {
-		  const menu = document.getElementById("mobile-menu");
-		  menu.classList.toggle("hidden");
-		}
+	    const menu = document.getElementById("mobile-menu");
+	    const isVisible = !menu.classList.contains("hidden");
+	
+	    // Барлық басқа менюді жасыру (қаласаңыз)
+	    document.querySelectorAll("#mobile-menu").forEach(m => m.classList.add("hidden"));
+	
+	    if (!isVisible) {
+	      menu.classList.remove("hidden");
+	    } else {
+	      menu.classList.add("hidden");
+	    }
+	  }
 
   </script>
 
@@ -469,23 +479,6 @@
       <button id="confirm-yes" onclick="confirmDelete()" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Иә</button>
       <button id="confirm-no" onclick="cancelDelete()" class="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">Жоқ</button>
     </div>
-  </div>
-</div>
-<!-- 📱 Мобильді толық меню -->
-<div id="mobile-menu" class="fixed inset-0 bg-white z-50 hidden flex flex-col p-6 text-lg">
-  <div class="flex justify-between items-center mb-6">
-    <h2 class="font-bold text-xl">📁 Меню</h2>
-    <button onclick="toggleMobileMenu()" class="text-2xl text-gray-600 hover:text-black">&times;</button>
-  </div>
-
-  <ul class="space-y-4">
-    <li><a href="#" class="text-blue-600 font-medium">Мои магазины</a></li>
-  </ul>
-
-  <div class="mt-6 space-x-4">
-    <button onclick="setLanguage('kk')" class="text-blue-600 hover:underline">KAZ</button>
-    <span>/</span>
-    <button onclick="setLanguage('ru')" class="text-blue-600 hover:underline">RU</button>
   </div>
 </div>
 
