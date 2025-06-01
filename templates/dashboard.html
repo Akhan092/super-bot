@@ -10,17 +10,28 @@
 
  	 <!-- 🔝 Жоғарғы панель -->
 	<div class="fixed top-0 left-0 right-0 bg-white shadow z-50 p-4 flex justify-between items-center text-sm sm:text-base px-4 sm:px-8">
-	  <!-- ☰ Мобильді меню батырмасы -->
-	  <div class="flex items-center gap-3">
+	  <!-- ☰ Гамбургер + Тіл таңдағыш -->
+	  <div class="flex items-center gap-4">
+	    <!-- ☰ Гамбургер тек мобайлда -->
 	    <button onclick="toggleMobileMenu()" class="sm:hidden text-2xl">☰</button>
-	    <div class="hidden sm:flex space-x-2">
+	    <!-- Тіл таңдағыш – барлық құрылғыда -->
+	    <div class="flex space-x-2">
 	      <button onclick="setLanguage('kk')" class="text-blue-600 hover:underline">KAZ</button>
 	      <span>/</span>
 	      <button onclick="setLanguage('ru')" class="text-blue-600 hover:underline">RU</button>
 	    </div>
 	  </div>
+		
+	  <!-- 📱 Мобильді меню (☰ басқанда ашылады) -->
+	  <div id="mobile-menu" class="absolute top-[64px] left-0 right-0 bg-white shadow-md hidden z-40 sm:hidden px-4 py-4">
+	    <ul class="space-y-4">
+	      <li><a href="#" class="text-blue-600 font-medium">📁 Мои магазины</a></li>
+	    </ul>
+	  </div>
+		
+	  <!-- Шығу батырмасы -->
 	  <a id="logout-button" href="/" class="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600">Шығу</a>
-	</div>
+	</div>	
 
 
 	<!-- ✅ Сол жақ мәзір -->
