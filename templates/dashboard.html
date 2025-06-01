@@ -188,11 +188,12 @@
 	  <p class="text-sm text-gray-600">Логин: ${shop.login}</p>
 	  <p class="text-sm text-red-600">Пароль: ${shop.password}</p>
 	  <p class="text-xs text-blue-500 mt-1">Тіркелген: ${createdAt}</p>
-	  <button onclick="deleteStore('{{ shop.shop_name }}', this)">
+	  <button onclick="deleteStore('${shop.name || shop.shop_name}', this)"
 	          class="absolute top-2 right-2 text-sm text-red-500 hover:underline">
 	    Өшіру
 	  </button>
 	`;
+
 
       document.getElementById("store-list").appendChild(card);
     }
