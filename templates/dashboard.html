@@ -8,17 +8,20 @@
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
 
-  <!-- 🔝 Тіл мен шығу -->
-	<div class="bg-white shadow p-4 flex justify-between items-center text-sm sm:text-base px-4 sm:px-8 fixed top-0 left-0 right-0 z-50">
-	  <div class="space-x-2">
-		<button onclick="setLanguage('kk')" class="text-blue-600 hover:underline">KAZ</button>
-		<span>/</span>
-		<button onclick="setLanguage('ru')" class="text-blue-600 hover:underline">RU</button>
+ 	 <!-- 🔝 Жоғарғы панель -->
+	<div class="fixed top-0 left-0 right-0 bg-white shadow z-50 p-4 flex justify-between items-center text-sm sm:text-base px-4 sm:px-8">
+	  <!-- ☰ Мобильді меню батырмасы -->
+	  <div class="flex items-center gap-3">
+	    <button onclick="toggleMobileMenu()" class="sm:hidden text-2xl">☰</button>
+	    <div class="hidden sm:flex space-x-2">
+	      <button onclick="setLanguage('kk')" class="text-blue-600 hover:underline">KAZ</button>
+	      <span>/</span>
+	      <button onclick="setLanguage('ru')" class="text-blue-600 hover:underline">RU</button>
+	    </div>
 	  </div>
-	  <a id="logout-button" href="/" class="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600">
-		Шығу
-	  </a>
+	  <a id="logout-button" href="/" class="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600">Шығу</a>
 	</div>
+
 
 	<!-- ✅ Сол жақ мәзір -->
 	<aside class="fixed top-16 left-0 w-1/6 h-full bg-white shadow-md px-4 py-6 z-40">
@@ -438,6 +441,11 @@
 	    const expText = `${texts[lang].expires_label} ${dateFormatted}<br>${texts[lang].left_label} ${daysLeft} ${texts[lang].days_unit}`;
 	    el.innerHTML = expText;
 	  });
+	  function toggleMobileMenu() {
+		  const menu = document.getElementById("mobile-menu");
+		  menu.classList.toggle("hidden");
+		}
+
   </script>
 
 <!-- 🗑️ Магазин өшіруді растау модалы -->
@@ -450,6 +458,23 @@
       <button id="confirm-yes" onclick="confirmDelete()" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Иә</button>
       <button id="confirm-no" onclick="cancelDelete()" class="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">Жоқ</button>
     </div>
+  </div>
+</div>
+<!-- 📱 Мобильді толық меню -->
+<div id="mobile-menu" class="fixed inset-0 bg-white z-50 hidden flex flex-col p-6 text-lg">
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="font-bold text-xl">📁 Меню</h2>
+    <button onclick="toggleMobileMenu()" class="text-2xl text-gray-600 hover:text-black">&times;</button>
+  </div>
+
+  <ul class="space-y-4">
+    <li><a href="#" class="text-blue-600 font-medium">Мои магазины</a></li>
+  </ul>
+
+  <div class="mt-6 space-x-4">
+    <button onclick="setLanguage('kk')" class="text-blue-600 hover:underline">KAZ</button>
+    <span>/</span>
+    <button onclick="setLanguage('ru')" class="text-blue-600 hover:underline">RU</button>
   </div>
 </div>
 
