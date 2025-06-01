@@ -188,7 +188,7 @@
 	  <p class="text-sm text-gray-600">Логин: ${shop.login}</p>
 	  <p class="text-sm text-red-600">Пароль: ${shop.password}</p>
 	  <p class="text-xs text-blue-500 mt-1">Тіркелген: ${createdAt}</p>
-	  <button onclick="deleteStore('${shop.name}', this)"
+	  <button onclick="deleteStore('{{ shop.shop_name }}', this)">
 	          class="absolute top-2 right-2 text-sm text-red-500 hover:underline">
 	    Өшіру
 	  </button>
@@ -323,14 +323,13 @@
 
 
 	function deleteStore(name, el) {
-	    deleteShopName = name;
-	    deleteShopElement = el;
+	  deleteShopName = name;
+	  deleteShopElement = el;
 	
-	    console.log("deleteStore шақырылды:", name);
-	
-	    document.getElementById("confirm-shop-name").innerText = `"${name}"`;
-	    document.getElementById("confirm-modal").classList.remove("hidden");
-	  }
+	  document.getElementById("confirm-shop-name").innerText = `"${name}"`;
+	  document.getElementById("confirm-modal").classList.remove("hidden");
+	}
+
 	
 	  function confirmDelete() {
 	    const phone = localStorage.getItem("user_phone");
