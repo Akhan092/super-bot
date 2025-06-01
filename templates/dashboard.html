@@ -273,7 +273,7 @@
           document.getElementById("store-email").value = "";
           document.getElementById("store-password").value = "";
           closeModal();
-          alert("✅ Магазин қосылды. Қарау үшін бетті жаңартыңыз.");
+          window.location.reload();
         } else {
           errorLabel.innerText = "❌ Логин немесе пароль қате.";
         }
