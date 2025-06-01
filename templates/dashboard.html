@@ -53,15 +53,10 @@
 			  ⏳ Осталось: 
 			  {{ ((shop.created_at + timedelta(hours=72)) - datetime.utcnow()).days }} күн
 			</p>
-			<button
-			  id="delete-button-{{ loop.index }}"
-			  onclick="deleteStore('{{ shop.shop_name }}', this)"
-			  class="absolute top-2 right-2 text-sm text-red-500 hover:underline"
-			>
+			<button onclick="deleteStore('{{ shop.shop_name }}', this)"
+				class="absolute top-2 right-2 text-sm text-red-500 hover:underline">
 			  Өшіру
 			</button>
-
-
 		  </div>
 		  {% endfor %}
 		</div>
@@ -114,8 +109,7 @@
         add_button: "+ Магазин қосу",
         modal_title: "Магазин қосу",
         modal_email_label: "email арқылы",
-        modal_add: "Қосу",
-	loading: "Қосылуда..."
+        modal_add: "Қосу"
       },
       ru: {
         logout: "Выйти",
@@ -124,45 +118,32 @@
         add_button: "+ Добавить магазин",
         modal_title: "Добавление магазина",
         modal_email_label: "по email",
-        modal_add: "Добавить",
-	loading: "Добавление..."
+        modal_add: "Добавить"
       }
     };
 
     function setLanguage(lang) {
-	  const t = texts[lang];
-	
-	  document.getElementById("logout-button").innerText = t.logout;
-	  document.getElementById("store-title").innerText = t.store_title;
-	  document.getElementById("add-button").innerText = t.add_button;
-	  document.getElementById("modal-title").innerText = t.modal_title;
-	  document.getElementById("email-label").innerText = t.modal_email_label;
-	  document.getElementById("modal-add-button").innerText = t.modal_add;
-	
-	  // 🔁 "Иә / Да" / "Жоқ / Нет" батырмалары
-	  document.getElementById("confirm-yes").innerText = (lang === "kk") ? "Иә" : "Да";
-	  document.getElementById("confirm-no").innerText = (lang === "kk") ? "Жоқ" : "Нет";
-	
-	  // 🔁 Өшіру батырмаларын өзгерту
-	  const deleteButtons = document.querySelectorAll("button[id^='delete-button']");
-	  deleteButtons.forEach(btn => {
-	    btn.innerText = (lang === "kk") ? "Өшіру" : "Удалить";
-	  });
-	
-	  // 🔁 Модал сұрағы
-	  document.getElementById("confirm-question").innerHTML =
-	    (lang === "kk")
-	      ? `<span id="confirm-shop-name"></span> магазинін өшіруге сенімдісіз бе?`
-	      : `Вы уверены, что хотите удалить магазин <span id="confirm-shop-name"></span>?`;
-	
-	  // 🔁 Сәлем
-	  const name = document.getElementById("greeting").getAttribute("data-name");
-	  document.getElementById("greeting").innerText = t.greeting + name;
-	
-	  // 🌐 Тілді сақтау (браузер жады)
-	  localStorage.setItem("lang", lang);
-	  window.currentLang = lang; // ✅ Осы жол керек
-	}
+      const t = texts[lang];
+      document.getElementById("logout-button").innerText = t.logout;
+      document.getElementById("store-title").innerText = t.store_title;
+      document.getElementById("add-button").innerText = t.add_button;
+      document.getElementById("modal-title").innerText = t.modal_title;
+      document.getElementById("email-label").innerText = t.modal_email_label;
+      document.getElementById("modal-add-button").innerText = t.modal_add;
+      // 🔁 "Иә / Жоқ" батырмалары
+      document.getElementById("confirm-yes").innerText = (lang === "kk") ? "Иә" : "Да";
+      document.getElementById("confirm-no").innerText = (lang === "kk") ? "Жоқ" : "Нет";
+
+      // 🔁 Сұрақ мәтіні
+     document.getElementById("confirm-question").innerHTML =
+       (lang === "kk")
+          ? <span id="confirm-shop-name"></span> магазинін өшіруге сенімдісіз бе?
+          : Вы уверены, что хотите удалить магазин <span id="confirm-shop-name"></span>?;
+
+      const name = document.getElementById("greeting").getAttribute("data-name");
+      document.getElementById("greeting").innerText = t.greeting + name;
+
+      localStorage.setItem("lang", lang);
     }
 
     function openModal() {
@@ -189,7 +170,7 @@
         hour: "2-digit", minute: "2-digit"
       });
     
-      card.innerHTML = `
+      card.innerHTML = 
         <h3 class="text-lg font-bold mb-1">${shop.name || shop.shop_name}</h3>
         <p class="text-sm text-gray-600">Логин: ${shop.login}</p>
         <p class="text-sm text-red-600">Пароль: ${shop.password}</p>
@@ -198,7 +179,7 @@
                 class="absolute top-2 right-2 text-sm text-red-500 hover:underline">
           Өшіру
         </button>
-      `;
+      ;
       document.getElementById("store-list").appendChild(card);
     }
 
@@ -257,74 +238,63 @@
 
  
     function editStore(name) {
-      alert(`"${name}" магазинін өзгерту логикасы кейін қосылады.`);
+      alert("${name}" магазинін өзгерту логикасы кейін қосылады.);
     }
 
     document.getElementById("modal-add-button").addEventListener("click", async () => {
-	  const login = document.getElementById("store-email").value.trim();
-	  const password = document.getElementById("store-password").value.trim();
-	  const errorLabel = document.getElementById("store-error");
-	  const button = document.getElementById("modal-add-button");
-	  const rawPhone = localStorage.getItem("user_phone");
-	
-	  if (!login || !password || !rawPhone) {
-	    errorLabel.innerText = "⚠️ Барлық өрістерді толтырыңыз.";
-	    return;
-	  }
-	
-	  const phone = rawPhone;
-	  button.disabled = true;
-	  const lang = window.currentLang || "kk"; // 👈 тілді анықтау
-	  button.innerHTML = `<svg class="animate-spin h-4 w-4 mr-2 inline" viewBox="0 0 24 24">
-	                      <circle class="opacity-25" cx="12" cy="12" r="10"
-	                              stroke="currentColor" stroke-width="4" fill="none"></circle>
-	                      <path class="opacity-75" fill="currentColor"
-	                            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
-	                    </svg> ${texts[lang].loading}`;
-	  errorLabel.innerText = "";
-	
-	  try {
-	    const res = await fetch("/add_kaspi_shop", {
-	      method: "POST",
-	      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-	      body: new URLSearchParams({ login, password, phone })
-	    });
-	
-	    const data = await res.json();
-	
-	    if (
-	      data.ok &&
-	      data.name &&
-	      data.login &&
-	      data.password &&
-	      data.created_at
-	    ) {
-	      document.getElementById("store-email").value = "";
-	      document.getElementById("store-password").value = "";
-	      closeModal();
-	      window.location.reload();
-	    } else {
-	      // ❗ нақты қай қате екенін анықтап шығару
-	      if (data.msg && data.msg.includes("бұрын тіркелген")) {
-	        errorLabel.innerText = data.msg; // "⚠️ Бұл Kaspi магазин бұрын тіркелген"
-	      } else if (data.msg && data.msg.includes("Логин") || data.msg.includes("пароль")) {
-	        errorLabel.innerText = "❌ Логин немесе пароль қате.";
-	      } else if (data.msg) {
-	        errorLabel.innerText = "❌ " + data.msg;
-	      } else {
-	        errorLabel.innerText = "❌ Белгісіз қате.";
-	      }
-	    }
-	
-	  } catch (e) {
-	    console.error(e);
-	    errorLabel.innerText = "❌ Серверге қосыла алмады.";
-	  } finally {
-	    button.disabled = false;
-	    button.innerText = "Добавить";
-	  }
-	});
-
+      const login = document.getElementById("store-email").value.trim();
+      const password = document.getElementById("store-password").value.trim();
+      const errorLabel = document.getElementById("store-error");
+      const button = document.getElementById("modal-add-button");
+      const rawPhone = localStorage.getItem("user_phone");
+    
+      if (!login || !password || !rawPhone) {
+        errorLabel.innerText = "⚠️ Барлық өрістерді толтырыңыз.";
+        return;
+      }
+    
+      const phone = rawPhone;
+      button.disabled = true;
+      button.innerHTML = <svg class="animate-spin h-4 w-4 mr-2 inline" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10"
+                                    stroke="currentColor" stroke-width="4" fill="none"></circle>
+                            <path class="opacity-75" fill="currentColor"
+                                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                          </svg> Қосылуда...;
+      errorLabel.innerText = "";
+    
+      try {
+        const res = await fetch("/add_kaspi_shop", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({ login, password, phone })
+        });
+    
+        const data = await res.json();
+    
+        if (
+          data.ok &&
+          data.name &&
+          data.login &&
+          data.password &&
+          data.created_at
+        ) {
+          document.getElementById("store-email").value = "";
+          document.getElementById("store-password").value = "";
+          closeModal();
+          window.location.reload();
+        } else {
+          errorLabel.innerText = "❌ Логин немесе пароль қате.";
+        }
+    
+      } catch (e) {
+        console.error(e);
+        errorLabel.innerText = "❌ Серверге қосыла алмады.";
+      } finally {
+        button.disabled = false;
+        button.innerText = "Добавить";
+      }
+    });
 
 	function deleteStore(name, el) {
 	    deleteShopName = name;
@@ -332,7 +302,7 @@
 	
 	    console.log("deleteStore шақырылды:", name);
 	
-	    document.getElementById("confirm-shop-name").innerText = `“${name}”`;
+	    document.getElementById("confirm-shop-name").innerText = “${name}”;
 	    document.getElementById("confirm-modal").classList.remove("hidden");
 	  }
 	
