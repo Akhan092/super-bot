@@ -308,7 +308,14 @@
     window.onload = function () {
 	  const phone = localStorage.getItem("user_phone");
 	  if (!phone) {
-	    alert("Қате: қолданушы нөмірі табылмады.");
+	    window.location.href = "/";
+	    return;
+	  }
+	
+	  const url = new URL(window.location.href);
+	  if (!url.searchParams.has("phone")) {
+	    url.searchParams.set("phone", phone);
+	    window.location.href = url.toString();
 	    return;
 	  }
 	
