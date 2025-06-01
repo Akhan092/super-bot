@@ -181,7 +181,14 @@
 	    day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit"
 	  });
 	
-	  const expText = `${texts[lang].expires_label} ${dateFormatted}<br>${texts[lang].left_label} ${daysLeft} ${texts[lang].days_unit}`;
+	  let leftText = "";
+	  if (lang === "kk") {
+	    leftText = `⏳ ${daysLeft} күн қалды`;
+	  } else {
+	    leftText = `⏳ Осталось: ${daysLeft} ${texts[lang].days_unit}`;
+	  }
+	  const expText = `${texts[lang].expires_label} ${dateFormatted}<br>${leftText}`;
+
 	  el.innerHTML = expText;
       });
 
