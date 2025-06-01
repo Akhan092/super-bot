@@ -9,7 +9,7 @@
 <body class="bg-gray-100 min-h-screen flex flex-col">
 
  	 <!-- 🔝 Жоғарғы панель -->
-	<div class="fixed top-0 left-0 right-0 bg-white shadow z-50 p-4 flex justify-between items-center text-sm sm:text-base px-4 sm:px-8">
+	<div id="top-bar" class="fixed top-0 left-0 right-0 bg-white shadow z-50 p-4 flex justify-between items-center text-sm sm:text-base px-4 sm:px-8">
 	  <!-- ☰ Гамбургер + Тіл таңдағыш -->
 	  <div class="flex items-center gap-4">
 	    <!-- ☰ Гамбургер тек мобайлда -->
@@ -459,18 +459,23 @@
 	    el.innerHTML = expText;
 	  });
 	  function toggleMobileMenu() {
-	  const menu = document.getElementById("mobile-menu");
-	  const overlay = document.getElementById("mobile-overlay");
-	  const isOpen = !menu.classList.contains("hidden");
-	
-	  if (isOpen) {
-	    menu.classList.add("hidden");
-	    overlay.classList.add("hidden");
-	  } else {
-	    menu.classList.remove("hidden");
-	    overlay.classList.remove("hidden");
-	  }
-	}
+		  const menu = document.getElementById("mobile-menu");
+		  const topBar = document.getElementById("top-bar");
+		
+		  const isVisible = !menu.classList.contains("hidden");
+		
+		  if (!isVisible) {
+		    // меню ашылады
+		    menu.classList.remove("hidden");
+		    topBar.classList.add("z-[999]"); // үстіне шығару
+		  } else {
+		    // меню жабылады
+		    menu.classList.add("hidden");
+		    topBar.classList.remove("z-[999]");
+		    topBar.classList.add("z-50");
+		  }
+		}
+
 
   </script>
 
