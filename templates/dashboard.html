@@ -283,7 +283,8 @@
 	
 	  const phone = rawPhone;
 	  button.disabled = true;
-	  button.innerHTML = `<svg class="animate-spin h-4 w-4 mr-2 inline" viewBox="0 0 24 24">
+	  const lang = window.currentLang || "kk"; // 👈 тілді анықтау
+	button.innerHTML = `<svg class="animate-spin h-4 w-4 mr-2 inline" viewBox="0 0 24 24">
 	                      <circle class="opacity-25" cx="12" cy="12" r="10"
 	                              stroke="currentColor" stroke-width="4" fill="none"></circle>
 	                      <path class="opacity-75" fill="currentColor"
