@@ -150,8 +150,8 @@
 	    : `Вы уверены, что хотите удалить магазин <span id="confirm-shop-name"></span>?`;
 
       // 🔁 Магазин карточкаларындағы "Өшіру" кнопкаларын жаңарту
-	  const deleteButtons = document.querySelectorAll("button[id^='delete-button']");
-	  deleteButtons.forEach(btn => {
+      const deleteButtons = document.querySelectorAll("button[id^='delete-button']");
+      deleteButtons.forEach(btn => {
 	    btn.innerText = (lang === "kk") ? "Өшіру" : "Удалить";
 	  });
     
