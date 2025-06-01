@@ -50,11 +50,8 @@
 			{% set lang = request.cookies.get("lang") or "kk" %}
 			{% set expires = shop.created_at + timedelta(hours=72) %}
 			{% set days_left = ((shop.created_at + timedelta(hours=72)) - datetime.utcnow()).days %}
-			<p class="text-xs text-blue-600 mt-1">
-			  🕒 {% if lang == "kk" %}Активтілік мерзімі:{% else %}Активен до:{% endif %}
-			  {{ expires.strftime('%d.%m.%Y, %H:%M') }}<br>
-			  ⏳ {% if lang == "kk" %}Қалды:{% else %}Осталось:{% endif %}
-			  {{ days_left }} {% if lang == "kk" %}күн{% else %}дней{% endif %}
+			<p class="text-xs text-blue-600 mt-1 expires-section" 
+			   data-created="{{ shop.created_at.isoformat() }}">
 			</p>
 
 			<button id="delete-button-{{ loop.index }}"
@@ -122,7 +119,9 @@
 	loading: "Қосылуда...",
 	duplicate_shop: "⚠️ Бұл Kaspi магазин біздің жүйеде бұрын тіркелген",
 	invalid_auth: "❌ Логин немесе пароль қате.",
-	expires_label: "🕒 Аяқталу уақыты:"
+	expires_label: "🕒 Активтілік мерзімі:",
+    	left_label: "⏳ Қалды:",
+    	days_unit: "күн"
       },
       ru: {
         logout: "Выйти",
@@ -135,7 +134,9 @@
 	loading: "Добавление...",
 	duplicate_shop: "⚠️ Этот Kaspi магазин уже зарегистрирован в системе",
 	invalid_auth: "❌ Неверный логин или пароль.",
-	expires_label: "🕒 Аяқталу уақыты:"
+	expires_label: "🕒 Активен до:",
+    	left_label: "⏳ Осталось:",
+    	days_unit: "дней"
       }
     };
 
