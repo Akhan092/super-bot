@@ -315,7 +315,7 @@ async def add_kaspi_shop(
         print("👤 Қолданушы ID:", user_id)
 
         # 🔁 Бұрын тіркелген бе?
-        check_query = kaspi_shops.select().where(kaspi_shops.c.login == login)
+        check_query = kaspi_shops.select().where(kaspi_shops.c.merchant_id == merchant_id)
         exists = await database.fetch_one(check_query)
         if exists:
             print("⚠️ Kaspi логин бұрын тіркелген")
