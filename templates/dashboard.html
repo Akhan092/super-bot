@@ -313,9 +313,8 @@
 	    } else {
 	      // ❗ нақты қай қате екенін анықтап шығару
 	      if (data.msg && (data.msg.includes("бұрын тіркелген") || data.msg.includes("зарегистрирован"))) {
-		  errorLabel.innerText = texts[lang]?.duplicate_shop || data.msg;
-		}
-	      } else if (data.msg && data.msg.includes("Логин") || data.msg.includes("пароль")) {
+	        errorLabel.innerText = texts[lang]?.duplicate_shop || data.msg;
+	      } else if (data.msg && (data.msg.includes("Логин") || data.msg.includes("пароль"))) {
 	        errorLabel.innerText = "❌ Логин немесе пароль қате.";
 	      } else if (data.msg) {
 	        errorLabel.innerText = "❌ " + data.msg;
