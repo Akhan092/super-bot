@@ -136,9 +136,10 @@
 
       // 🔁 Сұрақ мәтіні
      document.getElementById("confirm-question").innerHTML =
-       (lang === "kk")
-          ? <span id="confirm-shop-name"></span> магазинін өшіруге сенімдісіз бе?
-          : Вы уверены, что хотите удалить магазин <span id="confirm-shop-name"></span>?;
+	  (lang === "kk")
+	    ? `<span id="confirm-shop-name"></span> магазинін өшіруге сенімдісіз бе?`
+	    : `Вы уверены, что хотите удалить магазин <span id="confirm-shop-name"></span>?`;
+
 
       const name = document.getElementById("greeting").getAttribute("data-name");
       document.getElementById("greeting").innerText = t.greeting + name;
@@ -170,16 +171,17 @@
         hour: "2-digit", minute: "2-digit"
       });
     
-      card.innerHTML = 
-        <h3 class="text-lg font-bold mb-1">${shop.name || shop.shop_name}</h3>
-        <p class="text-sm text-gray-600">Логин: ${shop.login}</p>
-        <p class="text-sm text-red-600">Пароль: ${shop.password}</p>
-        <p class="text-xs text-blue-500 mt-1">Тіркелген: ${createdAt}</p>
-        <button onclick="deleteStore('${shop.name}', this)"
-                class="absolute top-2 right-2 text-sm text-red-500 hover:underline">
-          Өшіру
-        </button>
-      ;
+      card.innerHTML = `
+	  <h3 class="text-lg font-bold mb-1">${shop.name || shop.shop_name}</h3>
+	  <p class="text-sm text-gray-600">Логин: ${shop.login}</p>
+	  <p class="text-sm text-red-600">Пароль: ${shop.password}</p>
+	  <p class="text-xs text-blue-500 mt-1">Тіркелген: ${createdAt}</p>
+	  <button onclick="deleteStore('${shop.name}', this)"
+	          class="absolute top-2 right-2 text-sm text-red-500 hover:underline">
+	    Өшіру
+	  </button>
+	`;
+
       document.getElementById("store-list").appendChild(card);
     }
 
@@ -238,7 +240,7 @@
 
  
     function editStore(name) {
-      alert("${name}" магазинін өзгерту логикасы кейін қосылады.);
+      alert(`"${name}" магазинін өзгерту логикасы кейін қосылады.`);
     }
 
     document.getElementById("modal-add-button").addEventListener("click", async () => {
