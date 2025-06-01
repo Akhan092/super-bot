@@ -101,6 +101,10 @@
 
   <!-- ✅ JavaScript -->
   <script>
+    // 🟢 МІНЕ ОСЫ ЖЕРГЕ ҚОЙЫҢЫЗ
+    let deleteShopName = "";
+    let deleteShopElement = null;
+	  
     const texts = {
       kk: {
         logout: "Шығу",
@@ -314,7 +318,7 @@
 	
 	    console.log("deleteStore шақырылды:", name);
 	
-	    document.getElementById("confirm-shop-name").innerText = “${name}”;
+	    document.getElementById("confirm-shop-name").innerText = `"${name}"`;
 	    document.getElementById("confirm-modal").classList.remove("hidden");
 	  }
 	
