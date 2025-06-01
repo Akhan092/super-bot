@@ -323,8 +323,13 @@ async def add_kaspi_shop(
             })
 
         if response.status_code != 200:
-            print("❌ Kaspi бот жауап бермеді")
-            return JSONResponse({"ok": False, "msg": "Kaspi сервері жауап қатпады"}, status_code=500)
+            print("❌ Kaspi бот жауап бермеді немесе логин/пароль дұрыс емес")
+            return JSONResponse({
+                "ok": False,
+                "msg": "❌ Логин немесе пароль қате.",
+                "error_type": "invalid_auth"
+            }, status_code=400)
+
 
         data = response.json()
 
