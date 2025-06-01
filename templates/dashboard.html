@@ -159,19 +159,6 @@
 	  localStorage.setItem("lang", lang);
 	  window.currentLang = lang; // ✅ Осы жол керек
 	}
-		
-
-
-      // 🔁 Сұрақ мәтіні
-     document.getElementById("confirm-question").innerHTML =
-       (lang === "kk")
-          ? `<span id="confirm-shop-name"></span> магазинін өшіруге сенімдісіз бе?`
-          : `Вы уверены, что хотите удалить магазин <span id="confirm-shop-name"></span>?`;
-
-      const name = document.getElementById("greeting").getAttribute("data-name");
-      document.getElementById("greeting").innerText = t.greeting + name;
-
-      localStorage.setItem("lang", lang);
     }
 
     function openModal() {
