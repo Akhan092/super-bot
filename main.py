@@ -341,8 +341,12 @@ async def add_kaspi_shop(
         check_query = kaspi_shops.select().where(kaspi_shops.c.merchant_id == merchant_id)
         exists = await database.fetch_one(check_query)
         if exists:
-            print("⚠️ Kaspi логин бұрын тіркелген")
-            return JSONResponse({"ok": False, "msg": "❌ Бұл Kaspi логин бұрын тіркелген"})
+            print("⚠️ Бұл Kaspi магазин біздің жүйеде бұрын тіркелген")
+            return JSONResponse({
+                "ok": False,
+                "msg": "❌ Бұл Kaspi магазин біздің жүйеде бұрын тіркелген"
+            })
+
             
         # Базаға жазу
         query = kaspi_shops.insert().values(
