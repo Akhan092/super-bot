@@ -58,6 +58,17 @@
 	  <!-- 🏪 Магазин тізімі -->
 	  <div id="section-shops" class="flex justify-center">
 	    <div class="bg-white shadow rounded-xl w-full max-w-6xl p-4 sm:p-6">
+		
+		<!-- 🔝 Тақырып пен кнопка -->
+		<div class="flex flex-wrap justify-between items-center gap-2 mb-6">
+		  <h2 id="store-title" class="text-lg sm:text-xl font-semibold text-gray-800">
+		    Магазиндеріңіз
+		  </h2>
+		  <button onclick="openModal()" id="add-button"
+		          class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm whitespace-nowrap">
+		    + Магазин қосу
+		  </button>
+		</div>
 
 	  <!-- 🧾 Накладной шығару бөлімі -->
 	  <div id="section-nakl" class="hidden mt-10">
@@ -84,19 +95,7 @@
 	    <button id="generate-nakl-button" class="bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700">
 	      📄 Накладной шығару
 	    </button>
-	  </div>	
-		
-		<!-- 🔝 Тақырып пен кнопка -->
-		<div class="flex flex-wrap justify-between items-center gap-2 mb-6">
-		  <h2 id="store-title" class="text-lg sm:text-xl font-semibold text-gray-800">
-		    Магазиндеріңіз
-		  </h2>
-		  <button onclick="openModal()" id="add-button"
-		          class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm whitespace-nowrap">
-		    + Магазин қосу
-		  </button>
-		</div>
-
+	  </div>
 
 		<!-- 🧩 Магазин карточкалары осы контейнер ішінде -->
 		<div id="store-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
