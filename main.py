@@ -454,47 +454,39 @@ async def add_merchant_id_column():
     except Exception as e:
         return {"ok": False, "error": str(e)}
 
-@app.post("/generate_nakl")
-async def generate_nakl(shop: str = Form(...), mode: str = Form(...), phone: str = Form(...)):
+from fastapi import Form
+import subprocess
+import platform
+
+@app.post("/generate_kaspi_nakl")
+async def generate_kaspi_nakl(
+    login: str = Form(...),
+    password: str = Form(...),
+    mode: str = Form(...),
+    shop: str = Form(...)
+):
     try:
-        # 🔍 Қолданушы мен магазинді база арқылы табу
-        query_user = users.select().where(users.c.phone == phone)
-        user = await database.fetch_one(query_user)
-        if not user:
-            return JSONResponse({"ok": False, "msg": "Қолданушы табылмады"}, status_code=404)
+        print("🟢 /generate_kaspi_nakl басталды")
+        print(f"➡️ Логин: {login}, Режим: {mode}, Магазин: {shop}")
 
-        user_id = user["id"]
-
-        query_shop = kaspi_shops.select().where(
-            (kaspi_shops.c.user_id == user_id) &
-            (kaspi_shops.c.shop_name == shop)
-        )
-        shop_row = await database.fetch_one(query_shop)
-        if not shop_row:
-            return JSONResponse({"ok": False, "msg": "Магазин табылмады"}, status_code=404)
-
-        login = shop_row["login"]
-        password = shop_row["password"]
-        shop_name = shop_row["shop_name"]
-
-        # ✅ Windows жолын нақты көрсетіңіз
-        script_path = "C:\\Users\\admin\\Desktop\\kaspibot\\login_kaspi.py"
-
-        # ✅ Windows үшін фондық режимде іске қосу
-        import subprocess, platform
+        # ✅ Windows жүйесі болса, консольсіз режим
         kwargs = {}
         if platform.system() == "Windows":
             kwargs["creationflags"] = subprocess.CREATE_NO_WINDOW
 
+        # ✅ login_kaspi.py файлы нақты тұрған жол
+        script_path = "C:\\Users\\admin\\Desktop\\kaspibot\\login_kaspi.py"
+
+        # 🔄 subprocess арқылы қосу
         subprocess.Popen(
-            ["python", script_path, login, password, mode, shop_name],
+            ["python", script_path, login, password, mode, shop],
             **kwargs
         )
 
         print("✅ login_kaspi.py іске қосылды")
-        return {"ok": True, "msg": "Накладной шығару басталды"}
-
+        return {"ok": True, "msg": "✅ Накладной шығару басталды"}
+    
     except Exception as e:
         print("❌ Қате:", str(e))
-        return JSONResponse({"ok": False, "msg": str(e)}, status_code=500)
+        return {"ok": False, "msg": str(e)}
 
