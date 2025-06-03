@@ -59,6 +59,32 @@
 	  <div class="flex justify-center">
 	    <div class="bg-white shadow rounded-xl w-full max-w-6xl p-4 sm:p-6">
 
+	  <!-- 🧾 Накладной шығару бөлімі -->
+	  <div id="section-nakl" class="hidden mt-10">
+	    <h2 class="text-xl font-semibold mb-4">🧾 Магазин таңдаңыз</h2>
+	    <select id="nakl-shop-select" class="border p-2 rounded mb-6 w-full max-w-md">
+	      <option disabled selected>Магазинді таңдаңыз</option>
+	      {% for shop in shops %}
+	        <option value="{{ shop.shop_name }}">{{ shop.shop_name }}</option>
+	      {% endfor %}
+	    </select>
+	
+	    <h2 class="text-xl font-semibold mb-3">⚙️ Режим таңдаңыз</h2>
+	    <div class="space-y-2 mb-6">
+	      <label class="block">
+	        <input type="radio" name="nakl-mode" value="upakovka" class="mr-2">
+	        Упаковкадағы жаңа заказдарды шығару
+	      </label>
+	      <label class="block">
+	        <input type="radio" name="nakl-mode" value="full" class="mr-2">
+	        Барлық заказдарды шығару (Упаковка + Передача)
+	      </label>
+	    </div>
+	
+	    <button id="generate-nakl-button" class="bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700">
+	      📄 Накладной шығару
+	    </button>
+	  </div>	
 		
 		<!-- 🔝 Тақырып пен кнопка -->
 		<div class="flex flex-wrap justify-between items-center gap-2 mb-6">
@@ -160,7 +186,8 @@
     	left_label: "⏳ Қалды:",
     	days_unit: "күн",
 	menu_my_shops: "Менің магазиндерім",
-	menu_nakl: "Kaspi накладнойларын автоматты шығару"
+	menu_nakl: "Kaspi накладнойларын автоматты шығару",
+	      
       },
       ru: {
         logout: "Выйти",
@@ -193,6 +220,29 @@
       document.getElementById("mobile-menu-link").innerText = texts[lang].menu_my_shops;
       document.getElementById("menu-nakl").innerText = texts[lang].menu_nakl;
       document.getElementById("mobile-menu-nakl").innerText = "📦 " + texts[lang].menu_nakl;
+      // Бөлім ауыстыру логикасы
+	document.getElementById("menu-link").addEventListener("click", () => {
+	  document.getElementById("section-shops").classList.remove("hidden");
+	  document.getElementById("section-nakl").classList.add("hidden");
+	});
+	
+	document.getElementById("mobile-menu-link").addEventListener("click", () => {
+	  toggleMobileMenu();
+	  document.getElementById("section-shops").classList.remove("hidden");
+	  document.getElementById("section-nakl").classList.add("hidden");
+	});
+	
+	document.getElementById("menu-nakl").addEventListener("click", () => {
+	  document.getElementById("section-shops").classList.add("hidden");
+	  document.getElementById("section-nakl").classList.remove("hidden");
+	});
+	
+	document.getElementById("mobile-menu-nakl").addEventListener("click", () => {
+	  toggleMobileMenu();
+	  document.getElementById("section-shops").classList.add("hidden");
+	  document.getElementById("section-nakl").classList.remove("hidden");
+	});
+
       // 🔁 "Иә / Жоқ" батырмалары
       document.getElementById("confirm-yes").innerText = (lang === "kk") ? "Иә" : "Да";
       document.getElementById("confirm-no").innerText = (lang === "kk") ? "Жоқ" : "Нет";
