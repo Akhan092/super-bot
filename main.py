@@ -11,6 +11,8 @@ import uuid
 import os
 import subprocess
 import httpx
+import platform
+import subprocess
 
 from database import database, users, metadata, kaspi_shops  # ✅ БІР ЖОЛҒА біріктіріңіз
 
@@ -476,10 +478,8 @@ async def generate_nakl(shop: str = Form(...), mode: str = Form(...), phone: str
         shop_name = shop_row["shop_name"]
 
         # ✅ ОСЫ ЖЕРГЕ subprocess коды келеді
-        import platform
         kwargs = {}
-        if platform.system() == "Windows":
-            import subprocess
+        if platform.system() == "Windows":      
             kwargs["creationflags"] = subprocess.CREATE_NO_WINDOW
 
         login_kaspi_path = "C:\\Users\\admin\\Desktop\\kaspibot\\login_kaspi.py"
