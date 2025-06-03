@@ -477,21 +477,26 @@ async def generate_nakl(shop: str = Form(...), mode: str = Form(...), phone: str
         password = shop_row["password"]
         shop_name = shop_row["shop_name"]
 
-        # ✅ ОСЫ ЖЕРГЕ subprocess коды келеді
-        kwargs = {}
-        if platform.system() == "Windows":      
-            kwargs["creationflags"] = subprocess.CREATE_NO_WINDOW
+        # 🌐 Kaspi накладной ботқа сұраныс (басқа серверде login_kaspi.py іске қосылады)
+        print("🌐 Накладной ботқа сұраныс жіберілуде...")
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            response = await client.post("http://45.136.57.219:5000/generate_kaspi_nakl", data={
+                "login": login,
+                "password": password,
+                "mode": mode,
+                "shop": shop_name
+            })
 
-        login_kaspi_path = "C:\\Users\\admin\\Desktop\\kaspibot\\login_kaspi.py"
+        if response.status_code != 200:
+            return JSONResponse({"ok": False, "msg": "❌ Сервер жауап бермеді"}, status_code=500)
 
-        subprocess.Popen(
-            ["python", login_kaspi_path, login, password, mode, shop_name],
-            **kwargs
-        )
-
-        print("✅ login_kaspi.py іске қосылды")
-        return {"ok": True, "msg": "Накладной шығару басталды"}
+        data = response.json()
+        if data.get("ok"):
+            return JSONResponse({"ok": True, "msg": "✅ Накладной шығару басталды"})
+        else:
+            return JSONResponse({"ok": False, "msg": data.get("msg", "Қате орын алды")})
 
     except Exception as e:
-        print("❌ Қате:", str(e))
+        print("❌ /generate_nakl ішінде қате:", str(e))
         return JSONResponse({"ok": False, "msg": str(e)}, status_code=500)
+
