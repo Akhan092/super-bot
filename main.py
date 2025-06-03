@@ -465,12 +465,21 @@ async def generate_kaspi_nakl(
         print("🟢 /generate_kaspi_nakl басталды")
         print(f"➡️ Логин: {login}, Режим: {mode}, Магазин: {shop}")
 
+        # ✅ Windows жүйесі болса — консольсіз режим
         kwargs = {}
         if platform.system() == "Windows":
             kwargs["creationflags"] = subprocess.CREATE_NO_WINDOW
 
-        script_path = r"C:\Users\admin\Desktop\kaspibot\login_kaspi_bot.py"  # Бұл – накладной шығаратын нақты скрипт
-        subprocess.Popen(["python", script_path, login, password, mode, shop], **kwargs)
+        # ✅ Нақты скрипт жолы
+        script_path = r"C:\Users\admin\Desktop\kaspibot\login_kaspi_bot.py"
+
+        # ✅ Аргументтермен бірге subprocess іске қосу
+        subprocess.Popen(
+            ["python", script_path, login, password, mode, shop],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            **kwargs
+        )
 
         print("✅ login_kaspi_bot.py іске қосылды")
         return JSONResponse({"ok": True, "msg": "✅ Накладной шығару басталды"})
