@@ -455,9 +455,7 @@ async def add_merchant_id_column():
 @app.post("/generate_nakl")
 async def generate_nakl(shop: str = Form(...), mode: str = Form(...), phone: str = Form(...)):
     try:
-        print("📥 /generate_nakl сұранысы:", shop, mode, phone)
-
-        # 🔍 Қолданушыны табу
+        # 🔍 Қолданушы мен магазинді база арқылы табамыз
         query_user = users.select().where(users.c.phone == phone)
         user = await database.fetch_one(query_user)
         if not user:
@@ -465,13 +463,11 @@ async def generate_nakl(shop: str = Form(...), mode: str = Form(...), phone: str
 
         user_id = user["id"]
 
-        # 🔍 Магазинді табу
         query_shop = kaspi_shops.select().where(
             (kaspi_shops.c.user_id == user_id) &
             (kaspi_shops.c.shop_name == shop)
         )
         shop_row = await database.fetch_one(query_shop)
-
         if not shop_row:
             return JSONResponse({"ok": False, "msg": "Магазин табылмады"}, status_code=404)
 
@@ -479,18 +475,23 @@ async def generate_nakl(shop: str = Form(...), mode: str = Form(...), phone: str
         password = shop_row["password"]
         shop_name = shop_row["shop_name"]
 
-        # 🔧 Файл жолы (қажет болса түзетіңіз)
+        # ✅ ОСЫ ЖЕРГЕ subprocess коды келеді
+        import platform
+        kwargs = {}
+        if platform.system() == "Windows":
+            import subprocess
+            kwargs["creationflags"] = subprocess.CREATE_NO_WINDOW
+
         login_kaspi_path = "C:\\Users\\admin\\Desktop\\kaspibot\\login_kaspi.py"
 
         subprocess.Popen(
             ["python", login_kaspi_path, login, password, mode, shop_name],
-            creationflags=subprocess.CREATE_NO_WINDOW  # Windows-та фондық режимде
+            **kwargs
         )
 
-        print(f"✅ login_kaspi.py іске қосылды: {shop_name} режим={mode}")
+        print("✅ login_kaspi.py іске қосылды")
         return {"ok": True, "msg": "Накладной шығару басталды"}
 
     except Exception as e:
-        print("❌ Қате /generate_nakl:", str(e))
+        print("❌ Қате:", str(e))
         return JSONResponse({"ok": False, "msg": str(e)}, status_code=500)
-
