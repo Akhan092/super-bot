@@ -454,10 +454,6 @@ async def add_merchant_id_column():
     except Exception as e:
         return {"ok": False, "error": str(e)}
 
-from fastapi import Form
-import subprocess
-import platform
-
 @app.post("/generate_kaspi_nakl")
 async def generate_kaspi_nakl(
     login: str = Form(...),
@@ -469,24 +465,16 @@ async def generate_kaspi_nakl(
         print("🟢 /generate_kaspi_nakl басталды")
         print(f"➡️ Логин: {login}, Режим: {mode}, Магазин: {shop}")
 
-        # ✅ Windows жүйесі болса, консольсіз режим
         kwargs = {}
         if platform.system() == "Windows":
             kwargs["creationflags"] = subprocess.CREATE_NO_WINDOW
 
-        # ✅ login_kaspi.py файлы нақты тұрған жол
-        script_path = "C:\\Users\\admin\\Desktop\\kaspibot\\login_kaspi.py"
+        script_path = r"C:\Users\admin\Desktop\kaspibot\login_kaspi_bot.py"  # Бұл – накладной шығаратын нақты скрипт
+        subprocess.Popen(["python", script_path, login, password, mode, shop], **kwargs)
 
-        # 🔄 subprocess арқылы қосу
-        subprocess.Popen(
-            ["python", script_path, login, password, mode, shop],
-            **kwargs
-        )
+        print("✅ login_kaspi_bot.py іске қосылды")
+        return JSONResponse({"ok": True, "msg": "✅ Накладной шығару басталды"})
 
-        print("✅ login_kaspi.py іске қосылды")
-        return {"ok": True, "msg": "✅ Накладной шығару басталды"}
-    
     except Exception as e:
         print("❌ Қате:", str(e))
-        return {"ok": False, "msg": str(e)}
-
+        return JSONResponse({"ok": False, "msg": str(e)}, status_code=500)
