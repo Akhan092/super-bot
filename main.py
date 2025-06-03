@@ -454,7 +454,7 @@ async def add_merchant_id_column():
     except Exception as e:
         return {"ok": False, "error": str(e)}
 
-@app.post("/run_kaspi_bot")
+@app.post("/generate_kaspi_nakl")
 async def run_kaspi_bot(
     login: str = Form(...),
     password: str = Form(...),
