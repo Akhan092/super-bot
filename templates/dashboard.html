@@ -254,7 +254,7 @@
 	    return;
 	  }
 	
-	  const res = await fetch("/api/generate_kaspi_nakl", {
+	  const res = await fetch("/generate_kaspi_nakl", {
 	    method: "POST",
 	    headers: { "Content-Type": "application/x-www-form-urlencoded" },
 	    body: new URLSearchParams({ shop, mode, phone })
