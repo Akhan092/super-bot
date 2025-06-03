@@ -457,7 +457,7 @@ async def add_merchant_id_column():
 @app.post("/generate_nakl")
 async def generate_nakl(shop: str = Form(...), mode: str = Form(...), phone: str = Form(...)):
     try:
-        # 🔍 Қолданушы мен магазинді база арқылы табамыз
+        # 🔍 Қолданушы мен магазинді база арқылы табу
         query_user = users.select().where(users.c.phone == phone)
         user = await database.fetch_one(query_user)
         if not user:
@@ -477,26 +477,24 @@ async def generate_nakl(shop: str = Form(...), mode: str = Form(...), phone: str
         password = shop_row["password"]
         shop_name = shop_row["shop_name"]
 
-        # 🌐 Kaspi накладной ботқа сұраныс (басқа серверде login_kaspi.py іске қосылады)
-        print("🌐 Накладной ботқа сұраныс жіберілуде...")
-        async with httpx.AsyncClient(timeout=60.0) as client:
-            response = await client.post("http://45.136.57.219:5000/generate_kaspi_nakl", data={
-                "login": login,
-                "password": password,
-                "mode": mode,
-                "shop": shop_name
-            })
+        # ✅ Windows жолын нақты көрсетіңіз
+        script_path = "C:\\Users\\admin\\Desktop\\kaspibot\\login_kaspi.py"
 
-        if response.status_code != 200:
-            return JSONResponse({"ok": False, "msg": "❌ Сервер жауап бермеді"}, status_code=500)
+        # ✅ Windows үшін фондық режимде іске қосу
+        import subprocess, platform
+        kwargs = {}
+        if platform.system() == "Windows":
+            kwargs["creationflags"] = subprocess.CREATE_NO_WINDOW
 
-        data = response.json()
-        if data.get("ok"):
-            return JSONResponse({"ok": True, "msg": "✅ Накладной шығару басталды"})
-        else:
-            return JSONResponse({"ok": False, "msg": data.get("msg", "Қате орын алды")})
+        subprocess.Popen(
+            ["python", script_path, login, password, mode, shop_name],
+            **kwargs
+        )
+
+        print("✅ login_kaspi.py іске қосылды")
+        return {"ok": True, "msg": "Накладной шығару басталды"}
 
     except Exception as e:
-        print("❌ /generate_nakl ішінде қате:", str(e))
+        print("❌ Қате:", str(e))
         return JSONResponse({"ok": False, "msg": str(e)}, status_code=500)
 
