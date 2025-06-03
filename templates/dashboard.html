@@ -362,7 +362,30 @@
 	    return;
 	  }
 	
-	  // 🔤 Тілді анықтау
+	  // ✅ Бөлім ауыстыру батырмаларына тыңдаушы тіркеу (бір рет қана)
+	  document.getElementById("menu-link").addEventListener("click", () => {
+	    document.getElementById("section-shops").classList.remove("hidden");
+	    document.getElementById("section-nakl").classList.add("hidden");
+	  });
+	
+	  document.getElementById("menu-nakl").addEventListener("click", () => {
+	    document.getElementById("section-shops").classList.add("hidden");
+	    document.getElementById("section-nakl").classList.remove("hidden");
+	  });
+	
+	  document.getElementById("mobile-menu-link").addEventListener("click", () => {
+	    toggleMobileMenu();
+	    document.getElementById("section-shops").classList.remove("hidden");
+	    document.getElementById("section-nakl").classList.add("hidden");
+	  });
+	
+	  document.getElementById("mobile-menu-nakl").addEventListener("click", () => {
+	    toggleMobileMenu();
+	    document.getElementById("section-shops").classList.add("hidden");
+	    document.getElementById("section-nakl").classList.remove("hidden");
+	  });
+	
+	  // 🔤 Тілді орнату
 	  const savedLang = localStorage.getItem("lang");
 	  const browserLang = navigator.language.startsWith("ru") ? "ru" : "kk";
 	  const lang = savedLang || browserLang;
@@ -370,10 +393,6 @@
 	  setLanguage(lang); // 🟢 Мәтіндерді дұрыс тілде көрсету
 	};
 
- 
-    function editStore(name) {
-      alert(`"${name}" магазинін өзгерту логикасы кейін қосылады.`);
-    }
 
     document.getElementById("modal-add-button").addEventListener("click", async () => {
 	  const login = document.getElementById("store-email").value.trim();
