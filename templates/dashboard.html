@@ -96,31 +96,35 @@
 	
 	<!-- ✅ Kaspi накладной шығару бөлімі БӨЛЕК тұр -->
 	<div id="section-nakl" class="hidden mt-10 flex justify-center">
- 	  <div class="bg-white shadow rounded-xl w-full max-w-xl p-6 flex flex-col items-center text-center">
-	  <h2 class="text-xl font-semibold mb-4">🧾 Магазин таңдаңыз</h2>
-	  <select id="nakl-shop-select" class="border p-2 rounded mb-6 w-full">
-	    <option disabled selected>Магазинді таңдаңыз</option>
-	    {% for shop in shops %}
-	    <option value="{{ shop.shop_name }}">{{ shop.shop_name }}</option>
-	    {% endfor %}
-	  </select>
+	  <div class="bg-white shadow rounded-xl w-full max-w-xl p-6 flex flex-col items-center text-center">
 	
-	  <h2 class="text-xl font-semibold mb-3">⚙️ Режим таңдаңыз</h2>
-	  <div class="space-y-2 mb-6">
-	    <label class="block">
-	      <input type="radio" name="nakl-mode" value="upakovka" class="mr-2">
-	      Упаковкадағы жаңа заказдарды шығару
-	    </label>
-	    <label class="block">
-	      <input type="radio" name="nakl-mode" value="full" class="mr-2">
-	      Барлық заказдарды шығару (Упаковка + Передача)
-	    </label>
+	    <h2 id="nakl-shop-title" class="text-xl font-semibold mb-4">🧾 Магазин таңдаңыз</h2>
+	    <select id="nakl-shop-select" class="border p-2 rounded mb-6 w-full">
+	      <option disabled selected>Магазинді таңдаңыз</option>
+	      {% for shop in shops %}
+	        <option value="{{ shop.shop_name }}">{{ shop.shop_name }}</option>
+	      {% endfor %}
+	    </select>
+	
+	    <h2 id="nakl-mode-title" class="text-xl font-semibold mb-3">⚙️ Режим таңдаңыз</h2>
+	    <div class="space-y-2 mb-6 text-left w-full max-w-sm">
+	      <label class="block">
+	        <input type="radio" name="nakl-mode" value="upakovka" class="mr-2">
+	        <span id="nakl-mode-upakovka">Упаковкадағы жаңа заказдарды шығару</span>
+	      </label>
+	      <label class="block">
+	        <input type="radio" name="nakl-mode" value="full" class="mr-2">
+	        <span id="nakl-mode-full">Барлық заказдарды шығару (Упаковка + Передача)</span>
+	      </label>
+	    </div>
+	
+	    <button id="generate-nakl-button" class="bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700">
+	      📄 Накладной шығару
+	    </button>
+	
 	  </div>
-	
-	  <button id="generate-nakl-button" class="bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700">
-	    📄 Накладной шығару
-	  </button>
 	</div>
+
 
 		    
 <!-- 📱 Мобильді меню -->
@@ -191,7 +195,12 @@
     	days_unit: "күн",
 	menu_my_shops: "Менің магазиндерім",
 	menu_nakl: "Kaspi накладнойларын автоматты шығару",
-	      
+	title_shop: "🧾 Магазин таңдаңыз",
+	placeholder: "Магазинді таңдаңыз",
+	title_mode: "⚙️ Режим таңдаңыз",
+	mode_upakovka: "Упаковкадағы жаңа заказдарды шығару",
+	mode_full: "Барлық заказдарды шығару (Упаковка + Передача)",
+	button: "📄 Накладной шығару"    
       },
       ru: {
         logout: "Выйти",
@@ -208,7 +217,13 @@
     	left_label: "⏳ Осталось:",
     	days_unit: "дней",
 	menu_my_shops: "Мои магазины",
-	menu_nakl: "Автоматическая выгрузка накладных Kaspi"
+	menu_nakl: "Автоматическая выгрузка накладных Kaspi",
+	title_shop: "🧾 Выберите магазин",
+  	placeholder: "Выберите магазин",
+  	title_mode: "⚙️ Выберите режим",
+  	mode_upakovka: "Выгрузить только новые заказы из \"Упаковка\"",
+  	mode_full: "Выгрузить все заказы (\"Упаковка\" + \"Передача\")",
+  	button: "📄 Выгрузить накладные"
       }
     };
 
@@ -224,6 +239,12 @@
       document.getElementById("mobile-menu-link").innerText = t.menu_my_shops;
       document.getElementById("menu-nakl").innerText = t.menu_nakl;
       document.getElementById("mobile-menu-nakl").innerText = "📦 " + t.menu_nakl;
+      document.getElementById("nakl-shop-title").innerText = texts[lang].nakl.title_shop;
+      document.getElementById("nakl-shop-select").options[0].text = texts[lang].nakl.placeholder;
+      document.getElementById("nakl-mode-title").innerText = texts[lang].nakl.title_mode;
+      document.getElementById("nakl-mode-upakovka").innerText = texts[lang].nakl.mode_upakovka;
+      document.getElementById("nakl-mode-full").innerText = texts[lang].nakl.mode_full;
+      document.getElementById("generate-nakl-button").innerText = texts[lang].nakl.button;
 
       // 🔁 "Иә / Жоқ" батырмалары
       document.getElementById("confirm-yes").innerText = (lang === "kk") ? "Иә" : "Да";
