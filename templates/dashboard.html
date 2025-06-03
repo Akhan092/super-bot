@@ -56,68 +56,71 @@
 	  </div>
 	
 	  <!-- 🏪 Магазин тізімі -->
-	  <div id="section-shops" class="flex justify-center">
-	    <div class="bg-white shadow rounded-xl w-full max-w-6xl p-4 sm:p-6">
-		
-		<!-- 🔝 Тақырып пен кнопка -->
-		<div class="flex flex-wrap justify-between items-center gap-2 mb-6">
-		  <h2 id="store-title" class="text-lg sm:text-xl font-semibold text-gray-800">
-		    Магазиндеріңіз
-		  </h2>
-		  <button onclick="openModal()" id="add-button"
-		          class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm whitespace-nowrap">
-		    + Магазин қосу
-		  </button>
-		</div>
-
-		<!-- 🧩 Магазин карточкалары осы контейнер ішінде -->
-		<div id="store-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-		  {% for shop in shops %}
-		  <div class="border rounded-xl shadow p-4 bg-white relative">
-			<h3 class="text-lg font-bold mb-1">{{ shop.shop_name }}</h3>
-			<p class="text-xs text-gray-500">ID: {{ shop.merchant_id }}</p>
-			{% set lang = request.cookies.get("lang") or "kk" %}
-			{% set expires = shop.created_at + timedelta(hours=72) %}
-			{% set days_left = ((shop.created_at + timedelta(hours=72)) - datetime.utcnow()).days %}
-			<p class="text-xs text-blue-600 mt-1 expires-section" 
-			   data-created="{{ shop.created_at.isoformat() }}">
-			</p>
-
-			<button id="delete-button-{{ loop.index }}"
-		               onclick="deleteStore('{{ shop.shop_name }}', this)"
-		               class="absolute top-2 right-2 text-sm text-red-500 hover:underline">
-		         <!-- бос қалдырамыз, JavaScript өзі толтырады -->
-		       </button>
-		  </div>
-		  {% endfor %}
-		</div>
-
-	  <!-- 🧾 Накладной шығару бөлімі -->
-	  <div id="section-nakl" class="hidden mt-10">
-	    <h2 class="text-xl font-semibold mb-4">🧾 Магазин таңдаңыз</h2>
-	    <select id="nakl-shop-select" class="border p-2 rounded mb-6 w-full max-w-md">
-	      <option disabled selected>Магазинді таңдаңыз</option>
-	      {% for shop in shops %}
-	        <option value="{{ shop.shop_name }}">{{ shop.shop_name }}</option>
-	      {% endfor %}
-	    </select>
-	
-	    <h2 class="text-xl font-semibold mb-3">⚙️ Режим таңдаңыз</h2>
-	    <div class="space-y-2 mb-6">
-	      <label class="block">
-	        <input type="radio" name="nakl-mode" value="upakovka" class="mr-2">
-	        Упаковкадағы жаңа заказдарды шығару
-	      </label>
-	      <label class="block">
-	        <input type="radio" name="nakl-mode" value="full" class="mr-2">
-	        Барлық заказдарды шығару (Упаковка + Передача)
-	      </label>
+	<div id="section-shops" class="flex justify-center">
+	  <div class="bg-white shadow rounded-xl w-full max-w-6xl p-4 sm:p-6">
+	    
+	    <!-- 🔝 Тақырып пен кнопка -->
+	    <div class="flex flex-wrap justify-between items-center gap-2 mb-6">
+	      <h2 id="store-title" class="text-lg sm:text-xl font-semibold text-gray-800">
+	        Магазиндеріңіз
+	      </h2>
+	      <button onclick="openModal()" id="add-button"
+	              class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm whitespace-nowrap">
+	        + Магазин қосу
+	      </button>
 	    </div>
 	
-	    <button id="generate-nakl-button" class="bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700">
-	      📄 Накладной шығару
-	    </button>
+	    <!-- 🧩 Магазин карточкалары -->
+	    <div id="store-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+	      {% for shop in shops %}
+	      <div class="border rounded-xl shadow p-4 bg-white relative">
+	        <h3 class="text-lg font-bold mb-1">{{ shop.shop_name }}</h3>
+	        <p class="text-xs text-gray-500">ID: {{ shop.merchant_id }}</p>
+	        {% set lang = request.cookies.get("lang") or "kk" %}
+	        {% set expires = shop.created_at + timedelta(hours=72) %}
+	        {% set days_left = ((shop.created_at + timedelta(hours=72)) - datetime.utcnow()).days %}
+	        <p class="text-xs text-blue-600 mt-1 expires-section" 
+	           data-created="{{ shop.created_at.isoformat() }}">
+	        </p>
+	
+	        <button id="delete-button-{{ loop.index }}"
+	                onclick="deleteStore('{{ shop.shop_name }}', this)"
+	                class="absolute top-2 right-2 text-sm text-red-500 hover:underline">
+	        </button>
+	      </div>
+	      {% endfor %}
+	    </div>
+	
 	  </div>
+	</div>
+	
+	<!-- ✅ Kaspi накладной шығару бөлімі БӨЛЕК тұр -->
+	<div id="section-nakl" class="hidden mt-10 bg-white shadow rounded-xl w-full max-w-3xl mx-auto p-6">
+	  <h2 class="text-xl font-semibold mb-4">🧾 Магазин таңдаңыз</h2>
+	  <select id="nakl-shop-select" class="border p-2 rounded mb-6 w-full">
+	    <option disabled selected>Магазинді таңдаңыз</option>
+	    {% for shop in shops %}
+	    <option value="{{ shop.shop_name }}">{{ shop.shop_name }}</option>
+	    {% endfor %}
+	  </select>
+	
+	  <h2 class="text-xl font-semibold mb-3">⚙️ Режим таңдаңыз</h2>
+	  <div class="space-y-2 mb-6">
+	    <label class="block">
+	      <input type="radio" name="nakl-mode" value="upakovka" class="mr-2">
+	      Упаковкадағы жаңа заказдарды шығару
+	    </label>
+	    <label class="block">
+	      <input type="radio" name="nakl-mode" value="full" class="mr-2">
+	      Барлық заказдарды шығару (Упаковка + Передача)
+	    </label>
+	  </div>
+	
+	  <button id="generate-nakl-button" class="bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700">
+	    📄 Накладной шығару
+	  </button>
+	</div>
+
 		    
 <!-- 📱 Мобильді меню -->
 	  <div id="mobile-menu" class="hidden absolute top-[64px] left-0 right-0 bg-white z-40 sm:hidden border-t border-gray-300 shadow-md min-h-[calc(100vh-64px)] px-4 py-6">
