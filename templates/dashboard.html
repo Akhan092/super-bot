@@ -254,8 +254,7 @@
 	    return;
 	  }
 	
-	  // 🔽 МІНЕ ОСЫ ЖЕР — сіздің сұраныс:
-	  const res = await fetch("/generate_nakl", {
+	  const res = await fetch("http://45.136.57.219:5000/generate_kaspi_nakl", {
 	    method: "POST",
 	    headers: { "Content-Type": "application/x-www-form-urlencoded" },
 	    body: new URLSearchParams({ shop, mode, phone })
@@ -268,6 +267,7 @@
 	    alert("❌ Қате: " + (data.msg || "Белгісіз қате"));
 	  }
 	});
+
 
 
 
