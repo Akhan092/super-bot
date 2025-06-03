@@ -39,7 +39,9 @@
 	  <h2 class="text-lg font-semibold mb-4">📁 Меню</h2>
 	  <ul class="space-y-2 text-sm">
 	    <li><a id="menu-link" href="#" class="text-blue-600 font-medium">Мои магазины</a></li>
+	    <li><a id="menu-nakl" href="#" class="text-blue-600 font-medium">Kaspi накладнойларын шығару</a></li>
 	  </ul>
+
 	</aside>
 	
 	<!-- 📦 Контент (мобилде толық ен, sm+ құрылғыларда оңға ығысқан) -->
@@ -95,6 +97,7 @@
 	  <div id="mobile-menu" class="hidden absolute top-[64px] left-0 right-0 bg-white z-40 sm:hidden border-t border-gray-300 shadow-md min-h-[calc(100vh-64px)] px-4 py-6">
 		  <ul class="space-y-4">
 		    <li><a id="mobile-menu-link" href="#" class="text-blue-600 font-medium">📁 Мои магазины</a></li>
+		    <li><a id="mobile-menu-nakl" href="#" class="text-blue-600 font-medium">📦 Kaspi накладнойларын шығару</a></li>
 		  </ul>
 		</div>
 	  </div>
@@ -156,7 +159,8 @@
 	expires_label: "🕒 Активтілік мерзімі:",
     	left_label: "⏳ Қалды:",
     	days_unit: "күн",
-	menu_my_shops: "Менің магазиндерім"
+	menu_my_shops: "Менің магазиндерім",
+	menu_nakl: "Kaspi накладнойларын шығару"
       },
       ru: {
         logout: "Выйти",
@@ -172,7 +176,8 @@
 	expires_label: "🕒 Активен до:",
     	left_label: "⏳ Осталось:",
     	days_unit: "дней",
-	menu_my_shops: "Мои магазины"
+	menu_my_shops: "Мои магазины",
+	menu_nakl: "Автоматическая выгрузка накладных Kaspi"
       }
     };
 
@@ -186,6 +191,8 @@
       document.getElementById("modal-add-button").innerText = t.modal_add;
       document.getElementById("menu-link").innerText = texts[lang].menu_my_shops;
       document.getElementById("mobile-menu-link").innerText = texts[lang].menu_my_shops;
+      document.getElementById("menu-nakl").innerText = texts[lang].menu_nakl;
+      document.getElementById("mobile-menu-nakl").innerText = "📦 " + texts[lang].menu_nakl;
       // 🔁 "Иә / Жоқ" батырмалары
       document.getElementById("confirm-yes").innerText = (lang === "kk") ? "Иә" : "Да";
       document.getElementById("confirm-no").innerText = (lang === "kk") ? "Жоқ" : "Нет";
