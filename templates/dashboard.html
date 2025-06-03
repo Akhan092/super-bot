@@ -155,7 +155,8 @@
 	invalid_auth: "❌ Логин немесе пароль қате.",
 	expires_label: "🕒 Активтілік мерзімі:",
     	left_label: "⏳ Қалды:",
-    	days_unit: "күн"
+    	days_unit: "күн",
+	menu_my_shops: "Менің магазиндерім"
       },
       ru: {
         logout: "Выйти",
@@ -170,7 +171,8 @@
 	invalid_auth: "❌ Неверный логин или пароль.",
 	expires_label: "🕒 Активен до:",
     	left_label: "⏳ Осталось:",
-    	days_unit: "дней"
+    	days_unit: "дней",
+	menu_my_shops: "Мои магазины"
       }
     };
 
@@ -182,6 +184,8 @@
       document.getElementById("modal-title").innerText = t.modal_title;
       document.getElementById("email-label").innerText = t.modal_email_label;
       document.getElementById("modal-add-button").innerText = t.modal_add;
+      document.getElementById("menu-link").innerText = texts[lang].menu_my_shops;
+      document.getElementById("mobile-menu-link").innerText = texts[lang].menu_my_shops;
       // 🔁 "Иә / Жоқ" батырмалары
       document.getElementById("confirm-yes").innerText = (lang === "kk") ? "Иә" : "Да";
       document.getElementById("confirm-no").innerText = (lang === "kk") ? "Жоқ" : "Нет";
