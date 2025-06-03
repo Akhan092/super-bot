@@ -249,6 +249,10 @@
 	  const mode = document.querySelector('input[name="nakl-mode"]:checked')?.value;
 	  const phone = localStorage.getItem("user_phone");
 	
+	  console.log("➡️ shop:", shop);
+	  console.log("➡️ mode:", mode);
+	  console.log("➡️ phone:", phone);
+	
 	  if (!shop || !mode || !phone) {
 	    alert("⚠️ Магазин, режим немесе телефон анықталмады.");
 	    return;
