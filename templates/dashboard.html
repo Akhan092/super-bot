@@ -70,6 +70,28 @@
 		  </button>
 		</div>
 
+		<!-- 🧩 Магазин карточкалары осы контейнер ішінде -->
+		<div id="store-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+		  {% for shop in shops %}
+		  <div class="border rounded-xl shadow p-4 bg-white relative">
+			<h3 class="text-lg font-bold mb-1">{{ shop.shop_name }}</h3>
+			<p class="text-xs text-gray-500">ID: {{ shop.merchant_id }}</p>
+			{% set lang = request.cookies.get("lang") or "kk" %}
+			{% set expires = shop.created_at + timedelta(hours=72) %}
+			{% set days_left = ((shop.created_at + timedelta(hours=72)) - datetime.utcnow()).days %}
+			<p class="text-xs text-blue-600 mt-1 expires-section" 
+			   data-created="{{ shop.created_at.isoformat() }}">
+			</p>
+
+			<button id="delete-button-{{ loop.index }}"
+		               onclick="deleteStore('{{ shop.shop_name }}', this)"
+		               class="absolute top-2 right-2 text-sm text-red-500 hover:underline">
+		         <!-- бос қалдырамыз, JavaScript өзі толтырады -->
+		       </button>
+		  </div>
+		  {% endfor %}
+		</div>
+
 	  <!-- 🧾 Накладной шығару бөлімі -->
 	  <div id="section-nakl" class="hidden mt-10">
 	    <h2 class="text-xl font-semibold mb-4">🧾 Магазин таңдаңыз</h2>
@@ -96,28 +118,7 @@
 	      📄 Накладной шығару
 	    </button>
 	  </div>
-
-		<!-- 🧩 Магазин карточкалары осы контейнер ішінде -->
-		<div id="store-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-		  {% for shop in shops %}
-		  <div class="border rounded-xl shadow p-4 bg-white relative">
-			<h3 class="text-lg font-bold mb-1">{{ shop.shop_name }}</h3>
-			<p class="text-xs text-gray-500">ID: {{ shop.merchant_id }}</p>
-			{% set lang = request.cookies.get("lang") or "kk" %}
-			{% set expires = shop.created_at + timedelta(hours=72) %}
-			{% set days_left = ((shop.created_at + timedelta(hours=72)) - datetime.utcnow()).days %}
-			<p class="text-xs text-blue-600 mt-1 expires-section" 
-			   data-created="{{ shop.created_at.isoformat() }}">
-			</p>
-
-			<button id="delete-button-{{ loop.index }}"
-		               onclick="deleteStore('{{ shop.shop_name }}', this)"
-		               class="absolute top-2 right-2 text-sm text-red-500 hover:underline">
-		         <!-- бос қалдырамыз, JavaScript өзі толтырады -->
-		       </button>
-		  </div>
-		  {% endfor %}
-		</div>
+		    
 <!-- 📱 Мобильді меню -->
 	  <div id="mobile-menu" class="hidden absolute top-[64px] left-0 right-0 bg-white z-40 sm:hidden border-t border-gray-300 shadow-md min-h-[calc(100vh-64px)] px-4 py-6">
 		  <ul class="space-y-4">
