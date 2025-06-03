@@ -454,35 +454,34 @@ async def add_merchant_id_column():
     except Exception as e:
         return {"ok": False, "error": str(e)}
 
-@app.post("/generate_kaspi_nakl")
-async def generate_kaspi_nakl(
+@app.post("/run_kaspi_bot")
+async def run_kaspi_bot(
     login: str = Form(...),
     password: str = Form(...),
     mode: str = Form(...),
     shop: str = Form(...)
 ):
     try:
-        print("🟢 /generate_kaspi_nakl басталды")
-        print(f"➡️ Логин: {login}, Режим: {mode}, Магазин: {shop}")
+        print("🟢 /run_kaspi_bot басталды")
+        print(f"➡️ login: {login}, mode: {mode}, shop: {shop}")
 
-        # ✅ Windows жүйесі болса — консольсіз режим
-        kwargs = {}
-        if platform.system() == "Windows":
-            kwargs["creationflags"] = subprocess.CREATE_NO_WINDOW
+        # ✅ 5001 порттағы серверге сұраныс жіберу
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            response = await client.post("http://45.136.57.219:5001/generate_kaspi_nakl", data={
+                "login": login,
+                "password": password,
+                "mode": mode,
+                "shop": shop
+            })
 
-        # ✅ Нақты скрипт жолы
-        script_path = r"C:\Users\admin\Desktop\kaspibot\login_kaspi_bot.py"
-
-        # ✅ Аргументтермен бірге subprocess іске қосу
-        subprocess.Popen(
-            ["python", script_path, login, password, mode, shop],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-            **kwargs
-        )
-
-        print("✅ login_kaspi_bot.py іске қосылды")
-        return JSONResponse({"ok": True, "msg": "✅ Накладной шығару басталды"})
+        # ✅ Жауапты тексеру
+        if response.status_code == 200:
+            data = response.json()
+            print("✅ 5001 порттан жауап:", data)
+            return JSONResponse({"ok": True, "msg": "✅ Kaspi бот іске қосылды", "response": data})
+        else:
+            print("❌ 5001 порттан жауап қатесі:", response.text)
+            return JSONResponse({"ok": False, "msg": "❌ Kaspi бот қосыла алмады", "detail": response.text}, status_code=500)
 
     except Exception as e:
         print("❌ Қате:", str(e))
