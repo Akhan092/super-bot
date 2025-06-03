@@ -244,7 +244,31 @@
       document.getElementById("nakl-mode-title").innerText = texts[lang].title_mode;
       document.getElementById("nakl-mode-upakovka").innerText = texts[lang].mode_upakovka;
       document.getElementById("nakl-mode-full").innerText = texts[lang].mode_full;
-      document.getElementById("generate-nakl-button").innerText = texts[lang].button;
+      document.getElementById("generate-nakl-button").addEventListener("click", async () => {
+	  const shop = document.getElementById("nakl-shop-select").value;
+	  const mode = document.querySelector('input[name="nakl-mode"]:checked')?.value;
+	  const phone = localStorage.getItem("user_phone");
+	
+	  if (!shop || !mode || !phone) {
+	    alert("⚠️ Магазин, режим немесе телефон анықталмады.");
+	    return;
+	  }
+	
+	  // 🔽 МІНЕ ОСЫ ЖЕР — сіздің сұраныс:
+	  const res = await fetch("/generate_nakl", {
+	    method: "POST",
+	    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+	    body: new URLSearchParams({ shop, mode, phone })
+	  });
+	
+	  const data = await res.json();
+	  if (data.ok) {
+	    alert("✅ Накладной шығару басталды");
+	  } else {
+	    alert("❌ Қате: " + (data.msg || "Белгісіз қате"));
+	  }
+	});
+
 
 
       // 🔁 "Иә / Жоқ" батырмалары
