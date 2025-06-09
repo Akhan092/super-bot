@@ -251,23 +251,32 @@
       document.getElementById("nakl-mode-upakovka").innerText = texts[lang].mode_upakovka;
       document.getElementById("nakl-mode-full").innerText = texts[lang].mode_full;
       document.getElementById("generate-nakl-button").addEventListener("click", async () => {
-	  const shop = document.getElementById("nakl-shop-select").value;
+	  const select = document.getElementById("nakl-shop-select");
+	  const selectedOption = select.options[select.selectedIndex];
+	
+	  const shop = selectedOption.value;
 	  const mode = document.querySelector('input[name="nakl-mode"]:checked')?.value;
 	  const phone = localStorage.getItem("user_phone");
+	
+	  // 🔑 Жаңа — логин мен парольді option ішінен алу
+	  const login = selectedOption.dataset.login;
+	  const password = selectedOption.dataset.password;
 	
 	  console.log("➡️ shop:", shop);
 	  console.log("➡️ mode:", mode);
 	  console.log("➡️ phone:", phone);
+	  console.log("➡️ login:", login);
+	  console.log("➡️ password:", password);
 	
-	  if (!shop || !mode || !phone) {
-	    alert("⚠️ Магазин, режим немесе телефон анықталмады.");
+	  if (!shop || !mode || !phone || !login || !password) {
+	    alert("⚠️ Деректер толық емес.");
 	    return;
 	  }
 	
 	  const res = await fetch("/generate_kaspi_nakl", {
 	    method: "POST",
 	    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-	    body: new URLSearchParams({ shop, mode, phone })
+	    body: new URLSearchParams({ shop, mode, phone, login, password })
 	  });
 	
 	  const data = await res.json();
@@ -277,9 +286,6 @@
 	    alert("❌ Қате: " + (data.msg || "Белгісіз қате"));
 	  }
 	});
-
-
-
 
       // 🔁 "Иә / Жоқ" батырмалары
       document.getElementById("confirm-yes").innerText = (lang === "kk") ? "Иә" : "Да";
