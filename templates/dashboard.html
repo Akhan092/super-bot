@@ -102,8 +102,14 @@
 	    <select id="nakl-shop-select" class="border p-2 rounded mb-6 w-full">
 	      <option disabled selected>Магазинді таңдаңыз</option>
 	      {% for shop in shops %}
-	        <option value="{{ shop.shop_name }}">{{ shop.shop_name }}</option>
-	      {% endfor %}
+		  <option 
+		    value="{{ shop.shop_name }}" 
+		    data-login="{{ shop.login }}"
+		    data-password="{{ shop.password }}">
+		    {{ shop.shop_name }}
+		  </option>
+		{% endfor %}
+
 	    </select>
 	
 	    <h2 id="nakl-mode-title" class="text-xl font-semibold mb-3">⚙️ Режим таңдаңыз</h2>
