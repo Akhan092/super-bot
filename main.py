@@ -454,6 +454,8 @@ async def add_merchant_id_column():
     except Exception as e:
         return {"ok": False, "error": str(e)}
 
+import traceback  # жоғарғы жаққа қосыңыз
+
 @app.post("/generate_kaspi_nakl")
 async def run_kaspi_bot(
     login: str = Form(...),
@@ -465,7 +467,6 @@ async def run_kaspi_bot(
         print("🟢 /run_kaspi_bot басталды")
         print(f"➡️ login: {login}, mode: {mode}, shop: {shop}")
 
-        # ✅ 5001 порттағы серверге сұраныс жіберу
         async with httpx.AsyncClient(timeout=60.0) as client:
             response = await client.post("http://45.136.57.219:5001/generate_kaspi_nakl", data={
                 "login": login,
@@ -474,7 +475,6 @@ async def run_kaspi_bot(
                 "shop": shop
             })
 
-        # ✅ Жауапты тексеру
         if response.status_code == 200:
             data = response.json()
             print("✅ 5001 порттан жауап:", data)
@@ -485,4 +485,5 @@ async def run_kaspi_bot(
 
     except Exception as e:
         print("❌ Қате:", str(e))
+        traceback.print_exc()  # 🔴 МІНЕ ОСЫ ЖЕР МАҢЫЗДЫ
         return JSONResponse({"ok": False, "msg": str(e)}, status_code=500)
