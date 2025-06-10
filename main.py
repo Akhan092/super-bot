@@ -461,18 +461,20 @@ async def run_kaspi_bot(
     login: str = Form(...),
     password: str = Form(...),
     mode: str = Form(...),
-    shop: str = Form(...)
+    shop: str = Form(...),
+    merchant_id: str = Form(...)
 ):
     try:
         print("🟢 /run_kaspi_bot басталды")
-        print(f"➡️ login: {login}, mode: {mode}, shop: {shop}")
+        print(f"➡️ login: {login}, mode: {mode}, shop: {shop}, merchant_id: {merchant_id}")
 
         async with httpx.AsyncClient(timeout=60.0) as client:
             response = await client.post("http://45.136.57.219:5001/generate_kaspi_nakl", data={
                 "login": login,
                 "password": password,
                 "mode": mode,
-                "shop": shop
+                "shop": shop,
+                "merchant_id": merchant_id
             })
 
         if response.status_code == 200:
@@ -485,5 +487,5 @@ async def run_kaspi_bot(
 
     except Exception as e:
         print("❌ Қате:", str(e))
-        traceback.print_exc()  # 🔴 МІНЕ ОСЫ ЖЕР МАҢЫЗДЫ
+        traceback.print_exc()
         return JSONResponse({"ok": False, "msg": str(e)}, status_code=500)
