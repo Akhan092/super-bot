@@ -125,9 +125,11 @@
 	      </label>
 	    </div>
 	
-	    <button id="generate-nakl-button" class="bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700">
-	      📄 Накладной шығару
-	    </button>
+	<!-- ✅ Spinner мен лог шығаратын толық кнопка функционалы -->
+	<button id="generate-nakl-button" class="bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700">
+	  📄 Накладной шығару
+	</button>
+	<pre id="log-output" class="hidden mt-4 text-xs bg-gray-100 p-2 rounded w-full max-h-80 overflow-y-auto"></pre>
 	
 	  </div>
 	</div>
@@ -251,18 +253,20 @@
       document.getElementById("nakl-mode-title").innerText = texts[lang].title_mode;
       document.getElementById("nakl-mode-upakovka").innerText = texts[lang].mode_upakovka;
       document.getElementById("nakl-mode-full").innerText = texts[lang].mode_full;
-      document.getElementById("generate-nakl-button").addEventListener("click", async () => {
-	  const select = document.getElementById("nakl-shop-select");
-	  const selectedOption = select.options[select.selectedIndex];
+	  document.getElementById("generate-nakl-button").addEventListener("click", async () => {
+	    const select = document.getElementById("nakl-shop-select");
+	    const selectedOption = select.options[select.selectedIndex];
+	    const shop = selectedOption.value;
+	    const mode = document.querySelector('input[name="nakl-mode"]:checked')?.value;
+	    const phone = localStorage.getItem("user_phone");
 	
-	  const shop = selectedOption.value;
-	  const mode = document.querySelector('input[name="nakl-mode"]:checked')?.value;
-	  const phone = localStorage.getItem("user_phone");
+	    const login = selectedOption.dataset.login;
+	    const password = selectedOption.dataset.password;
+	    const merchant_id = selectedOption.dataset.id;
 	
-	  // 🔑 Жаңа — логин мен парольді option ішінен алу
-	  const login = selectedOption.dataset.login;
-	  const password = selectedOption.dataset.password;
-	  const merchant_id = selectedOption.dataset.id;
+	    const button = document.getElementById("generate-nakl-button");
+	    const shopSelect = document.getElementById("nakl-shop-select");
+	    const modeRadios = document.querySelectorAll('input[name="nakl-mode"]');
 	  console.log("➡️ merchant_id:", merchant_id); // ← осыны console.log-қа қосыңыз!
 	
 	  console.log("➡️ shop:", shop);
@@ -275,27 +279,70 @@
 	    alert("⚠️ Деректер толық емес.");
 	    return;
 	  }
-	
-	  const res = await fetch("/generate_kaspi_nakl", {
-		  method: "POST",
-		  headers: { "Content-Type": "application/x-www-form-urlencoded" },
-		  body: new URLSearchParams({
-		    login: login,
-		    password: password,
-		    mode: mode,
-		    shop: shop,
-		    merchant_id: merchant_id // 🟢 Мына жолды қостыңыз
-		  })
-		});
 
+	    // ⛔ Блоктау және айналдыру белгісі қосу
+	    button.disabled = true;
+	    shopSelect.disabled = true;
+	    modeRadios.forEach(r => r.disabled = true);
 	
-	  const data = await res.json();
-	  if (data.ok) {
-	    alert("✅ Накладной шығару басталды");
-	  } else {
-	    alert("❌ Қате: " + (data.msg || "Белгісіз қате"));
-	  }
-	});
+	    const lang = window.currentLang || "kk";
+	    const spinnerText = (lang === "kk") ? "Үңделуде..." : "Обработка...";
+	
+	    button.innerHTML = `
+	      <svg class="animate-spin h-4 w-4 mr-2 inline" viewBox="0 0 24 24">
+	        <circle class="opacity-25" cx="12" cy="12" r="10"
+	                stroke="currentColor" stroke-width="4" fill="none"></circle>
+	        <path class="opacity-75" fill="currentColor"
+	              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+	      </svg> ${spinnerText}
+	    `;
+	
+	    // 🔻 Лог шығару контейнерін көрсетеміз
+	    const logContainer = document.getElementById("log-output");
+	    logContainer.classList.remove("hidden");
+	
+	    async function pollLog() {
+	      try {
+	        const res = await fetch(`/get_log?merchant_id=${merchant_id}`);
+	        const text = await res.text();
+	        logContainer.textContent = text.trim();
+	        logContainer.scrollTop = logContainer.scrollHeight; // автоматты төменге жылжу
+	      } catch (err) {
+	        logContainer.textContent += "\n❌ Серверден лог оқылмады.";
+	      }
+	    }
+	
+	    const interval = setInterval(pollLog, 2000);
+	    pollLog(); // алғашқы жүктеу
+		  
+	    const res = await fetch("/generate_kaspi_nakl", {
+	      method: "POST",
+	      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+	      body: new URLSearchParams({
+	        login: login,
+	        password: password,
+	        mode: mode,
+	        shop: shop,
+	        merchant_id: merchant_id
+	      })
+	    });
+	
+	    const data = await res.json();
+	    clearInterval(interval); // лог сұрауды тоқтатамыз
+	    pollLog(); // соңғы рет жүктеу
+	
+	    if (data.ok) {
+	      alert("✅ Накладной шығару басталды");
+	    } else {
+	      alert("❌ Қате: " + (data.msg || "Белгісіз қате"));
+	    }
+	
+	    // Батырма мен input-тарды қайта ашамыз
+	    button.disabled = false;
+	    shopSelect.disabled = false;
+	    modeRadios.forEach(r => r.disabled = false);
+	    button.innerText = texts[lang].button;
+	  });
 
       // 🔁 "Иә / Жоқ" батырмалары
       document.getElementById("confirm-yes").innerText = (lang === "kk") ? "Иә" : "Да";
