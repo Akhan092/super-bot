@@ -103,11 +103,12 @@
 	      <option disabled selected>Магазинді таңдаңыз</option>
 	      {% for shop in shops %}
 		  <option 
-		    value="{{ shop.shop_name }}" 
-		    data-login="{{ shop.login }}"
-		    data-password="{{ shop.password }}">
-		    {{ shop.shop_name }}
-		  </option>
+			  value="{{ shop.shop_name }}" 
+			  data-login="{{ shop.login }}"
+			  data-password="{{ shop.password }}"
+			  data-id="{{ shop.merchant_id }}">
+			  {{ shop.shop_name }}
+			</option>
 		{% endfor %}
 
 	    </select>
