@@ -276,10 +276,17 @@
 	  }
 	
 	  const res = await fetch("/generate_kaspi_nakl", {
-	    method: "POST",
-	    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-	    body: new URLSearchParams({ shop, mode, phone, login, password, merchant_id })
-	  });
+		  method: "POST",
+		  headers: { "Content-Type": "application/x-www-form-urlencoded" },
+		  body: new URLSearchParams({
+		    login: login,
+		    password: password,
+		    mode: mode,
+		    shop: shop,
+		    merchant_id: merchant_id // 🟢 Мына жолды қостыңыз
+		  })
+		});
+
 	
 	  const data = await res.json();
 	  if (data.ok) {
