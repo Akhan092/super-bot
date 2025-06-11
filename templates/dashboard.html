@@ -298,17 +298,20 @@
 	    `;
 	
 	    // 🔻 Лог шығару контейнерін көрсетеміз
-	    const logContainer = document.getElementById("log-output");
-	    logContainer.classList.remove("hidden");
-	
-		const evtSource = new EventSource(`/log_stream?merchant_id=${merchant_id}`);
-		evtSource.onmessage = function(event) {
+		const logContainer = document.getElementById("log-output");
+		logContainer.classList.remove("hidden");
+		
+		const eventSource = new EventSource(`/log_stream?merchant_id=${merchant_id}`);
+		eventSource.onmessage = function(event) {
 		  logContainer.textContent += event.data + "\n";
 		  logContainer.scrollTop = logContainer.scrollHeight;
 		};
-	
-	    const interval = setInterval(pollLog, 2000);
-	    pollLog(); // алғашқы жүктеу
+		
+		eventSource.onerror = function() {
+		  eventSource.close();
+		  logContainer.textContent += "\n❌ Лог оқу тоқтатылды.";
+		};
+
 		  
 	    const res = await fetch("/generate_kaspi_nakl", {
 	      method: "POST",
