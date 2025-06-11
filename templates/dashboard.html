@@ -301,16 +301,11 @@
 	    const logContainer = document.getElementById("log-output");
 	    logContainer.classList.remove("hidden");
 	
-	    async function pollLog() {
-	      try {
-	        const res = await fetch(`/get_log?merchant_id=${merchant_id}`);
-	        const text = await res.text();
-	        logContainer.textContent = text.trim();
-	        logContainer.scrollTop = logContainer.scrollHeight; // автоматты төменге жылжу
-	      } catch (err) {
-	        logContainer.textContent += "\n❌ Серверден лог оқылмады.";
-	      }
-	    }
+		const evtSource = new EventSource(`/log_stream?merchant_id=${merchant_id}`);
+		evtSource.onmessage = function(event) {
+		  logContainer.textContent += event.data + "\n";
+		  logContainer.scrollTop = logContainer.scrollHeight;
+		};
 	
 	    const interval = setInterval(pollLog, 2000);
 	    pollLog(); // алғашқы жүктеу
