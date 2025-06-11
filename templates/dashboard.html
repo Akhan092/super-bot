@@ -323,8 +323,6 @@
 	    });
 	
 	    const data = await res.json();
-	    clearInterval(interval); // лог сұрауды тоқтатамыз
-	    pollLog(); // соңғы рет жүктеу
 	
 	    if (data.ok) {
 	      alert("✅ Накладной шығару басталды");
