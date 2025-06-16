@@ -1,28 +1,14 @@
-name: Send SMS via Dispatch
+name: Send SMS
 
 on:
   repository_dispatch:
     types: [sms]
 
 jobs:
-  sms_dispatch:
+  send_sms:
     runs-on: ubuntu-latest
     steps:
-      - name: Жұмыс параметрлерін оқу
-        run: |
-          echo "📲 Phone: ${{ github.event.client_payload.phone }}"
-          echo "📩 Message: ${{ github.event.client_payload.message }}"
-
-      # Textbelt API арқылы SMS жіберу
-      - name: Send SMS
-        uses: mikeal/curl-action@v1
-        with:
-          args: >
-            -X POST https://textbelt.com/text
-            -d phone="${{ github.event.client_payload.phone }}"
-            -d message="${{ github.event.client_payload.message }}"
-            -d key=${{ secrets.TEXTBELT_API_KEY }}
-
-      - name: Жауапты шығару
-        run: |
-          echo "📬 SMS жіберілді!"
+    - name: Echo SMS
+      run: |
+        echo "📞 Phone: ${{ github.event.client_payload.phone }}"
+        echo "✉️ Message: ${{ github.event.client_payload.message }}"
