@@ -8,7 +8,12 @@ jobs:
   send_sms:
     runs-on: ubuntu-latest
     steps:
-    - name: Echo SMS
+    - name: Send SMS via Textbelt
       run: |
-        echo "📞 Phone: ${{ github.event.client_payload.phone }}"
+        echo "📞 Sending to: ${{ github.event.client_payload.phone }}"
         echo "✉️ Message: ${{ github.event.client_payload.message }}"
+        
+        curl -X POST https://textbelt.com/text \
+          --data-urlencode "phone=${{ github.event.client_payload.phone }}" \
+          --data-urlencode "message=${{ github.event.client_payload.message }}" \
+          --data-urlencode "key=58ed0414c9e959d68d66c2b55e0a4c576e2a4c52BgRzbptGWysU5P2wvItnvUbHD"
