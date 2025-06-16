@@ -1,0 +1,15 @@
+name: Send SMS via Textbelt
+
+on:
+  workflow_dispatch:
+
+jobs:
+  send-sms:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send SMS
+        run: |
+          curl -X POST https://textbelt.com/text \
+          --data-urlencode phone='+77750523394' \
+          --data-urlencode message='GitHub Actions арқылы тест!' \
+          --data-urlencode key='58ed0414c9e959d68d66c2b55e0a4c576e2a4c52BgRzbptGWysU5P2wvItnvUbHD'
